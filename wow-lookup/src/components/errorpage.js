@@ -5,15 +5,15 @@ import Navigation from "../components/navigation.js"
 import { useParams } from 'react-router-dom';
 
 
-const Checkpvp = () => {
+const Errorpage = () => {
     let params = useParams();
     //use params.url
 
     return (
-        <div className="checkpvp-main">
-            <p>wowlogs</p>
+        <div className="errorpage-main">
+            <p>error</p>
         </div>
     );
 }
 
-export default Checkpvp;
+export default Errorpage;

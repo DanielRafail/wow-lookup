@@ -1,4 +1,5 @@
-.body, .footer{
+.body,
+.footer {
   background-color: #282c34;
 }
 
@@ -17,12 +18,12 @@
 }
 
 
-#lookup-form{
-  width:100%;
+#lookup-form {
+  width: 100%;
   text-align: center;
 }
 
-.header-title{
+.header-title {
   width: 100%;
   text-align: center;
   margin-left: -3%;
@@ -37,21 +38,24 @@
   margin-right: 20px;
 }
 
-.footer-container > footer{
-  border-top: 1px solid rgba(0,0,0,0.3);
+.footer-container>footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-.footer-container > footer > div{
-    text-align: center;
-    color: white;
+.footer-container>footer>div {
+  text-align: center;
+  color: white;
 }
 
-.footer-container{
+.footer-container {
   opacity: 90%;
 }
 
-footer{
+footer {
   padding: 20px;
 }
 
-
+.nav_tab {
+  display: flex;
+  flex: auto;
+}
