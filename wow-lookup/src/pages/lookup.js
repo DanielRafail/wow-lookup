@@ -24,7 +24,7 @@ const Lookup = () => {
     set_navigation_tab_value(0);
     //verify which tab we are on and select the link based on it (or send back to index)
     const correctPage = VerifyTab(v);
-    if (correctPage !== null) {
+    if (correctPage !== null && correctPage !== -1) {
       window.open(correctPage, "_blank", "noopener,noreferrer");
     }
   }
@@ -47,7 +47,7 @@ const Lookup = () => {
         return "https://check-pvp.fr/" + characterInfo;
       case -1:
         navigate("/");
-        break;
+        return -1;
       default:
         return null;
     }

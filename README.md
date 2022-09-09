@@ -1,4 +1,4 @@
-# wow-lookup
+# WoW-Lookup
 
 ## What is it?
 
