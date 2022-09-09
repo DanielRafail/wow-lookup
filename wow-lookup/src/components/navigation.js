@@ -5,7 +5,11 @@ import Paper from "@mui/material/Paper";
 import LinkTab from "./linktab.js";
 import HomeIcon from "@mui/icons-material/Home";
 /**
- * Navigation bar component. Requires navigation_tab_value int, homeButton boolean to verify whether to add home button or not, HandleChange to handle clicks, headers array for header names 
+ * Navigation bar component with headers. Modify if need different navigation id
+ * * @param {int} navigation_tab_value value the tabs will use 
+ * * @param {boolean} homeButton boolean to verify if to add menu button
+ * * @param {function} HandleChange function to handle the tabs click 
+ * * @param {array} headers string array with the name of the headers
  */
 class Navigation extends React.Component {
   render() {
