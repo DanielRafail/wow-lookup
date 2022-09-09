@@ -1,7 +1,6 @@
 import "../CSS/main.css";
-import React, { useState } from "react";
+import React from "react";
 import "../CSS/main.css";
-import Navigation from "../components/navigation.js";
 import { useParams } from "react-router-dom";
 
 const Summary = () => {
