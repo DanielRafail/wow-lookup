@@ -5,6 +5,10 @@ import "../CSS/main.css";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Index page which asks player for Raider.IO URL (though wowlogs or checkpvp url works as well)
+ * @returns HTML and logic components for the index page
+ */
 const Index = () => {
   let [url, seturl] = useState(0);
   let [error, seterror] = useState(0);

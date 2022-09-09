@@ -6,6 +6,10 @@ import { useParams } from "react-router-dom";
 import Summary from "../components/summary.js";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * main page (lookup page) which displays a summary of all the information, with individual links to each of them
+ * @returns HTML and logic components for the main page (lookup page)
+ */
 const Lookup = () => {
   let [navigation_tab_value, set_navigation_tab_value] = useState(0);
   let params = useParams();

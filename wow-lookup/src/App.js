@@ -5,6 +5,10 @@ import Footer from "./components/footer.js"
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import history from "./history";
 
+/**
+ * App page which hosts the routes and all other pages
+ * @returns HTML and logic components for the App Page
+ */
 function App() {
   return (
     <Router history={history}>

@@ -4,6 +4,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 
+/**
+ * Create the HTML tags for a paragraph with the website and copyright 
+ * @returns String with the paragraph
+ */
 function Copyright() {
     return (
         <Typography variant="body1">
@@ -16,6 +20,10 @@ function Copyright() {
     );
 }
 
+/**
+ * Footer page with copyright information
+ * @returns HTML and logic components for the Footer page
+ */
 export default function Footer() {
 
     return (
