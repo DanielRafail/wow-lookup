@@ -7,39 +7,57 @@ import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   let [url, seturl] = useState(0);
+  let [error, seterror] = useState(0);
   let navigate = useNavigate();
 
   useEffect(() => {
-    if (typeof url === "object") {
+    if (typeof url === "object" || typeof error === "object") {
       seturl("");
+      seterror(false);
     }
-  });
+  }, [url, error]);
 
   /**
-   * update the input tag value
+   * Get the value of the input tag and set the URL value with it
+   * @param {Object} event object from which we will get the value and set the URL
    */
   function UpdateInput(event) {
     seturl(event.target.value);
   }
 
   /**
-   * submit the form
+   * Submit the form and move to the next page
    */
-  function HandleSubmit(event) {
+  function HandleSubmit() {
     const parsedString = parseString(url);
-    navigate(
-      `/lookup/${
-        parsedString.characterRegion +
-        "&" +
-        parsedString.characterServer +
-        "&" +
-        parsedString.characterName
-      }`
-    );
+    if (
+      parsedString.characterRegion &&
+      parsedString.characterServer &&
+      parsedString.characterName
+    ){
+        navigate(
+            `/lookup/${
+              parsedString.characterRegion +
+              "&" +
+              parsedString.characterServer +
+              "&" +
+              parsedString.characterName
+            }`
+          );
+    }
+      
+    else {
+        seterror(true);
+    }
+    
   }
 
   /**
    * Get the position of a value within a String after a certain amount of repetitions
+   * @param {string} string the String we will use
+   * @param {string} subString the substring we are looking for
+   * @param {int} index after how many repititons we get the position
+   * @returns position of the substring after an index amount of repitions
    */
   function getPosition(string, subString, index) {
     return string.split(subString, index).join(subString).length;
@@ -47,6 +65,10 @@ const Index = () => {
 
   /**
    * Get the substring within a startindex and endIndex
+   * @param {string} string the string we will get the substring of
+   * @param {int} startIndex the start index for getting the substring
+   * @param {int} endIndex  the end index for getting the substring
+   * @returns substring within a startindex and endindex
    */
   function getSubstring(string, startIndex, endIndex) {
     // + 1 to remove the /
@@ -58,6 +80,7 @@ const Index = () => {
 
   /**
    * Parse the URL string to get relevant information
+   * @returns dictionary object containing useful character information
    */
   function parseString() {
     const characterName = getSubstring(
@@ -96,11 +119,12 @@ const Index = () => {
           />
           <IconButton
             style={{ transform: "scale(1.8)", color: "white" }}
-            onClick={(e) => HandleSubmit(e)}
+            onClick={() => HandleSubmit()}
           >
             <SendIcon />
           </IconButton>
         </form>
+        {error === true ? <p className="error-p">The URL entered is invalid</p> : <React.Fragment/>}
       </div>
     </div>
   );

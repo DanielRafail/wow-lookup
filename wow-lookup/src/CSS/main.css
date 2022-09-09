@@ -64,3 +64,8 @@ div div nav div div div div .home-button-section{
   font-size: large;
   color:#282c34 !important;
 }
+
+.error-p{
+  color: red;
+  width: 54%;
+}

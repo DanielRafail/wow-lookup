@@ -6,10 +6,15 @@ import LinkTab from "./linktab.js";
 import HomeIcon from "@mui/icons-material/Home";
 
 class Navigation extends React.Component {
+
+  /**
+   * Function to handle changing tabs on the navigation menu
+   */
   HandleChange = (event, v) => {
-    this.props.set_navigation_tab_value(v);
+    // Set the navigation tab back to 0 as it is the default and only interactive page, will leave this here in case I decide to create personalized pages for each website in the future
+    this.props.set_navigation_tab_value(0);
+    //verify which tab we are on and select the link based on it (or send back to index)
     const correctPage = this.VerifyTab(v);
-    
     if (correctPage === -1) {
       this.props.navigate("/");}
       else if (correctPage !== null){
@@ -17,8 +22,12 @@ class Navigation extends React.Component {
     }
   };
 
+  /**
+   * 
+   * @param {int} index Verify which tab we are on and select the appropriate website
+   * @returns the appropriate website URL
+   */
   VerifyTab(index) {
-    console.log(this.props.characterInfo)
     const characterInfo = this.props.characterInfo.replaceAll("&", "/");
     switch (index) {
       case 0:
