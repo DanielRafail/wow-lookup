@@ -87,20 +87,21 @@ const Index = () => {
    * @returns dictionary object containing useful character information
    */
   function parseString() {
+    const split_url_length = url.split("/").length;
     const characterName = getSubstring(
       url,
-      url.split("/").length - 1,
-      url.split("/").length
+      split_url_length - 1,
+      split_url_length
     );
     const characterServer = getSubstring(
       url,
-      url.split("/").length - 2,
-      url.split("/").length - 1
+      split_url_length - 2,
+      split_url_length - 1
     );
     const characterRegion = getSubstring(
       url,
-      url.split("/").length - 3,
-      url.split("/").length - 2
+      split_url_length - 3,
+      split_url_length - 2
     );
     return {
       characterRegion: characterRegion,
