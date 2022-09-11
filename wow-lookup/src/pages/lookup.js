@@ -14,9 +14,9 @@ import Reader from "../API/reader.js";
  */
 const Lookup = () => {
   let [navigationTabValue, setNavigationTabValue] = useState(0);
-  let [raiderIOValid, setRaiderIOValid] = useState(0);
-  // let [wowlogsValid, setWowlogsValid] = useState(0);
-  // let [checkPVPValid, setCheckPVP] = useState(0);
+  let [raiderIOError, setRaiderIOError] = useState(0);
+  // let [wowlogsError, setWowlogsError] = useState(0);
+  // let [checkPVPError, setCheckPVPError] = useState(0);
   let [parsedRaiderIOData, setRaiderIOData] = useState(0);
   let [parsedWowlogsData, setWowlogsData] = useState(0);
   let [parsedCheckPVPData, setcheckPVPData] = useState(0);
@@ -25,8 +25,32 @@ const Lookup = () => {
   let headers = ["Summary", "WoWlogs", "Raider.IO", "CheckPVP"];
 
   useEffect(() => {
-    const raiderIOData = Reader.getRaiderIOData(params.url, setRaiderIOValid, Parser.parseRaiderIOData);
-  }, [params]);
+    apiCall(
+      Reader.getRaiderIOData(params.url),
+      setRaiderIOData,
+      setRaiderIOError
+    );
+  }, [setRaiderIOData, params.url]);
+
+  /**
+   * Function used to call a API, set data upon a response, and set an error upno a failure
+   * @param {Function} apiCallFunction Function which decides which API to call
+   * @param {Function} setData Function which sets the data in this class's state
+   * @param {Function} setError Function which sets the appropriate error variable in this class's state
+   */
+  function apiCall(apiCallFunction, setData, setError) {
+    apiCallFunction
+      .then(function (response) {
+        if (response) {
+          setError(false);
+          setData(Parser.parseRaiderIOData(response.data));
+        }
+      })
+      .catch(function (error) {
+        setError(true);
+        console.log(error);
+      });
+  }
 
   /**
    * Function to handle changing tabs on the navigation menu
@@ -39,10 +63,6 @@ const Lookup = () => {
     if (correctPage !== null && correctPage !== -1) {
       window.open(correctPage, "_blank", "noopener,noreferrer");
     }
-  }
-
-  function raiderIODataHandler(){
-    
   }
 
   /**
@@ -80,9 +100,11 @@ const Lookup = () => {
       <div className="body">
         {
           <Summary
-            url={params.url}
             data={{
-              raiderio: {parsedRaiderIOData},
+              name: params.url.split("&")[2],
+              server: params.url.split("&")[1],
+              raiderio: parsedRaiderIOData,
+              raiderIOError: raiderIOError,
               wowlogs: "",
               checkPVP: "",
             }}

@@ -3,13 +3,18 @@ import axios from "axios";
 import React from "react";
 
 /**
- * Summary page which will show information about your WoWlogs, Raider.IO and CheckPVP in one compact location
- * @returns HTML and logic components for the Summary page
+ * The reader class that will send requests to the APIs, read them and respond to them
  */
 class Reader extends React.Component {
-  static getRaiderIOData(urlParams, setError, responseHandler){
+  /**
+   * API call to get the relevant information from raiderIO
+   * @param {string} urlParams The URL parameters which include the character name, server and region
+   * @param {boolean} setError Boolean that changes if the request fails
+   * @param {Function} responseHandler A function to handle how the response will be handled
+   */
+  static async getRaiderIOData(urlParams) {
     const characterInfoArray = urlParams.split("&");
-    axios
+    return await axios
       .get("https://raider.io/api/v1/characters/profile", {
         params: {
           region: characterInfoArray[0],
@@ -19,20 +24,23 @@ class Reader extends React.Component {
             "mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs:all",
         },
       })
-      .then(function (response) {
-        if (response) {
-          setError(true);
-          responseHandler(response.data);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
   }
 
-  static getWowlogsData(urlParams, setError) {}
+  /**
+   * API call to get the relevant information from wowlogs
+   * @param {string} urlParams The URL parameters which include the character name, server and region
+   * @param {boolean} setError Boolean that changes if the request fails
+   * @param {Function} responseHandler A function to handle how the response will be handled
+   */
+  static getWowlogsData(urlParams, setError, responseHandler) {}
 
-  static getCheckPVPData(urlParams, setError) {}
+  /**
+   * API call to get the relevant information from checkPVP
+   * @param {string} urlParams The URL parameters which include the character name, server and region
+   * @param {boolean} setError Boolean that changes if the request fails
+   * @param {Function} responseHandler A function to handle how the response will be handled
+   */
+  static getCheckPVPData(urlParams, setError, responseHandler) {}
 }
 
 export default Reader;

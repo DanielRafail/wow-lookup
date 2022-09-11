@@ -6,9 +6,9 @@ import LinkTab from "./linktab.js";
 import HomeIcon from "@mui/icons-material/Home";
 /**
  * Navigation bar component with headers. Modify if need different navigation id
- * * @param {int} navigation_tab_value value the tabs will use 
+ * * @param {int} navigation_tab_value value the tabs will use
  * * @param {boolean} homeButton boolean to verify if to add menu button
- * * @param {function} HandleChange function to handle the tabs click 
+ * * @param {function} HandleChange function to handle the tabs click
  * * @param {array} headers string array with the name of the headers
  */
 class Navigation extends React.Component {
@@ -38,9 +38,13 @@ class Navigation extends React.Component {
             ) : (
               <React.Fragment />
             )}
-            {this.props.headers ? this.props.headers.map((header, i) => {
-              return <LinkTab label={header} value={i} key={i}/>
-            }): <React.Fragment/>}
+            {this.props.headers ? (
+              this.props.headers.map((header, i) => {
+                return <LinkTab label={header} value={i} key={i} />;
+              })
+            ) : (
+              <React.Fragment />
+            )}
           </Tabs>
         </Paper>
       </nav>

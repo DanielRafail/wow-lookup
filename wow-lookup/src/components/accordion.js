@@ -1,9 +1,8 @@
-import Accordion from '@mui/material/Accordion';
-import React from 'react';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import Accordion from "@mui/material/Accordion";
+import React from "react";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 //THIS IS TEMPLATE FROM MUI, FIX LATER
 
