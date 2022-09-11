@@ -22,7 +22,7 @@ class Navigation extends React.Component {
                 animation: "none",
               },
             }}
-            value={this.props.navigation_tab_value}
+            value={this.props.navigationTabValue}
             onChange={(e, v) => this.props.HandleChange(e, v)}
             centered
           >

@@ -16,6 +16,7 @@ function Copyright() {
                 WoW-Lookup.surge.sh
             </Link>{' '}
             2022
+            <br/><br/>Also add here references to all APIs used
         </Typography>
     );
 }

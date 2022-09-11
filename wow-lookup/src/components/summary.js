@@ -2,6 +2,7 @@ import "../CSS/main.css";
 import React from "react";
 import "../CSS/main.css";
 import { useParams } from "react-router-dom";
+import CustomTable from "./table";
 
 /**
  * Summary page which will show information about your WoWlogs, Raider.IO and CheckPVP in one compact location
@@ -9,12 +10,16 @@ import { useParams } from "react-router-dom";
  */
 const Summary = () => {
   let params = useParams();
+
+
+
   //use params.url
   /*       <a href="https://www.warcraftlogs.com/character/us/illidan/leeroys">asdasd</a> */
 
   return (
     <div className="summary-main">
         <p>yo</p>
+        <CustomTable headers={["Dungeons", "Fortified", "Tyrannical"]} rows={[]}/>
     </div>
   );
 };
