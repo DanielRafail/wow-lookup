@@ -28,7 +28,8 @@ const Lookup = () => {
     apiCall(
       Reader.getRaiderIOData(params.url),
       setRaiderIOData,
-      setRaiderIOError
+      setRaiderIOError,
+      Parser.parseRaiderIOData
     );
   }, [setRaiderIOData, params.url]);
 
@@ -38,12 +39,12 @@ const Lookup = () => {
    * @param {Function} setData Function which sets the data in this class's state
    * @param {Function} setError Function which sets the appropriate error variable in this class's state
    */
-  function apiCall(apiCallFunction, setData, setError) {
+  function apiCall(apiCallFunction, setData, setError, parserFunction) {
     apiCallFunction
       .then(function (response) {
         if (response) {
           setError(false);
-          setData(Parser.parseRaiderIOData(response.data));
+          setData(parserFunction(response.data));
         }
       })
       .catch(function (error) {

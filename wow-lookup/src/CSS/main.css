@@ -1,6 +1,10 @@
+#root {
+  font-family: Verdana, Helvetica, sans-serif
+}
+
 .body,
 .footer {
-  background-color: #282c34;
+  background-color: rgb(33, 33, 33);
 }
 
 .body {
@@ -68,4 +72,31 @@ div div nav div div div div .home-button-section{
 .error-p{
   color: red;
   width: 54%;
+}
+
+.summary-main{
+  width: 90%;
+}
+
+.raiderIO-section{
+  display: flex;
+}
+
+.best-keys, .recent-keys{
+  flex-direction: column;
+}
+
+.best-keys{
+  flex: 1.5;
+}
+
+.recent-keys{
+  flex: 1;
+}
+
+.flex-seperator{
+  flex:0.2;
+}
+.hidden{
+  visibility: hidden;
 }
