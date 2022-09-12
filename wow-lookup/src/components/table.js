@@ -50,7 +50,6 @@ class CustomTable extends React.Component {
   render() {
     const StyledTableCell = this.styleTableCell();
     const StyledTableRow = this.styleTableRow();
-    console.log();
     return (
       <TableContainer component={Paper}>
         <Table aria-label="customized table" sx={{borderStyle:"solid"}}>

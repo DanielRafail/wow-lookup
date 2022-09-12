@@ -15,7 +15,7 @@ import Reader from "../API/reader.js";
 const Lookup = () => {
   let [navigationTabValue, setNavigationTabValue] = useState(0);
   let [raiderIOError, setRaiderIOError] = useState(0);
-  // let [wowlogsError, setWowlogsError] = useState(0);
+  let [wowlogsError, setWowlogsError] = useState(0);
   // let [checkPVPError, setCheckPVPError] = useState(0);
   let [parsedRaiderIOData, setRaiderIOData] = useState(0);
   let [parsedWowlogsData, setWowlogsData] = useState(0);
@@ -31,7 +31,13 @@ const Lookup = () => {
       setRaiderIOError,
       Parser.parseRaiderIOData
     );
-  }, [setRaiderIOData, params.url]);
+    apiCall(
+      Reader.getWowlogsData(params.url),
+      setWowlogsData,
+      setWowlogsError,
+      Parser.parseWowlogsData
+    );
+  }, [params.url]);
 
   /**
    * Function used to call a API, set data upon a response, and set an error upno a failure
@@ -104,11 +110,13 @@ const Lookup = () => {
             data={{
               name: params.url.split("&")[2],
               server: params.url.split("&")[1],
-              raiderio: parsedRaiderIOData,
+              parsedRaiderIOData: parsedRaiderIOData,
               raiderIOError: raiderIOError,
-              wowlogs: "",
+              parsedWowlogsData: parsedWowlogsData,
+              wowlogsError: wowlogsError,
               checkPVP: "",
             }}
+            url={params.url}
           />
         }
       </div>
