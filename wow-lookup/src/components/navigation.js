@@ -11,45 +11,43 @@ import HomeIcon from "@mui/icons-material/Home";
  * * @param {function} HandleChange function to handle the tabs click
  * * @param {array} headers string array with the name of the headers
  */
-class Navigation extends React.Component {
-  render() {
-    return (
-      <nav id="navigation-header">
-        <Paper>
-          <Tabs
-            TabIndicatorProps={{
-              style: {
-                animation: "none",
-              },
-            }}
-            value={this.props.navigationTabValue}
-            onChange={(e, v) => this.props.HandleChange(e, v)}
-            centered
-          >
-            {this.props.homeButton ? (
-              <Tab
-                className="home-button-section"
-                label="WoW-Lookup"
-                icon={<HomeIcon />}
-                iconPosition="start"
-                key={-1}
-                value={-1}
-              />
-            ) : (
-              <React.Fragment />
-            )}
-            {this.props.headers ? (
-              this.props.headers.map((header, i) => {
-                return <LinkTab label={header} value={i} key={i} />;
-              })
-            ) : (
-              <React.Fragment />
-            )}
-          </Tabs>
-        </Paper>
-      </nav>
-    );
-  }
-}
+const Navigation = (props) => {
+  return (
+    <nav id="navigation-header">
+      <Paper>
+        <Tabs
+          TabIndicatorProps={{
+            style: {
+              animation: "none",
+            },
+          }}
+          value={props.navigationTabValue}
+          onChange={(e, v) => props.HandleChange(e, v)}
+          centered
+        >
+          {props.homeButton ? (
+            <Tab
+              className="home-button-section"
+              label="WoW-Lookup"
+              icon={<HomeIcon />}
+              iconPosition="start"
+              key={-1}
+              value={-1}
+            />
+          ) : (
+            <React.Fragment />
+          )}
+          {props.headers ? (
+            props.headers.map((header, i) => {
+              return <LinkTab label={header} value={i} key={i} />;
+            })
+          ) : (
+            <React.Fragment />
+          )}
+        </Tabs>
+      </Paper>
+    </nav>
+  );
+};
 
 export default Navigation;

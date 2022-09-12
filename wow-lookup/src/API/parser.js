@@ -66,10 +66,10 @@ class Parser extends React.Component {
     );
     const mainSpec = findMainSpec(
       mainParseDifficulty,
-      wowlogsData.data.characterData.lfr,
-      wowlogsData.data.characterData.normal,
-      wowlogsData.data.characterData.heroic,
-      wowlogsData.data.characterData.mythic
+      wowlogsData.data.characterData.lfr.overall.metric,
+      wowlogsData.data.characterData.normal.overall.metric,
+      wowlogsData.data.characterData.heroic.overall.metric,
+      wowlogsData.data.characterData.mythic.overall.metric
     );
     return {
       tableData: {
@@ -107,6 +107,13 @@ function calculateUpgrades(key_level, num_keystone_upgrades) {
   return keyUpgrade.concat(key_level);
 }
 
+/**
+ * Verify if the initial parses shown will be normal, heroic or mythic. No need to verify LFR as it will be the fallback
+ * @param {Object} normal Dictionary containing the normal parses
+ * @param {Object} heroic Dictionary containing the heroic parses
+ * @param {Object} mythic Dictionary containing the mythic parses
+ * @returns The highest tier with which you have parses
+ */
 function verifyMainParses(normal, heroic, mythic) {
   let normalKills = 0;
   let heroicKills = 0;
@@ -121,6 +128,15 @@ function verifyMainParses(normal, heroic, mythic) {
   return mythicKills > 0 ? 3 : heroicKills > 0 ? 2 : normalKills > 0 ? 1 : 0;
 }
 
+/**
+ * Verify which difficulty is your highest and verify the spec you played at that difficulty
+ * @param {int} difficulty Int which represents the difficulty level, 0 lfr, 1 normal, 2 heroic, 3 mythic 
+ * @param {string} lfr String saying what your main spec in LFR is 
+ * @param {string} normal String saying what your main spec in normal is 
+ * @param {string} heroic String saying what your main spec in heroic is 
+ * @param {string} mythic String saying what your main spec in mythic is 
+ * @returns The string with your main spec for the highest tier
+ */
 function findMainSpec(difficulty, lfr, normal, heroic, mythic) {
   switch (difficulty) {
     case 0:
@@ -136,6 +152,11 @@ function findMainSpec(difficulty, lfr, normal, heroic, mythic) {
   }
 }
 
+/**
+ * Parses each tier to get the relevant information into a dictionary that will fit the table component
+ * @param {Object} tier Dictionary holding the information regarding this tier 
+ * @returns New custom made dictionary with the information put in a covenient form
+ */
 function parseWowlogsDataTiers(tier) {
   let returnDictionary = [];
   Object.entries(tier.overall.rankings).map((entry, i) => {

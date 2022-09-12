@@ -10,12 +10,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 
-class CustomTable extends React.Component {
+const CustomTable = (props) => {
   /**
    * Function which returns the style the cells in the table will use
    * @returns The style for the cells
    */
-  styleTableCell() {
+  function styleTableCell() {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
         backgroundColor: "rgb(5, 5, 5)",
@@ -34,7 +34,7 @@ class CustomTable extends React.Component {
    * Function which returns the style the rows in the table will use
    * @returns The style for the rows
    */
-  styleTableRow() {
+  function styleTableRow() {
     const StyledTableRow = styled(TableRow)(({ theme }) => ({
       "&": {
         backgroundColor: "rgb(18, 18, 18)",
@@ -47,50 +47,48 @@ class CustomTable extends React.Component {
     return StyledTableRow;
   }
 
-  render() {
-    const StyledTableCell = this.styleTableCell();
-    const StyledTableRow = this.styleTableRow();
-    return (
-      <TableContainer component={Paper}>
-        <Table aria-label="customized table" sx={{borderStyle:"solid"}}>
-          <TableHead>
-            <TableRow>
-              {this.props.headers.map((header, i) => {
-                if (i === 0)
-                  return <StyledTableCell key={i}>{header}</StyledTableCell>;
+  const StyledTableCell = styleTableCell();
+  const StyledTableRow = styleTableRow();
+  return (
+    <TableContainer component={Paper}>
+      <Table aria-label="customized table" sx={{ borderStyle: "solid" }}>
+        <TableHead>
+          <TableRow>
+            {props.headers.map((header, i) => {
+              if (i === 0)
+                return <StyledTableCell key={i}>{header}</StyledTableCell>;
+              else
+                return (
+                  <StyledTableCell key={i} align="center">
+                    {header}
+                  </StyledTableCell>
+                );
+            })}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {/* First element is header, following elements are not. Only give th to first element and on dictionary read, skip first element*/}
+          {props.rows.map((row, i) => (
+            <StyledTableRow key={i}>
+              {Object.entries(row).map((cell, j) => {
+                if (j === 0)
+                  return (
+                    <StyledTableCell key={j} component="th" scope="row">
+                      {cell[1]}
+                    </StyledTableCell>
+                  );
                 else
                   return (
-                    <StyledTableCell key={i} align="center">
-                      {header}
+                    <StyledTableCell key={j} align="center">
+                      {cell[1]}
                     </StyledTableCell>
                   );
               })}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* First element is header, following elements are not. Only give th to first element and on dictionary read, skip first element*/}
-            {this.props.rows.map((row, i) => (
-              <StyledTableRow key={i}>
-                {Object.entries(row).map((cell, j) => {
-                  if (j === 0)
-                    return (
-                      <StyledTableCell key={j} component="th" scope="row">
-                        {cell[1]}
-                      </StyledTableCell>
-                    );
-                  else
-                    return (
-                      <StyledTableCell key={j} align="center">
-                        {cell[1]}
-                      </StyledTableCell>
-                    );
-                })}
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-}
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 export default CustomTable;

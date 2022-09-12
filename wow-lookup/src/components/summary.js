@@ -22,14 +22,14 @@ const Summary = (props) => {
               raiderIOError: props.data.raiderIOError,
             }}
           />,
-          <WowlogsComponent
-            data={{
-              name: props.url.split("&")[2],
-              server: props.url.split("&")[1],
-              parsedWowlogsData: props.data.parsedWowlogsData,
-              wowlogsError: props.data.wowlogsError,
-            }}
-          />,
+          // <WowlogsComponent
+          //   data={{
+          //     name: props.url.split("&")[2],
+          //     server: props.url.split("&")[1],
+          //     parsedWowlogsData: props.data.parsedWowlogsData,
+          //     wowlogsError: props.data.wowlogsError,
+          //   }}
+          // />,
         ]}
         titles={["RaiderIO", "WarcraftLogs", "PVP"]}
       />
