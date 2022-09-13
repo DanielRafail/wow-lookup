@@ -224,7 +224,6 @@ function findEveryPVPSeason(pvpAchievs) {
  * @returns An int value equivalent to their sorting order
  */
 function sortPVPSeasons(comparator, compared) {
-  console.log(comparator, compared);
   const allSeasons = getAllSeasons();
   const substringValueComparator = getExpansionFromString(comparator);
   const substringValueCompared = getExpansionFromString(compared);

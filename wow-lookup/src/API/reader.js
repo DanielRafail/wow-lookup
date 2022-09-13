@@ -29,8 +29,7 @@ class Reader extends React.Component {
    */
   static async getWowlogsData(urlParams) {
     const characterInfoArray = getCharacterInfoArray(urlParams);
-    const token =
-      "";
+    const token = "";
     const characterInfoString =
       'character(name:"' +
       characterInfoArray[2] +

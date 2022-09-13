@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 
 const WowlogsComponent = (props) => {
   let [difficultyParse, setdifficultyParse] = useState(0);
-  let [difficulty, setdifficulty] = useState(0);
+  let [difficulty, setDifficulty] = useState(0);
 
   /**
    * Function ran whenever the props element is modified which verifies what the current difficultyParse is (Based on page reload and tabs click)
@@ -23,7 +23,7 @@ const WowlogsComponent = (props) => {
       props.data.parsedWowlogsData.tableData &&
       props.data.parsedWowlogsData.tableData.lfr
     ) {
-      setdifficulty(props.data.parsedWowlogsData.mainParseDifficulty);
+      setDifficulty(props.data.parsedWowlogsData.mainParseDifficulty);
       switch (props.data.parsedWowlogsData.mainParseDifficulty) {
         case 0:
           setdifficultyParse(props.data.parsedWowlogsData.tableData.lfr);
@@ -70,7 +70,7 @@ const WowlogsComponent = (props) => {
    * @param {string} newVal The value of the new tab clicked 
    */
   function handleChange(event, newVal) {
-    setdifficulty(newVal);
+    setDifficulty(newVal);
     Object.entries(props.data.parsedWowlogsData.tableData).map((data, i)=>{
         if(i === Number(newVal))
         setdifficultyParse(data[1])
