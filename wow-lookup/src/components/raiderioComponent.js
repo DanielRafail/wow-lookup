@@ -12,11 +12,11 @@ const RaiderioComponent = (props) => {
     const headers = ["Dungeons", "Fortified", "Tyrannical"];
     return (
       <div className="best-keys">
-        <h4>
+        <h4 style={{marginBottom:"0px"}}>
           {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}{" "}
           ({props.data.parsedRaiderIOData.score.all} IO)
         </h4>
-        <h6>
+        <h6 style={{marginTop:"20px"}}>
           DPS({props.data.parsedRaiderIOData.score.dps} IO), Healer(
           {props.data.parsedRaiderIOData.score.healer} IO), Tank(
           {props.data.parsedRaiderIOData.score.tank} IO)
@@ -36,8 +36,8 @@ const RaiderioComponent = (props) => {
   function returnRaiderIORecentKeys() {
     return (
       <div className="recent-keys">
-        <h4>Most Recent Runs</h4>
         <h6 className="hidden">.</h6>
+        <h4>Most Recent Runs</h4>
         <CustomTable
           headers={["Dungeons", "Date"]}
           rows={props.data.parsedRaiderIOData.recentRuns}

@@ -11,10 +11,10 @@ class Parser extends React.Component {
    * @returns A usable dictionary
    */
   static parseRaiderIOData(raiderIOData) {
-    const mythicPlusAlternate = raiderIOData.mythic_plus_alternate_runs;
-    const mythicPlusBest = raiderIOData.mythic_plus_best_runs;
-    const mythicPlusRecent = raiderIOData.mythic_plus_recent_runs;
-    const MythicPlusScore = raiderIOData.mythic_plus_scores_by_season;
+    const mythicPlusAlternate = raiderIOData.data.mythic_plus_alternate_runs;
+    const mythicPlusBest = raiderIOData.data.mythic_plus_best_runs;
+    const mythicPlusRecent = raiderIOData.data.mythic_plus_recent_runs;
+    const MythicPlusScore = raiderIOData.data.mythic_plus_scores_by_season;
     let keys = [];
     let recentData = [];
     Object.entries(mythicPlusAlternate).map((entry, i) => {
@@ -55,21 +55,15 @@ class Parser extends React.Component {
    * @returns A usable dictionary
    */
   static parseWowlogsData(wowlogsData) {
-    const lfr = parseWowlogsDataTiers(wowlogsData.data.characterData.lfr);
-    const normal = parseWowlogsDataTiers(wowlogsData.data.characterData.normal);
-    const heroic = parseWowlogsDataTiers(wowlogsData.data.characterData.heroic);
-    const mythic = parseWowlogsDataTiers(wowlogsData.data.characterData.mythic);
+    const characterData = wowlogsData.data.data.characterData;
+    const lfr = parseWowlogsDataTiers(characterData.lfr);
+    const normal = parseWowlogsDataTiers(characterData.normal);
+    const heroic = parseWowlogsDataTiers(characterData.heroic);
+    const mythic = parseWowlogsDataTiers(characterData.mythic);
     let mainParseDifficulty = verifyMainParses(
-      wowlogsData.data.characterData.normal,
-      wowlogsData.data.characterData.heroic,
-      wowlogsData.data.characterData.mythic
-    );
-    const mainSpec = findMainSpec(
-      mainParseDifficulty,
-      wowlogsData.data.characterData.lfr.overall.metric,
-      wowlogsData.data.characterData.normal.overall.metric,
-      wowlogsData.data.characterData.heroic.overall.metric,
-      wowlogsData.data.characterData.mythic.overall.metric
+      characterData.normal,
+      characterData.heroic,
+      characterData.mythic
     );
     return {
       tableData: {
@@ -78,20 +72,192 @@ class Parser extends React.Component {
         heroic: heroic,
         mythic: mythic,
       },
-      mainSpec: mainSpec,
       mainParseDifficulty: mainParseDifficulty,
     };
   }
 
   /**
-   * Parses the data of checkPVP into usable dictionaries
-   * @param {Object} checkPVPData The data dictionary we get from the checkPVP APIs
+   * Parses the data of PVP into usable dictionaries
+   * @param {Object} pvpData The data dictionary we get from the blizzard PVP APIs
    * @returns A usable dictionary
    */
-  static parseCheckPVPData(checkPVPData) {}
+  static parsePVPData(pvpData) {
+    const pvpAchievs = getAllPVPAchievs(pvpData);
+    const pvpSeasons = findEveryPVPSeason(pvpAchievs);
+    const seasonsPerExpansions = divideSeasonsPerExpansion(pvpSeasons);
+    findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions);
+    const twoRating = getRating(pvpData.two);
+    const threeRating = getRating(pvpData.three);
+    return {
+      rankHistory: seasonsPerExpansions,
+      twoRating: twoRating,
+      threeRating: threeRating,
+    };
+  }
 }
 
 export default Parser;
+
+/**
+ * Create a dictionary object with keys for every expansion, and empty values
+ * @param {*} seasons
+ * @returns
+ */
+function divideSeasonsPerExpansion(seasons) {
+  let currentSeason = "";
+  let dividedSeasons = {};
+  seasons.map((season, i) => {
+    const nextSeasonEntry = getExpansionFromString(season);
+    if (nextSeasonEntry !== currentSeason) {
+      currentSeason = nextSeasonEntry;
+      dividedSeasons[nextSeasonEntry] = [];
+    }
+    dividedSeasons[currentSeason].push({ [season]: "" });
+  });
+  return dividedSeasons;
+}
+
+/**
+ * Get the rating and stats of a player has within a certain PVP bracket
+ * @param {Object} bracket The pvp bracket
+ * @returns the player's rating and weekly and season stats
+ */
+function getRating(bracket) {
+  return {
+    rating: bracket.data.rating,
+    seasonStats: bracket.data.season_match_statistics,
+    weeklyStats: bracket.data.weekly_match_statistics,
+  };
+}
+
+/**
+ * Within the array of every achievement, find all the PVP achievements
+ * @param {Object} allAchievs Array with every achievement earned by the player
+ * @returns An array with all the PVP achievements string names
+ */
+function getAllPVPAchievs(allAchievs) {
+  let pvpAchievs = [];
+  const pvpAchievsRegex = new RegExp("Season [0-9]$");
+  allAchievs.achievements.data.achievements.map((achievement, i) => {
+    if (pvpAchievsRegex.test(achievement.achievement.name)) {
+      pvpAchievs.push(achievement.achievement.name);
+    }
+  });
+  return pvpAchievs;
+}
+
+/**
+ * Find the highest rank someone had per season
+ * @param {Object} pvpAchievs all the achievements
+ * @param {Object} seasons all the seasons
+ * @returns A dictionary object with key as season and value as rank
+ */
+function findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions) {
+  let pvpRanking = {
+    Combatant: 0,
+    Challenger: 1,
+    Rival: 2,
+    Duelist: 3,
+    Elite: 4,
+    Gladiator: 5,
+  };
+  Object.values(seasonsPerExpansions).map((seasons, i) => {
+    Object.values(seasons).map((season, j) => {
+      const seasonName = Object.keys(season)[0];
+      let highestRank = -1;
+      pvpAchievs.map((achievement, j) => {
+        if (achievement.includes(seasonName)) {
+          const rankWithNumber = achievement.substring(
+            0,
+            achievement.indexOf(" ")
+          );
+          const rankWithoutNumber = achievement.substring(
+            0,
+            achievement.indexOf(":")
+          );
+          const correctRank =
+            rankWithoutNumber.length > rankWithNumber.length
+              ? rankWithNumber
+              : rankWithoutNumber;
+          if (highestRank < pvpRanking[correctRank]) {
+            highestRank = pvpRanking[correctRank];
+          }
+        }
+      });
+      if (highestRank !== -1)
+        season[seasonName] = Object.entries(pvpRanking)[highestRank][0];
+    });
+  });
+  return seasonsPerExpansions;
+}
+
+/**
+ * Based on the PVP achievement title, figure out the expansion it belongs to
+ * @param {string} str  The PVP achievement title
+ * @returns The expansion it belongs to
+ */
+function getExpansionFromString(str) {
+  return str.substring(0, str.indexOf("Season") - 1);
+}
+
+/**
+ * Find every season the player received a rank
+ * @param {Object} pvpAchievs all the achievements the player has
+ * @returns An array with all the seasons the player had a rank
+ */
+function findEveryPVPSeason(pvpAchievs) {
+  let seasons = [];
+  let season = "";
+  pvpAchievs.map((achievement, i) => {
+    season = achievement.substring(achievement.indexOf(":") + 2);
+    if (!seasons.includes(season)) seasons.push(season);
+  });
+  return seasons.sort(function (comparator, compared) {
+    return sortPVPSeasons(comparator, compared);
+  });
+}
+
+/**
+ * Sort PVP seasons by expansion and then by season
+ * @param {string} comparator String of the PVP achievement title we will compare to
+ * @param {string} compared String of the PVP achievement title that will be compared
+ * @returns An int value equivalent to their sorting order
+ */
+function sortPVPSeasons(comparator, compared) {
+  console.log(comparator, compared);
+  const allSeasons = getAllSeasons();
+  const substringValueComparator = getExpansionFromString(comparator);
+  const substringValueCompared = getExpansionFromString(compared);
+  return (
+    allSeasons[substringValueCompared] - allSeasons[substringValueComparator] ||
+    compared.substring(compared.length - 1, compared.length) -
+      comparator.substring(comparator.length - 1, comparator.length)
+  );
+}
+
+/**
+ * Hard code method which returns a dictionary with key all of WoW's expansions and values an incrementing ID. Have to manually hard code it because Blizzard API returns it in a falsy order. Maybe use other API call and compare based on ID?
+ * @returns Dictionary object with keys = WoW expansions and values = incrementing ID
+ */
+function getAllSeasons() {
+  let everySeasons = [
+    "Classic",
+    "Burning Crusade",
+    "Wrath of the Lich King",
+    "Cataclysm",
+    "Mists of Pandaria",
+    "Warlords of Draenor",
+    "Legion",
+    "Battle for Azeroth",
+    "Shadowlands",
+    "Dragonflight",
+  ];
+  let everySeasonsWithId = {};
+  everySeasons.map((everySeason, i) => {
+    everySeasonsWithId[everySeason] = i;
+  });
+  return everySeasonsWithId;
+}
 
 /**
  * Calculate the amount of + to add infront of a string to display the amount of upgrades received when finishing a key
@@ -129,32 +295,8 @@ function verifyMainParses(normal, heroic, mythic) {
 }
 
 /**
- * Verify which difficulty is your highest and verify the spec you played at that difficulty
- * @param {int} difficulty Int which represents the difficulty level, 0 lfr, 1 normal, 2 heroic, 3 mythic 
- * @param {string} lfr String saying what your main spec in LFR is 
- * @param {string} normal String saying what your main spec in normal is 
- * @param {string} heroic String saying what your main spec in heroic is 
- * @param {string} mythic String saying what your main spec in mythic is 
- * @returns The string with your main spec for the highest tier
- */
-function findMainSpec(difficulty, lfr, normal, heroic, mythic) {
-  switch (difficulty) {
-    case 0:
-      return lfr.overall.metric;
-    case 1:
-      return normal.overall.metric;
-    case 2:
-      return heroic.overall.metric;
-    case 3:
-      return mythic.overall.metric;
-    default:
-      return -1;
-  }
-}
-
-/**
  * Parses each tier to get the relevant information into a dictionary that will fit the table component
- * @param {Object} tier Dictionary holding the information regarding this tier 
+ * @param {Object} tier Dictionary holding the information regarding this tier
  * @returns New custom made dictionary with the information put in a covenient form
  */
 function parseWowlogsDataTiers(tier) {
@@ -162,12 +304,14 @@ function parseWowlogsDataTiers(tier) {
   Object.entries(tier.overall.rankings).map((entry, i) => {
     returnDictionary.push({
       boss: entry[1].encounter.name,
-      overall: entry[1].rankPercent ? Math.round(entry[1].rankPercent) : "-",
+      overall: entry[1].rankPercent
+        ? Math.round(entry[1].rankPercent) + "%"
+        : "-",
       ilvl: tier.ilvl.rankings[i].rankPercent
-        ? Math.round(tier.ilvl.rankings[i].rankPercent)
+        ? Math.round(tier.ilvl.rankings[i].rankPercent) + "%"
         : "-",
       dps: tier.ilvl.rankings[i].rankPercent
-        ? Math.round(entry[1].bestAmount)
+        ? Math.round(entry[1].bestAmount).toLocaleString("en-US")
         : "-",
       killCount: entry[1].totalKills,
     });

@@ -19,11 +19,13 @@ const CustomTable = (props) => {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
         backgroundColor: "rgb(5, 5, 5)",
+        fontWeight:"bold",
         color: theme.palette.common.white,
         fontSize: 24,
       },
       [`&.${tableCellClasses.body}`]: {
         fontSize: 18,
+        fontWeight:"bold",
         color: theme.palette.common.white,
       },
     }));

@@ -5,11 +5,12 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const customAccordion = (props) => {
+  
   return (
     <div>
       {props.content.map((section, i) => {
         return (
-          <Accordion key={i} sx={{ color: "white" }}>
+          <Accordion key={i} sx={{ color: "white" }} defaultExpanded={props.expanded}>
             <AccordionSummary
               expandIcon={
                 <ExpandMoreIcon

@@ -16,10 +16,10 @@ const Lookup = () => {
   let [navigationTabValue, setNavigationTabValue] = useState(0);
   let [raiderIOError, setRaiderIOError] = useState(0);
   let [wowlogsError, setWowlogsError] = useState(0);
-  // let [checkPVPError, setCheckPVPError] = useState(0);
+  let [pvpError, setPVPError] = useState(0);
   let [parsedRaiderIOData, setRaiderIOData] = useState(0);
   let [parsedWowlogsData, setWowlogsData] = useState(0);
-  let [parsedCheckPVPData, setcheckPVPData] = useState(0);
+  let [parsedPVPData, setPVPParsedData] = useState(0);
   let params = useParams();
   let navigate = useNavigate();
   let headers = ["Summary", "WoWlogs", "Raider.IO", "CheckPVP"];
@@ -37,6 +37,12 @@ const Lookup = () => {
       setWowlogsError,
       Parser.parseWowlogsData
     );
+    apiCall(
+      Reader.getPVPData(params.url),
+      setPVPParsedData,
+      setPVPError,
+      Parser.parsePVPData
+    );
   }, [params.url]);
 
   /**
@@ -50,11 +56,11 @@ const Lookup = () => {
       .then(function (response) {
         if (response) {
           setError(false);
-          setData(parserFunction(response.data));
+          setData(parserFunction(response));
         }
       })
       .catch(function (error) {
-        setError(true);
+        setError(true, error);
         console.log(error);
       });
   }
@@ -114,7 +120,8 @@ const Lookup = () => {
               raiderIOError: raiderIOError,
               parsedWowlogsData: parsedWowlogsData,
               wowlogsError: wowlogsError,
-              checkPVP: "",
+              parsedPVPData: parsedPVPData,
+              pvpError: pvpError
             }}
             url={params.url}
           />
