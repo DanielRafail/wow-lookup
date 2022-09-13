@@ -64,6 +64,19 @@ const pvpComponent = (props) => {
     return [two, three];
   }
 
+  function setSeasonsAccordionContent(seasonArray) {
+    return <div>
+      {seasonArray.map((season, i) => {
+        return <p key={i}>{/* PLACE IMAGE HERE, HAVE FUNCTION FIGURE OUT CORRECT IMAGE*/}{Object.keys(season)[0]} : {Object.values(season)[0]}</p>
+      }
+      )}
+    </div>
+  }
+
+  function setSeasonsAccordionTitles(index) {
+    return Object.keys(parsedData.rankHistory)[index];
+  }
+
   function returnPVPComponent() {
     return (
       <div>
@@ -79,19 +92,15 @@ const pvpComponent = (props) => {
           rows={returnRowsForBrackets()}
         />
         {Object.values(parsedData.rankHistory).map((entryDictionary, i) => {
-        //   return <Accordion
-        //   content={[Object.values(entryDictionary)]}
-        //   titles={["RaiderIO", "WarcraftLogs", "PVP"]}
-        //   expanded = {true}
-        // />
-        //Im thinking to change the value of rankHistory so it fits into the accordion since this is the only place where we use it
-        console.log(Object.values(entryDictionary).map((a,b) =>{console.log(a)}))
-          return Object.values(entryDictionary).map((entry, j) => {
-            return <p key={j}>
-            {Object.entries(entry)[0][0]} : {Object.entries(entry)[0][1]}
-          </p>
-          })
-        })}
+          return <Accordion
+            content={[setSeasonsAccordionContent(entryDictionary)]}
+            titles={[setSeasonsAccordionTitles(i)]}
+            expanded={true}
+            key={i}
+          />
+        }
+        )
+        }
       </div>
     );
   }
@@ -99,9 +108,9 @@ const pvpComponent = (props) => {
   return (
     <div className="pvp-section">
       {parsedData &&
-      parsedData.rankHistory &&
-      parsedData.twoRating &&
-      parsedData.twoRating.rating ? (
+        parsedData.rankHistory &&
+        parsedData.twoRating &&
+        parsedData.twoRating.rating ? (
         returnPVPComponent()
       ) : props.data && props.data.pvpError ? (
         <p className="error-p">Error loading PVP info</p>

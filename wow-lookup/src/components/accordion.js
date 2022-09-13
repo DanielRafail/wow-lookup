@@ -9,6 +9,7 @@ const customAccordion = (props) => {
   return (
     <div>
       {props.content.map((section, i) => {
+        //titles index are based on content iterations
         return (
           <Accordion key={i} sx={{ color: "white" }} defaultExpanded={props.expanded}>
             <AccordionSummary

@@ -112,6 +112,12 @@ const Lookup = () => {
       />
       <div className="body">
         {
+        /* if (typeof parsedRaiderIOData === "undefined" && typeof parsedWowlogsData === "undefined" && typeof parsedPVPData === "undefined") 
+                put loading symbol
+                setInterval(function(){alert("Error gathering information")},5000);
+            else
+                put the summary
+         */
           <Summary
             data={{
               name: params.url.split("&")[2],
