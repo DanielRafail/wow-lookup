@@ -74,6 +74,8 @@ const CustomTable = (props) => {
             <StyledTableRow key={i}>
               {Object.entries(row).map((cell, j) => {
                 if (j === 0)
+                //MAYBE HERE RETURN OBJECTS TAKEN AS PARAMETERS INSTEAD OF STYLEDTABLECELL THAT WAY WE CAN CUSTOMIZE THE TABLECELLS IN THE PARAMS FOR UNDERLINE IN RAIDERIO
+                //CREATE A FILE WHICH RETURNS DEFAULTS, USE DEFAULTS AND IF PARAM EXISTS USE THAT INSTEAD
                   return (
                     <StyledTableCell key={j} component="th" scope="row">
                       {cell[1]}

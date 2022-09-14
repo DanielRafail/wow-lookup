@@ -85,6 +85,7 @@ const WowlogsComponent = (props) => {
    */
   function returnWowlogsContent() {
     const averageParse = findAverageParse();
+    //NO API FOR COLORS SO HAVE TO DO IT URSELF 
     return (
       <div className="wowlogs-section">
         <div className="wowlogs-section-data">
@@ -134,6 +135,7 @@ const WowlogsComponent = (props) => {
                         "Kills",
                       ]}
                       rows={entry[1]}
+                      //PASS CUSTOM CELL OBJECTS HERE AND DO VERIFICATIONS FOR COLORS HERE USING ENTRY[1]
                     />
                   </TabPanel>
                 );
@@ -143,6 +145,22 @@ const WowlogsComponent = (props) => {
         </div>
       </div>
     );
+  }
+
+  /**
+   * Set the color of the text based on parses %
+   * Hard code colors because no APIs
+   */
+  function setParsesColors(){
+      const colors={
+        100: "gold",
+        99:"pink",
+        98:"orange",
+        94:"purple",
+        74: "blue",
+        49: "green",
+        24: "grey"
+      }
   }
   
   return (   

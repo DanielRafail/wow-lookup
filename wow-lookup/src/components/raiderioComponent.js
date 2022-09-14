@@ -11,14 +11,14 @@ const RaiderioComponent = (props) => {
   function returnRaiderIOBestKeys(headers) {
     return (
       <div className="best-keys">
-        <h4 style={{marginBottom:"0px"}}>
+        <h4 style={{ marginBottom: "0px" }}>
           {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}{" "}
-          ({props.data.parsedRaiderIOData.score.all} IO)
+          (<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.all)}}>{props.data.parsedRaiderIOData.score.all} IO</span>)
         </h4>
-        <h6 style={{marginTop:"20px"}}>
-          DPS({props.data.parsedRaiderIOData.score.dps} IO), Healer(
-          {props.data.parsedRaiderIOData.score.healer} IO), Tank(
-          {props.data.parsedRaiderIOData.score.tank} IO)
+        <h6 style={{ marginTop: "20px" }}>
+         DPS(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.dps)}}>{props.data.parsedRaiderIOData.score.dps} IO</span>)
+          Healer(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.healer)}}>{props.data.parsedRaiderIOData.score.healer} IO</span>)
+          Tank(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.tank)}}>{props.data.parsedRaiderIOData.score.tank}  IO</span>)
         </h6>
         <CustomTable
           headers={headers}
@@ -28,16 +28,29 @@ const RaiderioComponent = (props) => {
     );
   }
 
+  /**
+   * Return the color for a raider io score
+   * @param {int} roleScore The score associated with a role
+   * @returns the color associated with that score
+   */
+  function getRaiderIOScoreColor(roleScore) {
+    for (var i = 0; i < props.data.parsedRaiderIOData.scoreColors.length; i++) {
+      if (roleScore >= props.data.parsedRaiderIOData.scoreColors[i].score) {
+        return props.data.parsedRaiderIOData.scoreColors[i].rgbHex;
+      }
+    }
+  }
+
 
   /**
    * Verify if props are valid
    * @returns If props are valid
    */
-  function verifyProps(){
+  function verifyProps() {
     return props.data &&
-    props.data.parsedRaiderIOData &&
-    props.data.parsedRaiderIOData.keys &&
-    props.data.parsedRaiderIOData.keys.length !== 0
+      props.data.parsedRaiderIOData &&
+      props.data.parsedRaiderIOData.keys &&
+      props.data.parsedRaiderIOData.keys.length !== 0
   }
 
   /**
@@ -56,10 +69,10 @@ const RaiderioComponent = (props) => {
       </div>
     );
   }
-  function createEmptyTableArray(allDungeons){
+  function createEmptyTableArray(allDungeons) {
     let returnArray = [];
-    allDungeons.map((dungeon, i) =>{
-      returnArray.push({dungeon: dungeon.name, tyrannical: "-", fortified:"-"})
+    allDungeons.map((dungeon, i) => {
+      returnArray.push({ dungeon: dungeon.name, tyrannical: "-", fortified: "-" })
     })
     return returnArray;
   }

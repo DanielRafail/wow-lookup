@@ -26,12 +26,12 @@ class Parser extends React.Component {
       mythicPlusRecent,
       raiderIOData.allDungeons
     );
-
     return {
       keys: raiderIOPlayedResults.keys,
       recentRuns: raiderIOPlayedResults.recentData,
       score: MythicPlusScore[0].scores,
       allDungeons: raiderIOData.allDungeons,
+      scoreColors: raiderIOData.scoreColors.data
     };
   }
 
@@ -42,10 +42,10 @@ class Parser extends React.Component {
    */
   static parseWowlogsData(wowlogsData) {
     const characterData = wowlogsData.data.data.characterData;
-    const lfr = parseWowlogsDataTiers(characterData.lfr);
-    const normal = parseWowlogsDataTiers(characterData.normal);
-    const heroic = parseWowlogsDataTiers(characterData.heroic);
-    const mythic = parseWowlogsDataTiers(characterData.mythic);
+    const lfr = parseWowlogsDataTiers(characterData.lfr,"DPS");
+    const normal = parseWowlogsDataTiers(characterData.normal,"DPS");
+    const heroic = parseWowlogsDataTiers(characterData.heroic,"DPS");
+    const mythic = parseWowlogsDataTiers(characterData.mythic,"DPS");
     let mainParseDifficulty = verifyMainParses(
       characterData.normal,
       characterData.heroic,
@@ -343,20 +343,25 @@ function verifyMainParses(normal, heroic, mythic) {
 /**
  * Parses each tier to get the relevant information into a dictionary that will fit the table component
  * @param {Object} tier Dictionary holding the information regarding this tier
+ * @param {string} metric The metric to be used (HPS or DPS)
  * @returns New custom made dictionary with the information put in a covenient form
  */
-function parseWowlogsDataTiers(tier) {
+function parseWowlogsDataTiers(tier, metric) {
   let returnDictionary = [];
-  Object.entries(tier.overall.rankings).map((entry, i) => {
+  console.log(tier)
+  const overallMetric = tier["overall".concat(metric)];
+  const ilvlMetric = tier["overall".concat(metric)];
+  console.log(overallMetric.rankings)
+  Object.entries(overallMetric.rankings).map((entry, i) => {
     returnDictionary.push({
       boss: entry[1].encounter.name,
       overall: entry[1].rankPercent
         ? Math.round(entry[1].rankPercent) + "%"
         : "-",
-      ilvl: tier.ilvl.rankings[i].rankPercent
-        ? Math.round(tier.ilvl.rankings[i].rankPercent) + "%"
+      ilvl: ilvlMetric.rankings[i].rankPercent
+        ? Math.round(ilvlMetric.rankings[i].rankPercent) + "%"
         : "-",
-      dps: tier.ilvl.rankings[i].rankPercent
+      dps: ilvlMetric.rankings[i].rankPercent
         ? Math.round(entry[1].bestAmount).toLocaleString("en-US")
         : "-",
       killCount: entry[1].totalKills,
