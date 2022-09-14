@@ -78,7 +78,29 @@ class Helper extends React.Component {
     return returnvalue;
   }
 
+  /**
+   * Hard code method which returns a dictionary with key all of WoW's expansions and values an incrementing ID. Have to manually hard code it because Blizzard API returns it in a falsy order. Maybe use other API call and compare based on ID?
+   * @returns Dictionary object with keys = WoW expansions and values = incrementing ID
+   */
+  static getAllSeasons() {
+    let everySeasons = [
+      "Classic",
+      "Burning Crusade",
+      "Wrath of the Lich King",
+      "Cataclysm",
+      "Mists of Pandaria",
+      "Warlords of Draenor",
+      "Legion",
+      "Battle for Azeroth",
+      "Shadowlands",
+      "Dragonflight",
+    ];
+    let everySeasonsWithId = {};
+    everySeasons.map((everySeason, i) => {
+      everySeasonsWithId[everySeason] = i;
+    });
+    return everySeasonsWithId;
+  }
 }
 
 export default Helper;
-

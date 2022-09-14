@@ -21,6 +21,13 @@ const pvpComponent = (props) => {
   };
 
   function returnRowsForBrackets() {
+    const verifyIfPlayedTwos =
+      parsedData.twoRating.weeklyStats.won ||
+      parsedData.twoRating.weeklyStats.lost;
+    const verifyIfPlayedThrees =
+      parsedData.threeRating.weeklyStats.won ||
+      parsedData.threeRating.weeklyStats.lost;
+
     const two = {
       bracket: "2v2",
       rating: parsedData.twoRating.rating.toString(),
@@ -31,12 +38,15 @@ const pvpComponent = (props) => {
         parsedData.twoRating.weeklyStats.won.toString() +
         " Lost: " +
         parsedData.twoRating.weeklyStats.lost.toString(),
-      weeklyRatio: (
-        parsedData.twoRating.weeklyStats.won /
-        parsedData.twoRating.weeklyStats.lost
-      )
-        .toFixed(2)
-        .concat("%"),
+      weeklyRatio: verifyIfPlayedTwos
+        ? (
+            parsedData.twoRating.weeklyStats.won /
+            parsedData.twoRating.weeklyStats.lost
+          )
+            .toFixed(2)
+            .toString()
+            .concat("%")
+        : "-",
       season:
         "Played: " +
         parsedData.twoRating.seasonStats.played.toString() +
@@ -61,14 +71,15 @@ const pvpComponent = (props) => {
         parsedData.threeRating.weeklyStats.won.toString() +
         " Lost: " +
         parsedData.threeRating.weeklyStats.lost.toString(),
-      weeklyRatio: (
-        parsedData.threeRating.weeklyStats.won /
-        parsedData.threeRating.weeklyStats.lost
-      )
-        .toFixed(2)
-        .toString()
-        .concat("%"),
-
+      weeklyRatio: verifyIfPlayedThrees
+        ? (
+            parsedData.threeRating.weeklyStats.won /
+            parsedData.threeRating.weeklyStats.lost
+          )
+            .toFixed(2)
+            .toString()
+            .concat("%")
+        : "-",
       season:
         "Played: " +
         parsedData.threeRating.seasonStats.played.toString() +
@@ -95,14 +106,30 @@ const pvpComponent = (props) => {
             <div className="pvpRankInfoContainer" key={i}>
               {
                 <img
-                  src={images[Object.values(season)[0]] ? Object.values(images[Object.values(season)[0]])[0] : Gladiator}
+                  src={
+                    images[Object.values(season)[0]]
+                      ? Object.values(images[Object.values(season)[0]])[0]
+                      : Gladiator
+                  }
                   alt="PVP Rank"
                   className="rankIcons"
                 />
               }
-              <p className="pvpText">
-                {Object.keys(season)[0]} : {Object.values(season)[0]}
-              </p>
+              {season.doneOnThisChar ? (
+                <p className="pvpText">
+                  {Object.keys(season)[0]} : {Object.values(season)[0]}
+                  <span className="pvp-achiev-desc">
+                    Done on this character
+                  </span>
+                </p>
+              ) : (
+                <p className="pvpText">
+                  {Object.keys(season)[0]} : {Object.values(season)[0]}
+                  <span className="pvp-achiev-desc">
+                    Done on another character
+                  </span>
+                </p>
+              )}
             </div>
           );
         })}

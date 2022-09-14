@@ -8,8 +8,7 @@ const RaiderioComponent = (props) => {
    * Function which returns the best keys you have run this season
    * @returns The best keys you have run this season
    */
-  function returnRaiderIOBestKeys() {
-    const headers = ["Dungeons", "Fortified", "Tyrannical"];
+  function returnRaiderIOBestKeys(headers) {
     return (
       <div className="best-keys">
         <h4 style={{marginBottom:"0px"}}>
@@ -29,40 +28,56 @@ const RaiderioComponent = (props) => {
     );
   }
 
+
+  /**
+   * Verify if props are valid
+   * @returns If props are valid
+   */
+  function verifyProps(){
+    return props.data &&
+    props.data.parsedRaiderIOData &&
+    props.data.parsedRaiderIOData.keys &&
+    props.data.parsedRaiderIOData.keys.length !== 0
+  }
+
   /**
    * Function which returns the most recent keys you have run this season (number of keys equivalent to the number of dungeons this season)
    * @returns The most recents keys you have run this season
    */
-  function returnRaiderIORecentKeys() {
+  function returnRaiderIORecentKeys(headers) {
     return (
       <div className="recent-keys">
         <h6 className="hidden">.</h6>
         <h4>Most Recent Runs</h4>
         <CustomTable
-          headers={["Dungeons", "Date"]}
+          headers={headers}
           rows={props.data.parsedRaiderIOData.recentRuns}
         />
       </div>
     );
   }
-
+  function createEmptyTableArray(allDungeons){
+    let returnArray = [];
+    allDungeons.map((dungeon, i) =>{
+      returnArray.push({dungeon: dungeon.name, tyrannical: "-", fortified:"-"})
+    })
+    return returnArray;
+  }
   return (
     <div className="raiderIO-section">
-      {props.data &&
-      props.data.parsedRaiderIOData &&
-      props.data.parsedRaiderIOData.keys ? (
-        returnRaiderIOBestKeys()
+      {verifyProps() ? (
+        returnRaiderIOBestKeys(["Dungeons", "Fortified", "Tyrannical"])
       ) : props.data && props.data.raiderIOError ? (
         <p className="error-p">Error loading Raider.IO info</p>
       ) : (
-        <React.Fragment />
+        <CustomTable
+          headers={["Dungeons", "Fortified", "Tyrannical"]}
+          rows={createEmptyTableArray(props.data.parsedRaiderIOData.allDungeons)}
+        />
       )}
       <div className="flex-seperator"></div>
-      {props.data &&
-      props.data.parsedRaiderIOData &&
-      props.data.parsedRaiderIOData.recentRuns &&
-      props.data.parsedRaiderIOData.keys ? (
-        returnRaiderIORecentKeys()
+      {verifyProps() ? (
+        returnRaiderIORecentKeys(["Dungeons", "Keys", "Date"])
       ) : (
         <React.Fragment />
       )}
@@ -70,4 +85,8 @@ const RaiderioComponent = (props) => {
   );
 };
 
+
+
 export default RaiderioComponent;
+
+

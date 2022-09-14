@@ -6,6 +6,8 @@
 
 1 - ADD BACKEND WITH .ENV TO HOLD HIDDEN KEYS 
 
+1 - ADD API CALLS TO GET THE COLORS
+
 10 - MAYBE PHONE FRIENDLY? (not priority)
 
 11 - MAYBE I18N (not priority, option would be a dropdown in footer)

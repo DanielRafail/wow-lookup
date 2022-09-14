@@ -88,8 +88,13 @@ const WowlogsComponent = (props) => {
         <div className="wowlogs-section-data">
           {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}
           <h6>{averageParse !== "-" ? averageParse + "% Average Parse": "No Average Parse"}</h6>
-          {/* To string because tablist values are only strings */}
-          <TabContext value={difficulty.toString()}>
+          {/* To string because tablist values are only strings 
+           /* difficulty -1 here because parser brings back with indexes starting at 1, else 
+           /* someone without any parses wouldn't have any tables because difficulty
+           /* woulda been at 0 and therefore considered "undeclared" or "undefined" or whatever
+           /* and none of the table would have appeared
+          */}
+          <TabContext value={(difficulty-1).toString()}>
           <Box className="multi-button-tab" sx={{ border: 3, borderColor: 'gray', borderBottom: 0, backgroundColor:"rgb(33, 33, 33)"}}>
             <TabList onChange={(e, v) => handleChange(e, v)}>
               {Object.entries(props.data.parsedWowlogsData.tableData).map(
@@ -136,11 +141,10 @@ const WowlogsComponent = (props) => {
       </div>
     );
   }
-
-  return (
+  
+  return (   
     <div className="wowlogs-section">
       {props.data.parsedWowlogsData.tableData &&
-      props.data.parsedWowlogsData.tableData.lfr &&
       difficultyParse ? (
         returnWowlogsContent()
       ) : props.data && props.data.wowlogsError ? (

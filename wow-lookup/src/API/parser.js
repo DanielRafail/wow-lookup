@@ -1,5 +1,6 @@
 import "../CSS/main.css";
 import React from "react";
+import Helper from "../Helper/helper.js";
 
 /**
  * The Parser class which will take all the inputs from the APIs and convert them into usable dictionaries
@@ -11,41 +12,25 @@ class Parser extends React.Component {
    * @returns A usable dictionary
    */
   static parseRaiderIOData(raiderIOData) {
-    const mythicPlusAlternate = raiderIOData.data.mythic_plus_alternate_runs;
-    const mythicPlusBest = raiderIOData.data.mythic_plus_best_runs;
-    const mythicPlusRecent = raiderIOData.data.mythic_plus_recent_runs;
-    const MythicPlusScore = raiderIOData.data.mythic_plus_scores_by_season;
-    let keys = [];
-    let recentData = [];
-    Object.entries(mythicPlusAlternate).map((entry, i) => {
-      if (entry[1].affixes[0].name === "Tyrannical") {
-        keys = pushToDictionary(keys, mythicPlusBest[i], entry[1]);
-      } else {
-        keys = pushToDictionary(keys, entry[1], mythicPlusBest[i]);
-      }
-      const seperatedDateElements = mythicPlusRecent[i].completed_at
-        .substring(0, mythicPlusRecent[i].completed_at.indexOf("T"))
-        .split("-");
-      recentData.push({
-        dungeons:
-          mythicPlusRecent[i].short_name +
-          " " +
-          calculateUpgrades(
-            mythicPlusRecent[i].mythic_level,
-            mythicPlusRecent[i].num_keystone_upgrades
-          ),
-        date:
-          seperatedDateElements[1] +
-          "/" +
-          seperatedDateElements[2] +
-          "/" +
-          seperatedDateElements[0],
-      });
-    });
+    const mythicPlusBest =
+      raiderIOData.raiderIOScores.data.mythic_plus_best_runs;
+    const mythicPlusAlternate =
+      raiderIOData.raiderIOScores.data.mythic_plus_alternate_runs;
+    const mythicPlusRecent =
+      raiderIOData.raiderIOScores.data.mythic_plus_recent_runs;
+    const MythicPlusScore =
+      raiderIOData.raiderIOScores.data.mythic_plus_scores_by_season;
+    const raiderIOPlayedResults = getRaiderIOIfPlayed(
+      mythicPlusBest,
+      mythicPlusAlternate,
+      mythicPlusRecent
+    );
+
     return {
-      keys: keys,
-      recentRuns: recentData,
+      keys: raiderIOPlayedResults.keys,
+      recentRuns: raiderIOPlayedResults.recentData,
       score: MythicPlusScore[0].scores,
+      allDungeons: raiderIOData.allDungeons,
     };
   }
 
@@ -83,9 +68,13 @@ class Parser extends React.Component {
    */
   static parsePVPData(pvpData) {
     const pvpAchievs = getAllPVPAchievs(pvpData);
-    const pvpSeasons = findEveryPVPSeason(pvpAchievs);
+    const pvpSeasons = findEveryPVPSeason(pvpAchievs.pvpAchievs);
     const seasonsPerExpansions = divideSeasonsPerExpansion(pvpSeasons);
-    findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions);
+    findHighestPVPAchievBySeason(
+      pvpAchievs.pvpAchievs,
+      seasonsPerExpansions,
+      pvpAchievs.doneOnThisChar
+    );
     const twoRating = getRating(pvpData.two);
     const threeRating = getRating(pvpData.three);
     return {
@@ -99,20 +88,60 @@ class Parser extends React.Component {
 export default Parser;
 
 /**
+ * Function to create dungeons if the player played
+ * @param {Object} mythicPlusBest Dictionary with best runs
+ * @param {Object} mythicPlusAlternate Dictionary with alternate runs
+ * @param {Object} mythicPlusRecent Dictionary with recent runs
+ * @returns the key and recent data dictionaries
+ */
+function getRaiderIOIfPlayed(
+  mythicPlusBest,
+  mythicPlusAlternate,
+  mythicPlusRecent
+) {
+  let keys = [];
+  let recentData = [];
+  Object.entries(mythicPlusBest).map((entry, i) => {
+    if (entry[1].affixes[0].name === "Tyrannical") {
+      keys = pushToDictionary(keys, mythicPlusAlternate[i], entry[1]);
+    } else {
+      keys = pushToDictionary(keys, entry[1], mythicPlusAlternate[i]);
+    }
+    const seperatedDateElements = mythicPlusRecent[i].completed_at
+      .substring(0, mythicPlusRecent[i].completed_at.indexOf("T"))
+      .split("-");
+    recentData.push({
+      dungeons: mythicPlusRecent[i].dungeon,
+      key: calculateUpgrades(
+        mythicPlusRecent[i].mythic_level,
+        mythicPlusRecent[i].num_keystone_upgrades
+      ),
+      date:
+        seperatedDateElements[1] +
+        "/" +
+        seperatedDateElements[2] +
+        "/" +
+        seperatedDateElements[0],
+    });
+  });
+  return { keys: keys, recentData: recentData };
+}
+
+/**
  * Create a dictionary object with keys for every expansion, and empty values
  * @param {*} seasons
  * @returns
  */
 function divideSeasonsPerExpansion(seasons) {
-  let currentSeason = "";
+  let previousSeason = "";
   let dividedSeasons = {};
   seasons.map((season, i) => {
-    const nextSeasonEntry = getExpansionFromString(season);
-    if (nextSeasonEntry !== currentSeason) {
-      currentSeason = nextSeasonEntry;
-      dividedSeasons[nextSeasonEntry] = [];
+    const currentSeasonEntry = getExpansionFromString(season);
+    if (currentSeasonEntry !== previousSeason) {
+      previousSeason = currentSeasonEntry;
+      dividedSeasons[currentSeasonEntry] = [];
     }
-    dividedSeasons[currentSeason].push({ [season]: "" });
+    dividedSeasons[currentSeasonEntry].push({ [season]: "" });
   });
   return dividedSeasons;
 }
@@ -137,9 +166,11 @@ function getRating(bracket) {
  */
 function getAllPVPAchievs(allAchievs) {
   let pvpAchievs = [];
+  let doneOnThisChar = [];
   const pvpAchievsRegex = new RegExp("Season [0-9]$");
   allAchievs.achievements.data.achievements.map((achievement, i) => {
     if (pvpAchievsRegex.test(achievement.achievement.name)) {
+      doneOnThisChar.push(achievement.criteria.is_completed);
       //Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
       //Blizzard, why are your APIs so shit
       if (achievement.achievement.name.includes("Warlords")) {
@@ -159,7 +190,7 @@ function getAllPVPAchievs(allAchievs) {
       }
     }
   });
-  return pvpAchievs;
+  return { pvpAchievs: pvpAchievs, doneOnThisChar: doneOnThisChar };
 }
 
 /**
@@ -168,7 +199,11 @@ function getAllPVPAchievs(allAchievs) {
  * @param {Object} seasons all the seasons
  * @returns A dictionary object with key as season and value as rank
  */
-function findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions) {
+function findHighestPVPAchievBySeason(
+  pvpAchievs,
+  seasonsPerExpansions,
+  doneOnThisChar
+) {
   let pvpRanking = {
     Combatant: 0,
     Challenger: 1,
@@ -197,8 +232,10 @@ function findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions) {
           }
         }
       });
-      if (highestRank !== -1)
+      if (highestRank !== -1) {
         season[seasonName] = Object.keys(pvpRanking)[highestRank];
+        season["doneOnThisChar"] = doneOnThisChar[i];
+      }
     });
   });
   return seasonsPerExpansions;
@@ -210,14 +247,8 @@ function findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions) {
  * @returns The rank of the achievement without the season
  */
 function returnCorrectRankSubstring(achievement) {
-  const rankWithNumber = achievement.substring(
-    0,
-    achievement.indexOf(" ")
-  );
-  const rankWithoutNumber = achievement.substring(
-    0,
-    achievement.indexOf(":")
-  );
+  const rankWithNumber = achievement.substring(0, achievement.indexOf(" "));
+  const rankWithoutNumber = achievement.substring(0, achievement.indexOf(":"));
   return achievement.includes("Gladiator")
     ? rankWithoutNumber
     : rankWithoutNumber.length > rankWithNumber.length
@@ -258,7 +289,7 @@ function findEveryPVPSeason(pvpAchievs) {
  * @returns An int value equivalent to their sorting order
  */
 function sortPVPSeasons(comparator, compared) {
-  const allSeasons = getAllSeasons();
+  const allSeasons = Helper.getAllSeasons();
   const substringValueComparator = getExpansionFromString(comparator);
   const substringValueCompared = getExpansionFromString(compared);
   return (
@@ -266,30 +297,6 @@ function sortPVPSeasons(comparator, compared) {
     compared.substring(compared.length - 1, compared.length) -
       comparator.substring(comparator.length - 1, comparator.length)
   );
-}
-
-/**
- * Hard code method which returns a dictionary with key all of WoW's expansions and values an incrementing ID. Have to manually hard code it because Blizzard API returns it in a falsy order. Maybe use other API call and compare based on ID?
- * @returns Dictionary object with keys = WoW expansions and values = incrementing ID
- */
-function getAllSeasons() {
-  let everySeasons = [
-    "Classic",
-    "Burning Crusade",
-    "Wrath of the Lich King",
-    "Cataclysm",
-    "Mists of Pandaria",
-    "Warlords of Draenor",
-    "Legion",
-    "Battle for Azeroth",
-    "Shadowlands",
-    "Dragonflight",
-  ];
-  let everySeasonsWithId = {};
-  everySeasons.map((everySeason, i) => {
-    everySeasonsWithId[everySeason] = i;
-  });
-  return everySeasonsWithId;
 }
 
 /**
@@ -324,7 +331,7 @@ function verifyMainParses(normal, heroic, mythic) {
     else if (normal && normal.overall.rankings[i].totalKills > 0)
       normalKills = normalKills + 1;
   });
-  return mythicKills > 0 ? 3 : heroicKills > 0 ? 2 : normalKills > 0 ? 1 : 0;
+  return mythicKills > 0 ? 4 : heroicKills > 0 ? 3 : normalKills > 0 ? 2 : 1;
 }
 
 /**
@@ -362,14 +369,15 @@ function parseWowlogsDataTiers(tier) {
 function pushToDictionary(dict, entry, secondEntry) {
   dict.push({
     dungeon: entry.dungeon,
-    tyrannical: calculateUpgrades(
-      entry.mythic_level,
-      entry.num_keystone_upgrades
-    ),
-    fortified: calculateUpgrades(
-      secondEntry.mythic_level,
-      secondEntry.num_keystone_upgrades
-    ),
+    tyrannical: entry
+      ? calculateUpgrades(entry.mythic_level, entry.num_keystone_upgrades)
+      : null,
+    fortified: secondEntry
+      ? calculateUpgrades(
+          secondEntry.mythic_level,
+          secondEntry.num_keystone_upgrades
+        )
+      : null,
   });
   return dict;
 }
