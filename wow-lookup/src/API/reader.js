@@ -1,7 +1,6 @@
 import "../CSS/main.css";
 import axios from "axios";
 import React from "react";
-import Helper from "../Helper/helper.js"
 
 /**
  * The reader class that will send requests to the APIs, read them and respond to them
@@ -13,7 +12,7 @@ class Reader extends React.Component {
    */
   static async getRaiderIOData(urlParams) {
     const characterInfoArray = getCharacterInfoArray(urlParams);
-    const raiderIOScores = await axios.get("https://raider.io/api/v1/characters/profile", {
+    return await axios.get("https://raider.io/api/v1/characters/profile", {
       params: {
         region: characterInfoArray[0],
         realm: characterInfoArray[1],
@@ -22,8 +21,6 @@ class Reader extends React.Component {
           "mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs:all",
       },
     });
-    const allDungeons = await axios.get("https://raider.io/api/v1/mythic-plus/static-data?expansion_id="+ (Object.keys(Helper.getAllSeasons()).length - 2))
-    return {raiderIOScores: raiderIOScores, allDungeons: Object.values(allDungeons.data.seasons)[0].dungeons}
   }
 
   /**
@@ -32,8 +29,7 @@ class Reader extends React.Component {
    */
   static async getWowlogsData(urlParams) {
     const characterInfoArray = getCharacterInfoArray(urlParams);
-    const token =
-      "";
+    const token = "";
     const characterInfoString =
       'character(name:"' +
       characterInfoArray[2] +

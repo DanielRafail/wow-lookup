@@ -25,16 +25,16 @@ const WowlogsComponent = (props) => {
     ) {
       setDifficulty(props.data.parsedWowlogsData.mainParseDifficulty);
       switch (props.data.parsedWowlogsData.mainParseDifficulty) {
-        case 0:
+        case 1:
           setdifficultyParse(props.data.parsedWowlogsData.tableData.lfr);
           return null;
-        case 1:
+        case 2:
           setdifficultyParse(props.data.parsedWowlogsData.tableData.normal);
           return null;
-        case 2:
+        case 3:
           setdifficultyParse(props.data.parsedWowlogsData.tableData.heroic);
           return null;
-        case 3:
+        case 4:
           setdifficultyParse(props.data.parsedWowlogsData.tableData.mythic);
           return null;
         default:
@@ -53,15 +53,17 @@ const WowlogsComponent = (props) => {
    * @returns The average parses between all bosses
    */
   function findAverageParse() {
-    let averageParse = 0;
+    let averageParseOverall = 0;
+    let averageParseIlvl = 0;
     let bossesKilled = 0;
     difficultyParse.map((boss, i) => {
       if(boss.overall !== "-"){
-        averageParse = averageParse + Number(boss.overall.slice(0, -1));
+        averageParseOverall = averageParseOverall + Number(boss.overall.slice(0, -1));
+        averageParseIlvl = averageParseIlvl + Number(boss.ilvl.slice(0, -1));
         bossesKilled = bossesKilled + 1;
       }
     });
-    return bossesKilled > 0 ? Math.round(averageParse / bossesKilled) : "-";
+    return bossesKilled > 0 ? {overall: Math.round(averageParseOverall / bossesKilled), ilvl: Math.round(averageParseIlvl / bossesKilled)} : "-";
   }
 
   /**
@@ -87,7 +89,8 @@ const WowlogsComponent = (props) => {
       <div className="wowlogs-section">
         <div className="wowlogs-section-data">
           {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}
-          <h6>{averageParse !== "-" ? averageParse + "% Average Parse": "No Average Parse"}</h6>
+          <h6>{averageParse.overall !== "-" ? averageParse.overall + "% Average Overall Parse": "No Average Parse"}</h6>
+          {averageParse.ilvl !== "-" ? <h6 className="wowlogs-ilvl-average-parse">{averageParse.ilvl}% Average Ilvl Parse</h6>: <React.Fragment/>}
           {/* To string because tablist values are only strings 
            /* difficulty -1 here because parser brings back with indexes starting at 1, else 
            /* someone without any parses wouldn't have any tables because difficulty
