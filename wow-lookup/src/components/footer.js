@@ -15,7 +15,34 @@ function Copyright() {
       <Link color="inherit">WoW-Lookup.surge.sh</Link> 2022
       <br />
       <br />
-      Also add here references to all APIs used
+      <a
+        href="https://www.youtube.com/watch?v=eQjlMk33sdk&ab_channel=tRistanthedumbifunny"
+        className="a-clicked-no-change"
+      >
+        Contact me (change link later)
+      </a>{" "}
+      - Language ? -{" "}
+      <a
+        href="https://github.com/DanielRafail"
+        className="a-clicked-no-change"
+      >
+        Github
+      </a>
+      <br />
+      <br />
+      Special thanks to{" "}
+      <a href="https://raider.io" className="a-clicked-no-change">
+        Raider.IO
+      </a>
+      ,{" "}
+      <a href="https://www.warcraftlogs.com" className="a-clicked-no-change">
+        WarcraftLogs
+      </a>
+      ,{" "}
+      <a href="https://check-pvp.fr" className="a-clicked-no-change">
+        Check-PVP
+      </a>{" "}
+      for the inspiration and APIs
     </Typography>
   );
 }
@@ -29,7 +56,7 @@ export default function Footer() {
     <div className="no-margin footer-container">
       <footer className="footer">
         <CssBaseline />
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
           <Copyright />
         </Container>
       </footer>

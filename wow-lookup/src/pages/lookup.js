@@ -26,33 +26,74 @@ const Lookup = () => {
   let headers = ["Summary", "WoWlogs", "Raider.IO", "CheckPVP"];
 
   useEffect(() => {
+    //declaring timeout to show error message after 5 seconds
     let timeout;
-    apiCall(
-      Reader.getRaiderIOData(params.url),
-      setRaiderIOData,
-      setRaiderIOError,
-      Parser.parseRaiderIOData
-    );
-    apiCall(
-      Reader.getWowlogsData(params.url),
-      setWowlogsData,
-      setWowlogsError,
-      Parser.parseWowlogsData
-    );
-    apiCall(
-      Reader.getPVPData(params.url),
-      setPVPParsedData,
-      setPVPError,
-      Parser.parsePVPData
-    );
+    //declaring all API calls since they will be used twice 
+    const raiderIOApiCall = () => {
+      apiCall(
+        Reader.getRaiderIOData(params.url),
+        setRaiderIOData,
+        setRaiderIOError,
+        Parser.parseRaiderIOData
+      );
+    };
+    const wowlogsApiCall = () => {
+      apiCall(
+        Reader.getWowlogsData(params.url),
+        setWowlogsData,
+        setWowlogsError,
+        Parser.parseWowlogsData
+      );
+    };
+    const pvpApiCall = () => {
+      apiCall(
+        Reader.getPVPData(params.url),
+        setPVPParsedData,
+        setPVPError,
+        Parser.parsePVPData
+      );
+    };
+    //setting intervals to call APIs (will be removed once we get a response)
+    let raiderioInterval = setInterval(() => {
+      raiderIOApiCall();
+    }, 3000);
+    let wowlogsInterval = setInterval(() => {
+      wowlogsApiCall();
+    }, 3000);
+    let pvpInterval = setInterval(() => {
+      pvpApiCall();
+    }, 3000);
+    //Removing API calls intervals once we get a response
+    if (parsedRaiderIOData) clearInterval(raiderioInterval);
+    if (parsedWowlogsData) clearInterval(wowlogsInterval);
+    if (parsedPVPData) clearInterval(pvpInterval);
+    //setting timeout if none of the APIs give an answer back (most likely falsy URL) OR if initial undefined state
+    //also calling APIs here originally 
     if (!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData) {
       timeout = setTimeout(function () {
-        alert("Error getting the character's information. Please make sure the link you gave is correct or the character exists");
-        navigate("/")
+        alert(
+          "Error getting the character's information. Please make sure the link you gave is correct or the character exists"
+        );
+        navigate("/");
       }, 5000);
+      raiderIOApiCall();
+      wowlogsApiCall();
+      pvpApiCall();
     }
-    return () => clearTimeout(timeout)
-  }, [params.url, parsedRaiderIOData, parsedWowlogsData, parsedPVPData, navigate]);
+    //clear everything on unmount
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(raiderioInterval);
+      clearInterval(wowlogsInterval);
+      clearInterval(pvpInterval);
+    };
+  }, [
+    params.url,
+    parsedRaiderIOData,
+    parsedWowlogsData,
+    parsedPVPData,
+    navigate,
+  ]);
 
   /**
    * Function used to call a API, set data upon a response, and set an error upno a failure
@@ -122,7 +163,7 @@ const Lookup = () => {
       <div className="body">
         {!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData ? (
           <div>
-            <CircularProgress size={100}/>
+            <CircularProgress size={100} />
           </div>
         ) : (
           <Summary

@@ -128,3 +128,11 @@ div div nav div div div div .home-button-section{
     display: inline;
   }
 }
+
+.a-clicked-no-change:visited{
+  color:white;
+}
+
+.a-clicked-no-change{
+  color:white;
+}

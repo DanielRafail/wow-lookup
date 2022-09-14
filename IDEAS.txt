@@ -1,13 +1,13 @@
-- ADD VALID INFORMATION TO FOOTER
+4 - ADD VALID INFORMATION TO FOOTER
 
-- DISPLAY ERROR NUMBER WHEN ERRORS OCCUR? (displayed in console so does it matter?)
+5 - DISPLAY ERROR NUMBER WHEN ERRORS OCCUR? (displayed in console so does it matter?)
 
-- FIX UGLY UI
+2 - FIX UGLY UI
 
-- ADD BACKEND WITH .ENV TO HOLD HIDDEN KEYS 
+1 - ADD BACKEND WITH .ENV TO HOLD HIDDEN KEYS 
 
-- MAYBE PHONE FRIENDLY? (not priority)
+10 - MAYBE PHONE FRIENDLY? (not priority)
 
-- MAYBE I18N (not priority, option would be a dropdown in footer)
+11 - MAYBE I18N (not priority, option would be a dropdown in footer)
 
 
