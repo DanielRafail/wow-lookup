@@ -7,6 +7,7 @@ import Summary from "../components/summary.js";
 import { useNavigate } from "react-router-dom";
 import Parser from "../API/parser";
 import Reader from "../API/reader.js";
+import CircularProgress from "@mui/material/CircularProgress";
 
 /**
  * main page (lookup page) which displays a summary of all the information, with individual links to each of them
@@ -25,6 +26,7 @@ const Lookup = () => {
   let headers = ["Summary", "WoWlogs", "Raider.IO", "CheckPVP"];
 
   useEffect(() => {
+    let timeout;
     apiCall(
       Reader.getRaiderIOData(params.url),
       setRaiderIOData,
@@ -43,7 +45,14 @@ const Lookup = () => {
       setPVPError,
       Parser.parsePVPData
     );
-  }, [params.url]);
+    if (!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData) {
+      timeout = setTimeout(function () {
+        alert("Error getting the character's information. Please make sure the link you gave is correct or the character exists");
+        navigate("/")
+      }, 5000);
+    }
+    return () => clearTimeout(timeout)
+  }, [params.url, parsedRaiderIOData, parsedWowlogsData, parsedPVPData, navigate]);
 
   /**
    * Function used to call a API, set data upon a response, and set an error upno a failure
@@ -111,13 +120,11 @@ const Lookup = () => {
         homeButton={true}
       />
       <div className="body">
-        {
-        /* if (typeof parsedRaiderIOData === "undefined" && typeof parsedWowlogsData === "undefined" && typeof parsedPVPData === "undefined") 
-                put loading symbol
-                setInterval(function(){alert("Error gathering information")},5000);
-            else
-                put the summary
-         */
+        {!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData ? (
+          <div>
+            <CircularProgress size={100}/>
+          </div>
+        ) : (
           <Summary
             data={{
               name: params.url.split("&")[2],
@@ -127,11 +134,11 @@ const Lookup = () => {
               parsedWowlogsData: parsedWowlogsData,
               wowlogsError: wowlogsError,
               parsedPVPData: parsedPVPData,
-              pvpError: pvpError
+              pvpError: pvpError,
             }}
             url={params.url}
           />
-        }
+        )}
       </div>
     </div>
   );

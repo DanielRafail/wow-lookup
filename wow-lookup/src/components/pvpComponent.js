@@ -2,10 +2,23 @@ import "../CSS/main.css";
 import React from "react";
 import CustomTable from "./table";
 import Accordion from "./accordion.js";
-
+import Challenger from "../images/Challenger.png";
+import Combatant from "../images/Combatant.png";
+import Rival from "../images/Rival.png";
+import Duelist from "../images/Duelist.png";
+import Gladiator from "../images/Gladiator.png";
+import Elite from "../images/Elite.png";
 
 const pvpComponent = (props) => {
   const parsedData = props.data.parsedPVPData;
+  const images = {
+    Challenger: { Challenger },
+    Combatant: { Combatant },
+    Rival: { Rival },
+    Duelist: { Duelist },
+    Gladiator: { Gladiator },
+    Elite: { Elite },
+  };
 
   function returnRowsForBrackets() {
     const two = {
@@ -21,7 +34,9 @@ const pvpComponent = (props) => {
       weeklyRatio: (
         parsedData.twoRating.weeklyStats.won /
         parsedData.twoRating.weeklyStats.lost
-      ).toFixed(2).concat("%"),
+      )
+        .toFixed(2)
+        .concat("%"),
       season:
         "Played: " +
         parsedData.twoRating.seasonStats.played.toString() +
@@ -32,7 +47,9 @@ const pvpComponent = (props) => {
       seasonRatio: (
         parsedData.twoRating.seasonStats.won /
         parsedData.twoRating.seasonStats.lost
-      ).toFixed(2).concat("%"),
+      )
+        .toFixed(2)
+        .concat("%"),
     };
     const three = {
       bracket: "3v3",
@@ -47,7 +64,10 @@ const pvpComponent = (props) => {
       weeklyRatio: (
         parsedData.threeRating.weeklyStats.won /
         parsedData.threeRating.weeklyStats.lost
-      ).toFixed(2).toString().concat("%"),
+      )
+        .toFixed(2)
+        .toString()
+        .concat("%"),
 
       season:
         "Played: " +
@@ -59,18 +79,35 @@ const pvpComponent = (props) => {
       seasonRatio: (
         parsedData.threeRating.seasonStats.won /
         parsedData.threeRating.seasonStats.lost
-      ).toFixed(2).toString().concat("%"),
+      )
+        .toFixed(2)
+        .toString()
+        .concat("%"),
     };
     return [two, three];
   }
 
   function setSeasonsAccordionContent(seasonArray) {
-    return <div>
-      {seasonArray.map((season, i) => {
-        return <p key={i}>{/* PLACE IMAGE HERE, HAVE FUNCTION FIGURE OUT CORRECT IMAGE*/}{Object.keys(season)[0]} : {Object.values(season)[0]}</p>
-      }
-      )}
-    </div>
+    return (
+      <div>
+        {seasonArray.map((season, i) => {
+          return (
+            <div className="pvpRankInfoContainer" key={i}>
+              {
+                <img
+                  src={images[Object.values(season)[0]] ? Object.values(images[Object.values(season)[0]])[0] : Gladiator}
+                  alt="PVP Rank"
+                  className="rankIcons"
+                />
+              }
+              <p className="pvpText">
+                {Object.keys(season)[0]} : {Object.values(season)[0]}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   function setSeasonsAccordionTitles(index) {
@@ -92,15 +129,15 @@ const pvpComponent = (props) => {
           rows={returnRowsForBrackets()}
         />
         {Object.values(parsedData.rankHistory).map((entryDictionary, i) => {
-          return <Accordion
-            content={[setSeasonsAccordionContent(entryDictionary)]}
-            titles={[setSeasonsAccordionTitles(i)]}
-            expanded={true}
-            key={i}
-          />
-        }
-        )
-        }
+          return (
+            <Accordion
+              content={[setSeasonsAccordionContent(entryDictionary)]}
+              titles={[setSeasonsAccordionTitles(i)]}
+              expanded={true}
+              key={i}
+            />
+          );
+        })}
       </div>
     );
   }
@@ -108,9 +145,9 @@ const pvpComponent = (props) => {
   return (
     <div className="pvp-section">
       {parsedData &&
-        parsedData.rankHistory &&
-        parsedData.twoRating &&
-        parsedData.twoRating.rating ? (
+      parsedData.rankHistory &&
+      parsedData.twoRating &&
+      parsedData.twoRating.rating ? (
         returnPVPComponent()
       ) : props.data && props.data.pvpError ? (
         <p className="error-p">Error loading PVP info</p>

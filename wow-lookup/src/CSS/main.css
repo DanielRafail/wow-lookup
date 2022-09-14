@@ -107,3 +107,24 @@ div div nav div div div div .home-button-section{
   margin-right: 24px;
   margin-bottom: -24px;
 }
+
+.rankIcons{
+  width:90px;
+  height:90px;
+}
+
+.pvpRankInfoContainer{
+  display: flex;
+  margin-bottom:40px;
+}
+
+.pvpText{
+  margin-left: 30px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1191px) {
+  .raiderIO-section {
+    display: inline;
+  }
+}

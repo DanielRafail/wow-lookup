@@ -140,7 +140,23 @@ function getAllPVPAchievs(allAchievs) {
   const pvpAchievsRegex = new RegExp("Season [0-9]$");
   allAchievs.achievements.data.achievements.map((achievement, i) => {
     if (pvpAchievsRegex.test(achievement.achievement.name)) {
-      pvpAchievs.push(achievement.achievement.name);
+      //Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
+      //Blizzard, why are your APIs so shit
+      if (achievement.achievement.name.includes("Warlords")) {
+        const uncompleteAchievementName = achievement.achievement.name;
+        pvpAchievs.push(
+          uncompleteAchievementName.substring(
+            0,
+            uncompleteAchievementName.indexOf("Season")
+          ) +
+            "of Draenor" +
+            uncompleteAchievementName.substring(
+              uncompleteAchievementName.indexOf("Season") - 1
+            )
+        );
+      } else {
+        pvpAchievs.push(achievement.achievement.name);
+      }
     }
   });
   return pvpAchievs;
@@ -161,34 +177,52 @@ function findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions) {
     Elite: 4,
     Gladiator: 5,
   };
+  let counter = Object.keys(pvpRanking).length;
   Object.values(seasonsPerExpansions).map((seasons, i) => {
     Object.values(seasons).map((season, j) => {
       const seasonName = Object.keys(season)[0];
       let highestRank = -1;
-      pvpAchievs.map((achievement, j) => {
+      pvpAchievs.map((achievement, k) => {
         if (achievement.includes(seasonName)) {
-          const rankWithNumber = achievement.substring(
-            0,
-            achievement.indexOf(" ")
-          );
-          const rankWithoutNumber = achievement.substring(
-            0,
-            achievement.indexOf(":")
-          );
-          const correctRank =
-            rankWithoutNumber.length > rankWithNumber.length
-              ? rankWithNumber
-              : rankWithoutNumber;
+          const correctRank = returnCorrectRankSubstring(achievement);
+          if (
+            typeof pvpRanking[correctRank] === "undefined" &&
+            correctRank.includes("Gladiator")
+          ) {
+            pvpRanking[correctRank] = counter;
+            counter = counter + 1;
+          }
           if (highestRank < pvpRanking[correctRank]) {
             highestRank = pvpRanking[correctRank];
           }
         }
       });
       if (highestRank !== -1)
-        season[seasonName] = Object.entries(pvpRanking)[highestRank][0];
+        season[seasonName] = Object.keys(pvpRanking)[highestRank];
     });
   });
   return seasonsPerExpansions;
+}
+
+/**
+ * Get the correct Title, figure out if the title is a Rank: X type, Rank: X II type, or Gladiator type (you can have Shadowlands: Rival, Shadowlands: Rival II or Shadowlands: Sinful Gladiator)
+ * @param {string} achievementRank The achievement that will be analyzed
+ * @returns The rank of the achievement without the season
+ */
+function returnCorrectRankSubstring(achievement) {
+  const rankWithNumber = achievement.substring(
+    0,
+    achievement.indexOf(" ")
+  );
+  const rankWithoutNumber = achievement.substring(
+    0,
+    achievement.indexOf(":")
+  );
+  return achievement.includes("Gladiator")
+    ? rankWithoutNumber
+    : rankWithoutNumber.length > rankWithNumber.length
+    ? rankWithNumber
+    : rankWithoutNumber;
 }
 
 /**
