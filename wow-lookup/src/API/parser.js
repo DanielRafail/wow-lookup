@@ -23,7 +23,8 @@ class Parser extends React.Component {
     const raiderIOPlayedResults = getRaiderIOIfPlayed(
       mythicPlusBest,
       mythicPlusAlternate,
-      mythicPlusRecent
+      mythicPlusRecent,
+      raiderIOData.allDungeons
     );
 
     return {
@@ -92,36 +93,41 @@ export default Parser;
  * @param {Object} mythicPlusBest Dictionary with best runs
  * @param {Object} mythicPlusAlternate Dictionary with alternate runs
  * @param {Object} mythicPlusRecent Dictionary with recent runs
+ *  * @param {Object} allDungeons Dictionary with all the dungeons this season
  * @returns the key and recent data dictionaries
  */
 function getRaiderIOIfPlayed(
   mythicPlusBest,
   mythicPlusAlternate,
-  mythicPlusRecent
+  mythicPlusRecent,
+  allDungeons
 ) {
   let keys = [];
   let recentData = [];
-  Object.entries(mythicPlusBest).map((entry, i) => {
-    if (entry[1].affixes[0].name === "Tyrannical") {
-      keys = pushToDictionary(keys, mythicPlusAlternate[i], entry[1]);
-    } else {
-      keys = pushToDictionary(keys, entry[1], mythicPlusAlternate[i]);
+  allDungeons.map((entry, i) => {
+    if (mythicPlusBest[i] && mythicPlusBest[i].affixes[0].name === "Tyrannical") {
+      keys = pushToDictionary(keys, mythicPlusAlternate[i], mythicPlusBest[i]);
+    } else if (mythicPlusBest[i]){
+      keys = pushToDictionary(keys, mythicPlusAlternate[i], mythicPlusBest[i]);
     }
-    const seperatedDateElements = mythicPlusRecent[i].completed_at
+    else{
+      keys.push({dungeon: entry.name, tyrannical: "-", fortified: "-"});
+    }
+    const seperatedDateElements = mythicPlusRecent[i] ? mythicPlusRecent[i].completed_at
       .substring(0, mythicPlusRecent[i].completed_at.indexOf("T"))
-      .split("-");
+      .split("-") : null;
     recentData.push({
-      dungeons: mythicPlusRecent[i].dungeon,
-      key: calculateUpgrades(
+      dungeons: entry.name,
+      key: mythicPlusRecent[i] ? calculateUpgrades(
         mythicPlusRecent[i].mythic_level,
         mythicPlusRecent[i].num_keystone_upgrades
-      ),
-      date:
+      ) : "-",
+      date: seperatedDateElements ? 
         seperatedDateElements[1] +
         "/" +
         seperatedDateElements[2] +
         "/" +
-        seperatedDateElements[0],
+        seperatedDateElements[0] : "-"
     });
   });
   return { keys: keys, recentData: recentData };
@@ -170,7 +176,7 @@ function getAllPVPAchievs(allAchievs) {
   const pvpAchievsRegex = new RegExp("Season [0-9]$");
   allAchievs.achievements.data.achievements.map((achievement, i) => {
     if (pvpAchievsRegex.test(achievement.achievement.name)) {
-      doneOnThisChar.push(achievement.criteria.is_completed);
+      doneOnThisChar.push(achievement.criteria ? achievement.criteria.is_completed : true);
       //Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
       //Blizzard, why are your APIs so shit
       if (achievement.achievement.name.includes("Warlords")) {
@@ -368,16 +374,16 @@ function parseWowlogsDataTiers(tier) {
  */
 function pushToDictionary(dict, entry, secondEntry) {
   dict.push({
-    dungeon: entry.dungeon,
+    dungeon: secondEntry.dungeon,
     tyrannical: entry
       ? calculateUpgrades(entry.mythic_level, entry.num_keystone_upgrades)
-      : null,
+      : "-",
     fortified: secondEntry
       ? calculateUpgrades(
           secondEntry.mythic_level,
           secondEntry.num_keystone_upgrades
         )
-      : null,
+      : "-",
   });
   return dict;
 }
