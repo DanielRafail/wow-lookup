@@ -5,7 +5,9 @@ import Navigation from "../components/navigation.js";
 import { useParams } from "react-router-dom";
 import Summary from "../components/summary.js";
 import { useNavigate } from "react-router-dom";
-import Parser from "../API/parser";
+import PvpParser from "../API/pvpParser";
+import WowlogsParser from "../API/wowlogsParser";
+import RaiderIOParser from "../API/raiderioParser";
 import Reader from "../API/reader.js";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -34,7 +36,7 @@ const Lookup = () => {
         Reader.getRaiderIOData(params.url),
         setRaiderIOData,
         setRaiderIOError,
-        Parser.parseRaiderIOData
+        RaiderIOParser.parseRaiderIOData
       );
     };
     const wowlogsApiCall = () => {
@@ -42,7 +44,7 @@ const Lookup = () => {
         Reader.getWowlogsData(params.url),
         setWowlogsData,
         setWowlogsError,
-        Parser.parseWowlogsData
+        WowlogsParser.parseWowlogsData
       );
     };
     const pvpApiCall = () => {
@@ -50,7 +52,7 @@ const Lookup = () => {
         Reader.getPVPData(params.url),
         setPVPParsedData,
         setPVPError,
-        Parser.parsePVPData
+        PvpParser.parsePVPData
       );
     };
     //setting intervals to call APIs (will be removed once we get a response)
