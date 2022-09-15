@@ -78,8 +78,7 @@ class Helper extends React.Component {
         case 0:
           return "DPS";
         case 1:
-        case "Healer":
-          return 1;
+          return "Healer";
         default:
           return null;
       }

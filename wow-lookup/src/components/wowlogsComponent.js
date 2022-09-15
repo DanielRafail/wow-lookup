@@ -8,6 +8,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import TableStyleDefault from "../Helper/tableStyleDefault.js";
+import { convertLength } from "@mui/material/styles/cssUtils";
 
 const WowlogsComponent = (props) => {
   let [difficultyParse, setdifficultyParse] = useState(0);
@@ -68,21 +69,36 @@ const WowlogsComponent = (props) => {
     });
     return bossesKilled > 0
       ? {
-          overall: Math.round(averageParseOverall / bossesKilled),
-          ilvl: Math.round(averageParseIlvl / bossesKilled),
-        }
-      : "-";
+        overall: Math.round(averageParseOverall / bossesKilled),
+        ilvl: Math.round(averageParseIlvl / bossesKilled),
+      }
+      : {
+        overall: "-",
+        ilvl: "-",
+      };
   }
 
   /**
-   * Function to handle changes on tab clicks
+   * Function to handle changes on tier tab clicks
    * @param {Object} event The event of the tab change
    * @param {string} newVal The value of the new tab clicked
    */
-  function handleChange(event, newVal) {
-    setDifficulty(newVal);
-    Object.values(props.data.parsedWowlogsData.tableData.DPS).map((data, i) => {
+  function handleChangeTiers(event, newVal) {
+    setDifficulty((Number(newVal) + 1).toString());
+    Object.values(props.data.parsedWowlogsData.tableData[role]).map((data, i) => {
       if (i === Number(newVal)) setdifficultyParse(data);
+    });
+  }
+
+  /**
+ * Function to handle changes on role tab clicks
+ * @param {Object} event The event of the tab change
+ * @param {string} newVal The value of the new tab clicked
+ */
+  function handleChangeRole(event, newVal) {
+    setRole(Helper.wowlogsNumbersToRole(Number(newVal)));
+    Object.values(props.data.parsedWowlogsData.tableData[Helper.wowlogsNumbersToRole(Number(newVal))]).map((data, i) => {
+      if (i === difficulty - 1) setdifficultyParse(data);
     });
   }
 
@@ -119,11 +135,11 @@ const WowlogsComponent = (props) => {
               className="multi-button-tab"
               sx={{
                 border: "2px solid gray",
-                borderBottom:"none",
+                borderBottom: "none",
                 backgroundColor: "rgb(33, 33, 33)",
               }}
             >
-              <TabList onChange={(e, v) => handleChange(e, v)} style={{marginBottom:"none"}}>
+              <TabList onChange={(e, v) => handleChangeTiers(e, v)} style={{ marginBottom: "none" }}>
                 {Object.keys(props.data.parsedWowlogsData.tableData[role]).map(
                   (entry, i) => {
                     return (
@@ -142,26 +158,27 @@ const WowlogsComponent = (props) => {
                     );
                   }
                 )}
-                {Object.keys(props.data.parsedWowlogsData.tableData).map(
-                  (roleEntry, i) => {
-                    return (
-                      <Tab
-                        label={roleEntry}
-                        key={i}
-                        sx={{
-                          fontSize: "18px",
-                          fontWeight: "bold",
-                          color: "white",
-                          backgroundColor: "rgb(33, 33, 33)",
-                          ...(roleEntry === "DPS" && {
-                            marginLeft: "auto",
-                          }),
-                        }}
-                        value={Helper.wowlogsRoleToNumbers(role) + 4}
-                      />
-                    );
-                  }
-                )}
+                <TabContext value={Helper.wowlogsRoleToNumbers(role).toString()}>
+                  <TabList onChange={(e, v) => handleChangeRole(e, v)} style={{ marginBottom: "none", marginLeft: "auto" }}>
+                    {Object.keys(props.data.parsedWowlogsData.tableData).map(
+                      (roleEntry, i) => {
+                        return (
+                          <Tab
+                            label={roleEntry}
+                            key={i}
+                            sx={{
+                              fontSize: "18px",
+                              fontWeight: "bold",
+                              color: "white",
+                              backgroundColor: "rgb(33, 33, 33)"
+                            }}
+                            value={Helper.wowlogsRoleToNumbers(roleEntry).toString()}
+                          />
+                        );
+                      }
+                    )}
+                  </TabList>
+                </TabContext>
               </TabList>
             </Box>
             {Object.entries(props.data.parsedWowlogsData.tableData[role]).map(
@@ -236,8 +253,8 @@ const WowlogsComponent = (props) => {
   return (
     <div className="wowlogs-section">
       {props.data.parsedWowlogsData.tableData &&
-      props.data.parsedWowlogsData.tableData.DPS &&
-      difficultyParse ? (
+        props.data.parsedWowlogsData.tableData.DPS &&
+        difficultyParse ? (
         returnWowlogsContent()
       ) : props.data && props.data.wowlogsError ? (
         <p className="error-p">Error loading WarcraftLogs info</p>
