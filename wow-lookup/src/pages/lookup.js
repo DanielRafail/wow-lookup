@@ -57,15 +57,15 @@ const Lookup = () => {
     let raiderioInterval = setInterval(() => {
       raiderIOApiCall();
     }, 3000);
-    let wowlogsInterval = setInterval(() => {
-      wowlogsApiCall();
-    }, 3000);
+    // let wowlogsInterval = setInterval(() => {
+    //   wowlogsApiCall();
+    // }, 3000);
     let pvpInterval = setInterval(() => {
       pvpApiCall();
     }, 3000);
     //Removing API calls intervals once we get a response
     if (parsedRaiderIOData) clearInterval(raiderioInterval);
-    if (parsedWowlogsData) clearInterval(wowlogsInterval);
+    // if (parsedWowlogsData) clearInterval(wowlogsInterval);
     if (parsedPVPData) clearInterval(pvpInterval);
     //setting timeout if none of the APIs give an answer back (most likely falsy URL) OR if initial undefined state
     //also calling APIs here originally 
@@ -84,7 +84,7 @@ const Lookup = () => {
     return () => {
       clearTimeout(timeout);
       clearInterval(raiderioInterval);
-      clearInterval(wowlogsInterval);
+      // clearInterval(wowlogsInterval);
       clearInterval(pvpInterval);
     };
   }, [

@@ -2,6 +2,7 @@ import "../CSS/main.css";
 import Helper from "../Helper/helper.js";
 import React from "react";
 import CustomTable from "./table";
+import TableStyleDefault from "../Helper/tableStyleDefault.js";
 
 const RaiderioComponent = (props) => {
   /**
@@ -13,18 +14,101 @@ const RaiderioComponent = (props) => {
       <div className="best-keys">
         <h4 style={{ marginBottom: "0px" }}>
           {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}{" "}
-          (<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.all)}}>{props.data.parsedRaiderIOData.score.all} IO</span>)
+          (
+          <span
+            style={{
+              color: getRaiderIOScoreColor(
+                props.data.parsedRaiderIOData.score.all
+              ),
+            }}
+          >
+            {props.data.parsedRaiderIOData.score.all} IO
+          </span>
+          )
         </h4>
         <h6 style={{ marginTop: "20px" }}>
-         DPS(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.dps)}}>{props.data.parsedRaiderIOData.score.dps} IO</span>)
-          Healer(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.healer)}}>{props.data.parsedRaiderIOData.score.healer} IO</span>)
-          Tank(<span style={{color: getRaiderIOScoreColor(props.data.parsedRaiderIOData.score.tank)}}>{props.data.parsedRaiderIOData.score.tank}  IO</span>)
+          DPS(
+          <span
+            style={{
+              color: getRaiderIOScoreColor(
+                props.data.parsedRaiderIOData.score.dps
+              ),
+            }}
+          >
+            {props.data.parsedRaiderIOData.score.dps} IO
+          </span>
+          ) Healer(
+          <span
+            style={{
+              color: getRaiderIOScoreColor(
+                props.data.parsedRaiderIOData.score.healer
+              ),
+            }}
+          >
+            {props.data.parsedRaiderIOData.score.healer} IO
+          </span>
+          ) Tank(
+          <span
+            style={{
+              color: getRaiderIOScoreColor(
+                props.data.parsedRaiderIOData.score.tank
+              ),
+            }}
+          >
+            {props.data.parsedRaiderIOData.score.tank} IO
+          </span>
+          )
         </h6>
         <CustomTable
           headers={headers}
           rows={props.data.parsedRaiderIOData.keys}
+          personalizedCells={(row, index) =>
+            createPersonalizedCells(row, index)
+          }
         />
       </div>
+    );
+  }
+
+  function compareKeys(keyOne, keyTwo) {
+    if (
+      keyOne.substring(keyOne.lastIndexOf("+")) ===
+      keyTwo.substring(keyOne.lastIndexOf("+"))
+    ) {
+      return (
+        (keyOne.match(/[+]/g) || []).length > (keyTwo.match(/[+]/g) || []).length
+      );
+    } else {
+      const keyOneNumber = keyOne.lastIndexOf("+") !== -1 ? keyOne.substring((keyOne.lastIndexOf("+"))+1) : keyOne;
+      const keyTwoNumber = keyTwo.lastIndexOf("+") !== -1 ? keyTwo.substring((keyTwo.lastIndexOf("+"))+1) : keyTwo;
+      return (
+        keyOneNumber > keyTwoNumber
+      );
+    }
+  }
+
+  function createPersonalizedCells(row, index) {
+    const StyledTableCell = TableStyleDefault.styleTableCell();
+    let className = "";
+    const rowKeys = Object.keys(row);
+    let biggestDungeonKey = "+";
+    for (var i = 0; i < rowKeys.length; i++) {
+      if (rowKeys[i] === "fortified" || rowKeys[i] === "tyrannical") {
+        biggestDungeonKey = compareKeys(row[rowKeys[i]], biggestDungeonKey)
+          ? row[rowKeys[i]]
+          : biggestDungeonKey;
+      }
+    }
+    if (
+      (rowKeys[index] === "fortified" || rowKeys[index] === "tyrannical") &&
+      row[rowKeys[index]] === biggestDungeonKey
+    ) {
+      className = "underline veryBold";
+    }
+    return (
+      <StyledTableCell key={index} align="center" className={className}>
+        {row[rowKeys[index]]}
+      </StyledTableCell>
     );
   }
 
@@ -41,16 +125,17 @@ const RaiderioComponent = (props) => {
     }
   }
 
-
   /**
    * Verify if props are valid
    * @returns If props are valid
    */
   function verifyProps() {
-    return props.data &&
+    return (
+      props.data &&
       props.data.parsedRaiderIOData &&
       props.data.parsedRaiderIOData.keys &&
       props.data.parsedRaiderIOData.keys.length !== 0
+    );
   }
 
   /**
@@ -71,9 +156,15 @@ const RaiderioComponent = (props) => {
   }
   function createEmptyTableArray(allDungeons) {
     let returnArray = [];
-    allDungeons.map((dungeon, i) => {
-      returnArray.push({ dungeon: dungeon.name, tyrannical: "-", fortified: "-" })
-    })
+    if (allDungeons) {
+      allDungeons.map((dungeon, i) => {
+        returnArray.push({
+          dungeon: dungeon.name,
+          tyrannical: "-",
+          fortified: "-",
+        });
+      });
+    }
     return returnArray;
   }
   return (
@@ -85,7 +176,9 @@ const RaiderioComponent = (props) => {
       ) : (
         <CustomTable
           headers={["Dungeons", "Fortified", "Tyrannical"]}
-          rows={createEmptyTableArray(props.data.parsedRaiderIOData.allDungeons)}
+          rows={createEmptyTableArray(
+            props.data.parsedRaiderIOData.allDungeons
+          )}
         />
       )}
       <div className="flex-seperator"></div>
@@ -98,8 +191,4 @@ const RaiderioComponent = (props) => {
   );
 };
 
-
-
 export default RaiderioComponent;
-
-

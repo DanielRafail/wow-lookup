@@ -10,7 +10,7 @@ class Helper extends React.Component {
   }
 
   /**
-   * Mythic to translate the tier name to its difficulty number
+   * Function to translate the tier name to its difficulty number
    * @param {string} name the tier name
    * @returns the difficulty number
    */
@@ -29,8 +29,24 @@ class Helper extends React.Component {
     }
   }
 
+    /**
+   * Function to translate the role name to its role number
+   * @param {string} name the role name
+   * @returns the role number
+   */
+     static wowlogsRoleToNumbers(name) {
+      switch (name) {
+        case "DPS":
+          return 0;
+        case "Healer":
+          return 1;
+        default:
+          return null;
+      }
+    }
+
   /**
-   * Mythic to translate the difficulty number to its tier name
+   * Function to translate the difficulty number to its tier name
    * @param {string} name the difficulty number
    * @returns the tier name
    */
@@ -51,6 +67,23 @@ class Helper extends React.Component {
         return null;
     }
   }
+
+    /**
+   * Function to translate the role number to its name
+   * @param {string} name the role number
+   * @returns the name
+   */
+     static wowlogsNumbersToRole(role) {
+      switch (role) {
+        case 0:
+          return "DPS";
+        case 1:
+        case "Healer":
+          return 1;
+        default:
+          return null;
+      }
+    }
 
   /**
    * Get the position of a value within a String after a certain amount of repetitions

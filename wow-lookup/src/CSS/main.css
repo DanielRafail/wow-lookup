@@ -147,3 +147,11 @@ div div nav div div div div .home-button-section{
 .wowlogs-ilvl-average-parse{
   margin-top:-2em;
 }
+
+.underline{
+  text-decoration:underline;
+}
+
+.veryBold{
+  font-weight: 1000 !important;
+}

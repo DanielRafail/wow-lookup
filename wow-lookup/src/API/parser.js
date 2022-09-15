@@ -42,21 +42,34 @@ class Parser extends React.Component {
    */
   static parseWowlogsData(wowlogsData) {
     const characterData = wowlogsData.data.data.characterData;
-    const lfr = parseWowlogsDataTiers(characterData.lfr,"DPS");
-    const normal = parseWowlogsDataTiers(characterData.normal,"DPS");
-    const heroic = parseWowlogsDataTiers(characterData.heroic,"DPS");
-    const mythic = parseWowlogsDataTiers(characterData.mythic,"DPS");
+    const lfrDPS = parseWowlogsDataTiers(characterData.lfr,"DPS");
+    const normalDPS = parseWowlogsDataTiers(characterData.normal,"DPS");
+    const heroicDPS = parseWowlogsDataTiers(characterData.heroic,"DPS");
+    const mythicDPS = parseWowlogsDataTiers(characterData.mythic,"DPS");
+    const lfrHealer = parseWowlogsDataTiers(characterData.lfr,"HPS");
+    const normalHealer = parseWowlogsDataTiers(characterData.normal,"HPS");
+    const heroicHealer = parseWowlogsDataTiers(characterData.heroic,"HPS");
+    const mythicHealer = parseWowlogsDataTiers(characterData.mythic,"HPS");
     let mainParseDifficulty = verifyMainParses(
       characterData.normal,
       characterData.heroic,
-      characterData.mythic
+      characterData.mythic,
+      "DPS"
     );
     return {
       tableData: {
-        lfr: lfr,
-        normal: normal,
-        heroic: heroic,
-        mythic: mythic,
+        DPS: {
+          lfr: lfrDPS,
+          normal: normalDPS,
+          heroic: heroicDPS,
+          mythic: mythicDPS,
+        },
+        Healer:{
+          lfr: lfrHealer,
+          normal: normalHealer,
+          heroic: heroicHealer,
+          mythic: mythicHealer,
+        }
       },
       mainParseDifficulty: mainParseDifficulty,
     };
@@ -326,15 +339,15 @@ function calculateUpgrades(key_level, num_keystone_upgrades) {
  * @param {Object} mythic Dictionary containing the mythic parses
  * @returns The highest tier with which you have parses
  */
-function verifyMainParses(normal, heroic, mythic) {
+function verifyMainParses(normal, heroic, mythic, metric) {
   let normalKills = 0;
   let heroicKills = 0;
   let mythicKills = 0;
-  mythic.overall.rankings.map((boss, i) => {
+  mythic["overall".concat(metric)].rankings.map((boss, i) => {
     if (boss && boss.totalKills > 0) mythicKills = mythicKills + 1;
-    else if (heroic && heroic.overall.rankings[i].totalKills > 0)
+    else if (heroic && heroic["overall".concat(metric)].rankings[i].totalKills > 0)
       heroicKills = heroicKills + 1;
-    else if (normal && normal.overall.rankings[i].totalKills > 0)
+    else if (normal && normal["overall".concat(metric)].rankings[i].totalKills > 0)
       normalKills = normalKills + 1;
   });
   return mythicKills > 0 ? 4 : heroicKills > 0 ? 3 : normalKills > 0 ? 2 : 1;
@@ -348,23 +361,21 @@ function verifyMainParses(normal, heroic, mythic) {
  */
 function parseWowlogsDataTiers(tier, metric) {
   let returnDictionary = [];
-  console.log(tier)
   const overallMetric = tier["overall".concat(metric)];
   const ilvlMetric = tier["overall".concat(metric)];
-  console.log(overallMetric.rankings)
-  Object.entries(overallMetric.rankings).map((entry, i) => {
+  Object.values(overallMetric.rankings).map((entry, i) => {
     returnDictionary.push({
-      boss: entry[1].encounter.name,
-      overall: entry[1].rankPercent
-        ? Math.round(entry[1].rankPercent) + "%"
+      boss: entry.encounter.name,
+      overall: entry.rankPercent
+        ? Math.round(entry.rankPercent) + "%"
         : "-",
       ilvl: ilvlMetric.rankings[i].rankPercent
         ? Math.round(ilvlMetric.rankings[i].rankPercent) + "%"
         : "-",
-      dps: ilvlMetric.rankings[i].rankPercent
-        ? Math.round(entry[1].bestAmount).toLocaleString("en-US")
+      [metric]: ilvlMetric.rankings[i].rankPercent
+        ? Math.round(entry.bestAmount).toLocaleString("en-US")
         : "-",
-      killCount: entry[1].totalKills,
+      killCount: entry.totalKills,
     });
   });
   return returnDictionary;
