@@ -29,21 +29,21 @@ class Helper extends React.Component {
     }
   }
 
-    /**
+  /**
    * Function to translate the role name to its role number
    * @param {string} name the role name
    * @returns the role number
    */
-     static wowlogsRoleToNumbers(name) {
-      switch (name) {
-        case "DPS":
-          return 0;
-        case "Healer":
-          return 1;
-        default:
-          return null;
-      }
+  static wowlogsRoleToNumbers(name) {
+    switch (name) {
+      case "DPS":
+        return 0;
+      case "Healer":
+        return 1;
+      default:
+        return null;
     }
+  }
 
   /**
    * Function to translate the difficulty number to its tier name
@@ -55,34 +55,31 @@ class Helper extends React.Component {
       case 0:
         return "lfr";
       case 1:
-      case "normal":
-        return 1;
+        return "normal";
       case 2:
-      case "heroic":
-        return 2;
+        return "heroic";
       case 3:
-      case "mythic":
-        return 3;
+        return "mythic";
       default:
         return null;
     }
   }
 
-    /**
+  /**
    * Function to translate the role number to its name
    * @param {string} name the role number
    * @returns the name
    */
-     static wowlogsNumbersToRole(role) {
-      switch (role) {
-        case 0:
-          return "DPS";
-        case 1:
-          return "Healer";
-        default:
-          return null;
-      }
+  static wowlogsNumbersToRole(role) {
+    switch (role) {
+      case 0:
+        return "DPS";
+      case 1:
+        return "Healer";
+      default:
+        return null;
     }
+  }
 
   /**
    * Get the position of a value within a String after a certain amount of repetitions

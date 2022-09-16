@@ -1,6 +1,5 @@
 import "../CSS/main.css";
 import React from "react";
-import Helper from "../Helper/helper.js";
 
 /**
  * The Parser class which will take the input from the wowlogs API and convert them into usable dictionaries for raid purposes
@@ -80,11 +79,11 @@ function verifyMainParses(normal, heroic, mythic, metric) {
 * @returns New custom made dictionary with the information put in a covenient form
 */
 function parseWowlogsDataTiers(tier, metric) {
-    let returnDictionary = [];
+    let returnDictionary = {spec: [], data:[]};
     const overallMetric = tier["overall".concat(metric)];
-    const ilvlMetric = tier["overall".concat(metric)];
+    const ilvlMetric = tier["ilvl".concat(metric)];
     Object.values(overallMetric.rankings).map((entry, i) => {
-        returnDictionary.push({
+        returnDictionary.data.push({
             boss: entry.encounter.name,
             overall: entry.rankPercent
                 ? Math.round(entry.rankPercent) + "%"
@@ -95,8 +94,9 @@ function parseWowlogsDataTiers(tier, metric) {
             [metric]: ilvlMetric.rankings[i].rankPercent
                 ? Math.round(entry.bestAmount).toLocaleString("en-US")
                 : "-",
-            killCount: entry.totalKills,
+            killCount: entry.totalKills
         });
+        returnDictionary.spec.push(entry.spec);
     });
     return returnDictionary;
 }

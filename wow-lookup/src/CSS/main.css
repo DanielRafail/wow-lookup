@@ -155,3 +155,21 @@ div div nav div div div div .home-button-section{
 .veryBold{
   font-weight: 1000 !important;
 }
+
+.spec-Image{
+  width: 30px;
+  vertical-align: bottom;
+  margin-right: 5px;
+}
+
+
+
+.wowlogs-cell-container{
+  display:inline-flex;
+  position: relative;
+  width: 100%;
+}
+
+.wowlogs-cell{
+  flex:auto;
+}

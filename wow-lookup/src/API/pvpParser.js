@@ -123,7 +123,7 @@ function findHighestPVPAchievBySeason(
     Object.values(seasonsPerExpansions).map((seasons, i) => {
         Object.values(seasons).map((season, j) => {
             const seasonName = Object.keys(season)[0];
-            let highestRank = -1;
+            let highestRank = 0;
             pvpAchievs.map((achievement, k) => {
                 if (achievement.includes(seasonName)) {
                     const correctRank = returnCorrectRankSubstring(achievement);
@@ -139,10 +139,8 @@ function findHighestPVPAchievBySeason(
                     }
                 }
             });
-            if (highestRank !== -1) {
-                season[seasonName] = Object.keys(pvpRanking)[highestRank];
-                season["doneOnThisChar"] = doneOnThisChar[i];
-            }
+            season[seasonName] = Object.keys(pvpRanking)[highestRank];
+            season["doneOnThisChar"] = doneOnThisChar[i];
         });
     });
     return seasonsPerExpansions;
