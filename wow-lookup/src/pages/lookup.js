@@ -66,9 +66,9 @@ const Lookup = () => {
       pvpApiCall();
     }, 3000);
     //Removing API calls intervals once we get a response
-    if (parsedRaiderIOData) clearInterval(raiderioInterval);
-    // if (parsedWowlogsData) clearInterval(wowlogsInterval);
-    if (parsedPVPData) clearInterval(pvpInterval);
+    if (parsedRaiderIOData || raiderIOError === 404) clearInterval(raiderioInterval);
+    // if (parsedWowlogsData || wowlogsError === 404) clearInterval(wowlogsInterval);
+    if (parsedPVPData || pvpError === 404) clearInterval(pvpInterval);
     //setting timeout if none of the APIs give an answer back (most likely falsy URL) OR if initial undefined state
     //also calling APIs here originally 
     if (!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData) {
@@ -94,6 +94,9 @@ const Lookup = () => {
     parsedRaiderIOData,
     parsedWowlogsData,
     parsedPVPData,
+    pvpError,
+    raiderIOError,
+    //wowlogsError,
     navigate,
   ]);
 
@@ -112,8 +115,8 @@ const Lookup = () => {
         }
       })
       .catch(function (error) {
-        setError(true, error);
         console.log(error);
+        setError(error.response.status);
       });
   }
 

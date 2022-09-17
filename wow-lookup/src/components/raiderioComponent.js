@@ -10,6 +10,7 @@ const RaiderioComponent = (props) => {
    * @returns The best keys you have run this season
    */
   function returnRaiderIOBestKeys(headers) {
+    const roles = ["DPS", "Tank", "Healer"];
     return (
       <div className="best-keys">
         <h4 style={{ marginBottom: "0px" }}>
@@ -27,37 +28,23 @@ const RaiderioComponent = (props) => {
           )
         </h4>
         <h6 style={{ marginTop: "20px" }}>
-          DPS(
-          <span
-            style={{
-              color: getRaiderIOScoreColor(
-                props.data.parsedRaiderIOData.score.dps
-              ),
-            }}
-          >
-            {props.data.parsedRaiderIOData.score.dps} IO
-          </span>
-          ) Healer(
-          <span
-            style={{
-              color: getRaiderIOScoreColor(
-                props.data.parsedRaiderIOData.score.healer
-              ),
-            }}
-          >
-            {props.data.parsedRaiderIOData.score.healer} IO
-          </span>
-          ) Tank(
-          <span
-            style={{
-              color: getRaiderIOScoreColor(
-                props.data.parsedRaiderIOData.score.tank
-              ),
-            }}
-          >
-            {props.data.parsedRaiderIOData.score.tank} IO
-          </span>
-          )
+          {roles.map((role, i) => {
+            return (
+              <span key={i}>
+                {role}(
+                <span
+                  style={{
+                    color: getRaiderIOScoreColor(
+                      props.data.parsedRaiderIOData.score[role.toLowerCase()]
+                    ),
+                  }}
+                >
+                  {props.data.parsedRaiderIOData.score[role.toLowerCase()]} IO
+                </span>
+                ){" "}
+              </span>
+            );
+          })}
         </h6>
         <CustomTable
           headers={headers}
@@ -76,14 +63,19 @@ const RaiderioComponent = (props) => {
       keyTwo.substring(keyOne.lastIndexOf("+"))
     ) {
       return (
-        (keyOne.match(/[+]/g) || []).length > (keyTwo.match(/[+]/g) || []).length
+        (keyOne.match(/[+]/g) || []).length >
+        (keyTwo.match(/[+]/g) || []).length
       );
     } else {
-      const keyOneNumber = keyOne.lastIndexOf("+") !== -1 ? keyOne.substring((keyOne.lastIndexOf("+"))+1) : keyOne;
-      const keyTwoNumber = keyTwo.lastIndexOf("+") !== -1 ? keyTwo.substring((keyTwo.lastIndexOf("+"))+1) : keyTwo;
-      return (
-        keyOneNumber > keyTwoNumber
-      );
+      const keyOneNumber =
+        keyOne.lastIndexOf("+") !== -1
+          ? keyOne.substring(keyOne.lastIndexOf("+") + 1)
+          : keyOne;
+      const keyTwoNumber =
+        keyTwo.lastIndexOf("+") !== -1
+          ? keyTwo.substring(keyTwo.lastIndexOf("+") + 1)
+          : keyTwo;
+      return keyOneNumber > keyTwoNumber;
     }
   }
 

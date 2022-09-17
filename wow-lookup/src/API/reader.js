@@ -45,7 +45,8 @@ class Reader extends React.Component {
    */
   static async getWowlogsData(urlParams) {
     const characterInfoArray = getCharacterInfoArray(urlParams);
-    const token =""
+    const token =
+      "";
     const characterInfoString =
       'character(name:"' +
       characterInfoArray[2] +
@@ -61,17 +62,44 @@ class Reader extends React.Component {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
+      // 1 lfr, 3 normal, 4 heroic, 5 mythic
       data: {
         query:
-          "{characterData{lfr: " +
+          "{characterData{" +
+          "lfr: " +
           characterInfoString +
-          "{overallDPS: zoneRankings(byBracket:false, difficulty: 1, metric:dps)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, metric:dps)overallHPS: zoneRankings(byBracket:false, difficulty: 1, metric:hps)ilvlHPS: zoneRankings(byBracket:false, difficulty: 1, metric:hps)}normal: " +
+          "{overallDPS: zoneRankings(byBracket:false, difficulty: 1, metric:dps)" +
+          "ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, metric:dps)" +
+          "overallHPS: zoneRankings(byBracket:false, difficulty: 1, metric:hps)" +
+          "ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, metric:hps)" +
+          "overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)" +
+          "ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}" +
+          "normal: " +
           characterInfoString +
-          "{overallDPS: zoneRankings(byBracket:false, difficulty: 3, metric:dps)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, metric:dps)overallHPS: zoneRankings(byBracket:false, difficulty: 3, metric:hps)ilvlHPS: zoneRankings(byBracket:false, difficulty: 3, metric:hps)}heroic: " +
+          "{overallDPS: zoneRankings(byBracket:false, difficulty: 3, metric:dps)" +
+          "ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, metric:dps)" +
+          "overallHPS: zoneRankings(byBracket:false, difficulty: 3, metric:hps)" +
+          "ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, metric:hps)" +
+          "overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)" +
+          "ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}" +
+          "heroic: " +
           characterInfoString +
-          "{overallDPS: zoneRankings(byBracket:false, difficulty: 4, metric:dps)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, metric:dps)overallHPS: zoneRankings(byBracket:false, difficulty: 4, metric:hps)ilvlHPS: zoneRankings(byBracket:false, difficulty: 4, metric:hps)}mythic: " +
+          "{overallDPS: zoneRankings(byBracket:false, difficulty: 4, metric:dps)" +
+          "ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, metric:dps)" +
+          "overallHPS: zoneRankings(byBracket:false, difficulty: 4, metric:hps)" +
+          "ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, metric:hps)" +
+          "overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)" +
+          "ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}" +
+          "mythic: " +
           characterInfoString +
-          "{overallDPS: zoneRankings(byBracket:false, difficulty: 5, metric:dps)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, metric:dps)overallHPS: zoneRankings(byBracket:false, difficulty: 5, metric:hps)ilvlHPS: zoneRankings(byBracket:false, difficulty: 5, metric:hps)}}}",
+          "{overallDPS: zoneRankings(byBracket:false, difficulty: 5, metric:dps)" +
+          "ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, metric:dps)" +
+          "overallHPS: zoneRankings(byBracket:false, difficulty: 5, metric:hps)" +
+          "ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, metric:hps)" +
+          "overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)" +
+          "ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}" +
+          characterInfoString +
+          "{gameData}}}",
       },
     };
 
@@ -126,9 +154,10 @@ class Reader extends React.Component {
       characterInfoArray[0] +
       "&locale=en_US&access_token=" +
       token;
-    const achievsAnswer = await axios.get(allAchievs, headers);
     const twoRatingAnswer = await axios.get(twoRating, headers);
     const threeRatingAnswer = await axios.get(threeRating, headers);
+    const achievsAnswer = await axios.get(allAchievs, headers);
+    console.log(achievsAnswer);
     return {
       achievements: achievsAnswer,
       two: twoRatingAnswer,

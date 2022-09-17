@@ -56,7 +56,7 @@ const CustomTable = (props) => {
                     </StyledTableCell>
                   );
                 else {
-                  return props.personalizedCells ? props.personalizedCells(row, j) : defaultCells(j, cell);
+                  return props.personalizedCells ? props.personalizedCells(row, j, i) : defaultCells(j, cell);
                 }
               })}
             </StyledTableRow>

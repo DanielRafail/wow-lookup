@@ -119,14 +119,14 @@ const pvpComponent = (props) => {
                 <p className="pvpText">
                   {Object.keys(season)[0]} : {Object.values(season)[0]}
                   <span className="pvp-achiev-desc">
-                    Done on this character
+                  Completed on this character
                   </span>
                 </p>
               ) : (
                 <p className="pvpText">
                   {Object.keys(season)[0]} : {Object.values(season)[0]}
                   <span className="pvp-achiev-desc">
-                    Done on another character
+                    Completed on another character
                   </span>
                 </p>
               )}
@@ -176,8 +176,10 @@ const pvpComponent = (props) => {
       parsedData.twoRating &&
       parsedData.twoRating.rating ? (
         returnPVPComponent()
-      ) : props.data && props.data.pvpError ? (
+      ) : props.data && props.data.pvpError && props.data.pvpError !== 404 ? (
         <p className="error-p">Error loading PVP info</p>
+      ) : props.data && props.data.pvpError && props.data.pvpError ? (
+        <p>This Player has no PVP experience</p>
       ) : (
         <React.Fragment />
       )}

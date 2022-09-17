@@ -8,10 +8,8 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import TableStyleDefault from "../Helper/tableStyleDefault.js";
-import ClassImages from "../Helper/classImages.js"
-import WowlogsHelper from "../Helper/wowlogsHelper.js"
-
-
+import ClassImages from "../Helper/classImages.js";
+import WowlogsHelper from "../Helper/wowlogsHelper.js";
 
 const WowlogsComponent = (props) => {
   let [difficultyParse, setdifficultyParse] = useState(0);
@@ -69,11 +67,12 @@ const WowlogsComponent = (props) => {
         averageParseIlvl = averageParseIlvl + Number(boss.ilvl.slice(0, -1));
         bossesKilled = bossesKilled + 1;
       }
+      return null;
     });
     return bossesKilled > 0
       ? {
-          overall: Math.round(averageParseOverall / bossesKilled),
-          ilvl: Math.round(averageParseIlvl / bossesKilled),
+          overall: Math.round(averageParseOverall / bossesKilled) + "%",
+          ilvl: Math.round(averageParseIlvl / bossesKilled) + "%",
         }
       : {
           overall: "-",
@@ -91,6 +90,7 @@ const WowlogsComponent = (props) => {
     Object.values(props.data.parsedWowlogsData.tableData[role]).map(
       (data, i) => {
         if (i === Number(newVal)) setdifficultyParse(data);
+        return null;
       }
     );
   }
@@ -108,7 +108,116 @@ const WowlogsComponent = (props) => {
       ]
     ).map((data, i) => {
       if (i === difficulty - 1) setdifficultyParse(data);
+      return null;
     });
+  }
+
+  function getAverageParses() {
+    const averageParse = findAverageParse();
+    return (
+      <div>
+        {averageParse.overall !== "-" ? (
+          <h6>
+            <span style={{ color: getColorFromNumber(averageParse.overall) }}>
+              {averageParse.overall}
+            </span>{" "}
+            Average Overall Parse
+          </h6>
+        ) : (
+          <h6>No Average Parse</h6>
+        )}
+        {averageParse.ilvl !== "-" ? (
+          <h6 className="wowlogs-ilvl-average-parse">
+            <span style={{ color: getColorFromNumber(averageParse.ilvl) }}>
+              {averageParse.ilvl}
+            </span>{" "}
+            Average Ilvl Parse
+          </h6>
+        ) : (
+          <React.Fragment />
+        )}
+      </div>
+    );
+  }
+
+  function getDifficultyHeaders() {
+    return Object.keys(props.data.parsedWowlogsData.tableData[role]).map(
+      (entry, i) => {
+        return (
+          <Tab
+            label={entry}
+            key={i}
+            sx={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "white",
+            }}
+            value={Helper.wowlogsTierNamesToNumbers(entry).toString()}
+          />
+        );
+      }
+    );
+  }
+
+  function getRoleHeaders() {
+    return Object.keys(props.data.parsedWowlogsData.tableData).map(
+      (roleEntry, i) => {
+        if (
+          roleEntry === "Tank" &&
+          !Helper.getAllTankingClasses().includes(
+            props.data.parsedWowlogsData.class
+          )
+        ) {
+          return null;
+        }
+        return (
+          <Tab
+            label={
+              roleEntry === "Healer"
+                ? "Healing"
+                : roleEntry === "Tank"
+                ? "Tanking"
+                : "DPS"
+            }
+            key={i}
+            sx={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "white",
+              backgroundColor: "rgb(33, 33, 33)",
+            }}
+            value={Helper.wowlogsRoleToNumbers(roleEntry).toString()}
+          />
+        );
+      }
+    );
+  }
+
+  function populateTable() {
+    return Object.entries(props.data.parsedWowlogsData.tableData[role]).map(
+      (entry, i) => {
+        return (
+          <TabPanel
+            key={i}
+            value={Helper.wowlogsTierNamesToNumbers(entry[0]).toString()}
+          >
+            <CustomTable
+              headers={[
+                "Boss",
+                "Overall Parse",
+                "Ilvl Parse",
+                "Highest " + [role === "Healer" ? "HPS" : "DPS"],
+                "Kills",
+              ]}
+              rows={entry[1].data}
+              personalizedCells={(row, index, parentIndex) =>
+                createPersonalizedCells(row, index, parentIndex)
+              }
+            />
+          </TabPanel>
+        );
+      }
+    );
   }
 
   /**
@@ -116,24 +225,12 @@ const WowlogsComponent = (props) => {
    * @returns the main logic components of the wowlogs section
    */
   function returnWowlogsContent() {
-    const averageParse = findAverageParse();
     return (
       <div className="wowlogs-section">
         <div className="wowlogs-section-data">
           {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
           {Helper.capitalizeFirstLetter(props.data.server)}
-          <h6>
-            {averageParse.overall !== "-"
-              ? averageParse.overall + "% Average Overall Parse"
-              : "No Average Parse"}
-          </h6>
-          {averageParse.ilvl !== "-" ? (
-            <h6 className="wowlogs-ilvl-average-parse">
-              {averageParse.ilvl}% Average Ilvl Parse
-            </h6>
-          ) : (
-            <React.Fragment />
-          )}
+          {getAverageParses()}
           {/* To string because tablist values are only strings 
            /* difficulty -1 here because parser brings back with indexes starting at 1, else 
            /* someone without any parses wouldn't have any tables because difficulty
@@ -153,24 +250,7 @@ const WowlogsComponent = (props) => {
                 onChange={(e, v) => handleChangeTiers(e, v)}
                 style={{ marginBottom: "none" }}
               >
-                {Object.keys(props.data.parsedWowlogsData.tableData[role]).map(
-                  (entry, i) => {
-                    return (
-                      <Tab
-                        label={entry}
-                        key={i}
-                        sx={{
-                          fontSize: "18px",
-                          fontWeight: "bold",
-                          color: "white",
-                        }}
-                        value={Helper.wowlogsTierNamesToNumbers(
-                          entry
-                        ).toString()}
-                      />
-                    );
-                  }
-                )}
+                {getDifficultyHeaders()}
                 <TabContext
                   value={Helper.wowlogsRoleToNumbers(role).toString()}
                 >
@@ -178,76 +258,52 @@ const WowlogsComponent = (props) => {
                     onChange={(e, v) => handleChangeRole(e, v)}
                     style={{ marginBottom: "none", marginLeft: "auto" }}
                   >
-                    {Object.keys(props.data.parsedWowlogsData.tableData).map(
-                      (roleEntry, i) => {
-                        return (
-                          <Tab
-                            label={roleEntry}
-                            key={i}
-                            sx={{
-                              fontSize: "18px",
-                              fontWeight: "bold",
-                              color: "white",
-                              backgroundColor: "rgb(33, 33, 33)",
-                            }}
-                            value={Helper.wowlogsRoleToNumbers(
-                              roleEntry
-                            ).toString()}
-                          />
-                        );
-                      }
-                    )}
+                    {getRoleHeaders()}
                   </TabList>
                 </TabContext>
               </TabList>
             </Box>
-            {Object.entries(props.data.parsedWowlogsData.tableData[role]).map(
-              (entry, i) => {
-                return (
-                  <TabPanel
-                    key={i}
-                    value={Helper.wowlogsTierNamesToNumbers(
-                      entry[0]
-                    ).toString()}
-                  >
-                    <CustomTable
-                      headers={[
-                        "Boss",
-                        "Overall Parse",
-                        "Ilvl Parse",
-                        "Highest DPS",
-                        "Kills",
-                      ]}
-                      rows={entry[1].data}
-                      personalizedCells={(row, index) =>
-                        createPersonalizedCells(row, index)
-                      }
-                    />
-                  </TabPanel>
-                );
-              }
-            )}
+            {populateTable()}
           </TabContext>
         </div>
       </div>
     );
   }
 
-  function createPersonalizedCells(row, index) {
-    const StyledTableCell = TableStyleDefault.styleTableCell();
-    let textColor = "";
-    Object.values(row).map((cell, i) => {
-      if (cell.toString().indexOf("%")) {
-        Object.entries(WowlogsHelper.getWowlogsColors()).map((color, i) => {
-          if (
-            cell.toString().substring(0, cell.toString().indexOf("%")) >=
-            Number(color[0])
-          ) {
-            textColor = color[1];
-          }
-        });
+  function getColorFromNumber(cell) {
+    const colors = Object.entries(WowlogsHelper.getWowlogsColors());
+    if (cell.toString().indexOf("%")) {
+      for (var i = colors.length - 1; i >= 0; i--) {
+        if (
+          cell.toString().substring(0, cell.toString().indexOf("%")) >=
+          Number(colors[i][0])
+        ) {
+          return colors[i][1];
+        }
       }
+    }
+  }
+
+
+  /**
+   * Create personalized cells for the customTable 
+   * @param {Dictionary} row Row dictionary which holds all the cells for a row
+   * @param {int} index The index of each cell  
+   * @param {int} parentIndex The index of each row 
+   * @returns The cells after they have been modified
+   */
+  function createPersonalizedCells(row, index, parentIndex) {
+    const StyledTableCell = TableStyleDefault.styleTableCell();
+    let textColor;
+
+    Object.values(row).map((cell, i) => {
+      textColor = textColor ? textColor : getColorFromNumber(cell);
+      return null;
     });
+    const specID =
+      props.data.parsedWowlogsData.tableData[role][
+        Helper.wowlogsNumbersToTierNames(difficulty - 1)
+      ].spec[parentIndex].specID;
     return (
       <StyledTableCell
         key={index}
@@ -258,16 +314,10 @@ const WowlogsComponent = (props) => {
         }}
       >
         <div className="wowlogs-cell-container">
-          {index === 1 ? (
+          {index === 1 && specID ? (
             <div className="wowlogs-spec-container">
               <img
-                src={
-                  ClassImages.getSpecImages()[
-                    props.data.parsedWowlogsData.tableData[role][
-                      Helper.wowlogsNumbersToTierNames(difficulty - 1)
-                    ].spec[index]
-                  ]
-                }
+                src={ClassImages.getSpecImages()[specID]}
                 alt="Spec"
                 className="spec-Image"
               />

@@ -13,12 +13,12 @@ class WowlogsHelper extends React.Component {
    */
   static getWowlogsColors() {
     return  {
-      100: "#dcb900",
-      99: "#d2a9b0",
-      95: "#ffa500ba",
-      75: "purple",
-      50: "rgb(57 105 184)",
-      25: "rgb(37 147 37)",
+      100: "#e5cc80",
+      99: "#f48cba",
+      95: "#ff8000",
+      75: "#a335ee",
+      50: "#0070dd",
+      25: "#1eff00",
     };
   
   }

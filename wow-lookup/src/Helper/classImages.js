@@ -26,6 +26,7 @@ import Marksmanship from "../images/Marksmanship.png";
 import Mistweaver from "../images/Mistweaver.png";
 import Outlaw from "../images/Outlaw.png";
 import Protection from "../images/Protection.png";
+import ProtectionW from "../images/ProtectionW.png";
 import Restoration from "../images/Restoration.png";
 import RestorationR from "../images/RestorationR.png";
 import Retribution from "../images/Retribution.png";
@@ -37,7 +38,7 @@ import Vengeance from "../images/Vengeance.png";
 import Windwalker from "../images/Windwalker.png";
 
 /**
- * A healper class with some static functions to limit repetition
+ * A helper class with some static functions to limit repetition
  */
 class ClassImages extends React.Component {
 
@@ -47,41 +48,42 @@ class ClassImages extends React.Component {
    */
   static getSpecImages() {
     return {
-      Affliction: Affliction,
-      Arcane: Arcane,
-      Arms: Arms,
-      Assassination: Assassination,
-      BeastMMastery: BeastMMastery,
-      Blood: Blood,
-      Boomkin: Boomkin,
-      Brewmaster: Brewmaster,
-      Demonology: Demonology,
-      Destruction: Destruction,
-      Discipline: Discipline,
-      Elemental: Elemental,
-      Enhancement: Enhancement,
-      Feral: Feral,
-      Fire: Fire,
-      Frost: Frost,
-      FrostDK: FrostDK,
-      Fury: Fury,
-      Guardian: Guardian,
-      Havoc: Havoc,
-      Holy: Holy,
-      HolyP: HolyP,
-      Marksmanship: Marksmanship,
-      Mistweaver: Mistweaver,
-      Outlaw: Outlaw,
-      Protection: Protection,
-      Restoration: Restoration,
-      RestorationR: RestorationR,
-      Retribution: Retribution,
-      Shadow: Shadow,
-      Subtlety: Subtlety,
-      Survival: Survival,
-      Unholy: Unholy,
-      Vengeance: Vengeance,
-      Windwalker: Windwalker,
+      265: Affliction,
+      73: ProtectionW,
+      62: Arcane,
+      71: Arms,
+      259: Assassination,
+      253: BeastMMastery,
+      250: Blood,
+      102: Boomkin,
+      268: Brewmaster,
+      266: Demonology,
+      267: Destruction,
+      256: Discipline,
+      262: Elemental,
+      263: Enhancement,
+      103: Feral,
+      63: Fire,
+      64: Frost,
+      251: FrostDK,
+      72: Fury,
+      104: Guardian,
+      577: Havoc,
+      257: Holy,
+      65: HolyP,
+      254: Marksmanship,
+      270: Mistweaver,
+      260: Outlaw,
+      66: Protection,
+      105: Restoration,
+      264: RestorationR,
+      70: Retribution,
+      258: Shadow,
+      261: Subtlety,
+      255: Survival,
+      252: Unholy,
+      581: Vengeance,
+      269: Windwalker,
     };
   }
 }

@@ -21,7 +21,7 @@ function Copyright() {
       >
         Contact me (change link later)
       </a>{" "}
-      - Language ? -{" "}
+      - 
       <a
         href="https://github.com/DanielRafail"
         className="a-clicked-no-change"

@@ -40,6 +40,9 @@ class Helper extends React.Component {
         return 0;
       case "Healer":
         return 1;
+      //I have absolutely no idea why but 2 does not work here and makes the UI flip out.
+      case "Tank":
+        return 3;
       default:
         return null;
     }
@@ -76,9 +79,27 @@ class Helper extends React.Component {
         return "DPS";
       case 1:
         return "Healer";
+      //I have absolutely no idea why but 2 does not work here and makes the UI flip out.
+      case 3:
+        return "Tank";
       default:
         return null;
     }
+  }
+
+  /**
+   * Function which returns an array of all classes that can tank
+   * @returns All classes that can tank
+   */
+  static getAllTankingClasses() {
+    return [
+      "Warrior",
+      "Monk",
+      "Death Knight",
+      "Paladin",
+      "Demon Hunter",
+      "Druid",
+    ];
   }
 
   /**
