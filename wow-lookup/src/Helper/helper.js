@@ -2,7 +2,7 @@ import "../CSS/main.css";
 import React from "react";
 
 /**
- * A healper class with some static functions to limit repetition
+ * A helper class with some static functions to limit repetition
  */
 class Helper extends React.Component {
   static capitalizeFirstLetter(string) {
@@ -31,18 +31,19 @@ class Helper extends React.Component {
 
   /**
    * Function to translate the role name to its role number
+   * The return values are high so that they do not overlap with the tier values and cause
+   * irregularities in the table
    * @param {string} name the role name
    * @returns the role number
    */
   static wowlogsRoleToNumbers(name) {
     switch (name) {
       case "DPS":
-        return 0;
+        return 10;
       case "Healer":
-        return 1;
-      //I have absolutely no idea why but 2 does not work here and makes the UI flip out.
+        return 11;
       case "Tank":
-        return 3;
+        return 12;
       default:
         return null;
     }
@@ -70,17 +71,18 @@ class Helper extends React.Component {
 
   /**
    * Function to translate the role number to its name
+   * The return values are high so that they do not overlap with the tier values and cause
+   * irregularities in the table
    * @param {string} name the role number
    * @returns the name
    */
   static wowlogsNumbersToRole(role) {
     switch (role) {
-      case 0:
+      case 10:
         return "DPS";
-      case 1:
+      case 11:
         return "Healer";
-      //I have absolutely no idea why but 2 does not work here and makes the UI flip out.
-      case 3:
+      case 12:
         return "Tank";
       default:
         return null;
@@ -148,6 +150,7 @@ class Helper extends React.Component {
     let everySeasonsWithId = {};
     everySeasons.map((everySeason, i) => {
       everySeasonsWithId[everySeason] = i;
+      return null;
     });
     return everySeasonsWithId;
   }

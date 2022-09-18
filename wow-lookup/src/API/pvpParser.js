@@ -13,7 +13,7 @@ class PvpParser extends React.Component {
      * @returns A usable dictionary
      */
     static parsePVPData(pvpData) {
-        const pvpAchievs = getAllPVPAchievs(pvpData);
+        const pvpAchievs = getAllPVPAchievs(pvpData.data.achievements.achievements);
         const pvpSeasons = findEveryPVPSeason(pvpAchievs.pvpAchievs);
         const seasonsPerExpansions = divideSeasonsPerExpansion(pvpSeasons);
         findHighestPVPAchievBySeason(
@@ -21,8 +21,8 @@ class PvpParser extends React.Component {
             seasonsPerExpansions,
             pvpAchievs.doneOnThisChar
         );
-        const twoRating = getRating(pvpData.two);
-        const threeRating = getRating(pvpData.three);
+        const twoRating = getRating(pvpData.data.two);
+        const threeRating = getRating(pvpData.data.three);
         return {
             rankHistory: seasonsPerExpansions,
             twoRating: twoRating,
@@ -49,6 +49,7 @@ function divideSeasonsPerExpansion(seasons) {
             dividedSeasons[currentSeasonEntry] = [];
         }
         dividedSeasons[currentSeasonEntry].push({ [season]: "" });
+        return null;
     });
     return dividedSeasons;
 }
@@ -60,9 +61,9 @@ function divideSeasonsPerExpansion(seasons) {
 */
 function getRating(bracket) {
     return {
-        rating: bracket.data.rating,
-        seasonStats: bracket.data.season_match_statistics,
-        weeklyStats: bracket.data.weekly_match_statistics,
+        rating: bracket.rating,
+        seasonStats: bracket.season_match_statistics,
+        weeklyStats: bracket.weekly_match_statistics,
     };
 }
 
@@ -75,7 +76,7 @@ function getAllPVPAchievs(allAchievs) {
     let pvpAchievs = [];
     let doneOnThisChar = [];
     const pvpAchievsRegex = new RegExp("Season [0-9]$");
-    allAchievs.achievements.data.achievements.map((achievement, i) => {
+    allAchievs.map((achievement, i) => {
         if (pvpAchievsRegex.test(achievement.achievement.name)) {
             doneOnThisChar.push(achievement.criteria ? achievement.criteria.is_completed : true);
             //Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
@@ -96,6 +97,7 @@ function getAllPVPAchievs(allAchievs) {
                 pvpAchievs.push(achievement.achievement.name);
             }
         }
+        return null;
     });
     return { pvpAchievs: pvpAchievs, doneOnThisChar: doneOnThisChar };
 }
@@ -138,10 +140,13 @@ function findHighestPVPAchievBySeason(
                         highestRank = pvpRanking[correctRank];
                     }
                 }
+                return null;
             });
             season[seasonName] = Object.keys(pvpRanking)[highestRank];
             season["doneOnThisChar"] = doneOnThisChar[i];
+            return null;
         });
+        return null;
     });
     return seasonsPerExpansions;
 }
@@ -181,6 +186,7 @@ function findEveryPVPSeason(pvpAchievs) {
     pvpAchievs.map((achievement, i) => {
         season = achievement.substring(achievement.indexOf(":") + 2);
         if (!seasons.includes(season)) seasons.push(season);
+        return null;
     });
     return seasons.sort(function (comparator, compared) {
         return sortPVPSeasons(comparator, compared);

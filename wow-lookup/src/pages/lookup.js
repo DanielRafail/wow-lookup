@@ -30,7 +30,7 @@ const Lookup = () => {
   useEffect(() => {
     //declaring timeout to show error message after 5 seconds
     let timeout;
-    //declaring all API calls since they will be used twice 
+    //declaring all API calls since they will be used twice
     const raiderIOApiCall = () => {
       apiCall(
         Reader.getRaiderIOData(params.url),
@@ -58,19 +58,20 @@ const Lookup = () => {
     //setting intervals to call APIs (will be removed once we get a response)
     let raiderioInterval = setInterval(() => {
       raiderIOApiCall();
-    }, 3000);
-    // let wowlogsInterval = setInterval(() => {
-    //   wowlogsApiCall();
-    // }, 3000);
+    }, 6000);
+    let wowlogsInterval = setInterval(() => {
+      wowlogsApiCall();
+    }, 6000);
     let pvpInterval = setInterval(() => {
       pvpApiCall();
-    }, 3000);
+    }, 6000);
     //Removing API calls intervals once we get a response
-    if (parsedRaiderIOData || raiderIOError === 404) clearInterval(raiderioInterval);
-    // if (parsedWowlogsData || wowlogsError === 404) clearInterval(wowlogsInterval);
+    if (parsedRaiderIOData || raiderIOError === 404)
+      clearInterval(raiderioInterval);
+    if (parsedWowlogsData || wowlogsError === 404) clearInterval(wowlogsInterval);
     if (parsedPVPData || pvpError === 404) clearInterval(pvpInterval);
     //setting timeout if none of the APIs give an answer back (most likely falsy URL) OR if initial undefined state
-    //also calling APIs here originally 
+    //also calling APIs here originally
     if (!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData) {
       timeout = setTimeout(function () {
         alert(
@@ -86,7 +87,7 @@ const Lookup = () => {
     return () => {
       clearTimeout(timeout);
       clearInterval(raiderioInterval);
-      // clearInterval(wowlogsInterval);
+      clearInterval(wowlogsInterval);
       clearInterval(pvpInterval);
     };
   }, [
@@ -166,7 +167,9 @@ const Lookup = () => {
         homeButton={true}
       />
       <div className="body">
-        {!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData ? (
+        {(!parsedRaiderIOData && !parsedWowlogsData) ||
+        (!parsedPVPData && !parsedRaiderIOData) ||
+        (!parsedWowlogsData && !parsedPVPData) ? (
           <div>
             <CircularProgress size={100} />
           </div>

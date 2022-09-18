@@ -68,9 +68,8 @@ const Index = () => {
    * Submit the form and move to the next page
    */
   function HandleSubmitInputs() {
-    console.log(name, region, server);
     if (name && region && server) {
-      // navigate(`/lookup/${region + "&" + server + "&" + name}`);
+      navigate(`/lookup/${region + "&" + server + "&" + name}`);
     } else {
       setInputserror(true);
     }
