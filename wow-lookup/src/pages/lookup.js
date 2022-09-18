@@ -97,7 +97,7 @@ const Lookup = () => {
     parsedPVPData,
     pvpError,
     raiderIOError,
-    //wowlogsError,
+    wowlogsError,
     navigate,
   ]);
 
