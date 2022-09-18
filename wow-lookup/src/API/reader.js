@@ -102,7 +102,6 @@ class Reader extends React.Component {
           "{gameData}}}",
       },
     };
-
     return await axios.request(options);
   }
 
@@ -157,7 +156,6 @@ class Reader extends React.Component {
     const twoRatingAnswer = await axios.get(twoRating, headers);
     const threeRatingAnswer = await axios.get(threeRating, headers);
     const achievsAnswer = await axios.get(allAchievs, headers);
-    console.log(achievsAnswer);
     return {
       achievements: achievsAnswer,
       two: twoRatingAnswer,

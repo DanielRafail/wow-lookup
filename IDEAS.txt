@@ -15,11 +15,14 @@
 - have auto fill server selection
 - have dropdown for servers using wowlogs API AFTER BACKEND
 
+
 1 - TANKING header blue shit under is weird
 
 10 - Maybe phone friendly? (not priority)
 
 11 - Maybe I18N (not priority, option would be a dropdown in footer)
+
+1 - LFR MAKES THE BLUE BAR GO CRAZY
 
 
 
