@@ -5,11 +5,12 @@ import Navigation from "../components/navigation.js";
 import { useParams } from "react-router-dom";
 import Summary from "../components/summary.js";
 import { useNavigate } from "react-router-dom";
-import PvpParser from "../API/pvpParser";
-import WowlogsParser from "../API/wowlogsParser";
-import RaiderIOParser from "../API/raiderioParser";
+import PvpParser from "../API/parser/pvpParser";
+import WowlogsParser from "../API/parser/wowlogsParser";
+import RaiderIOParser from "../API/parser/raiderioParser";
 import Reader from "../API/reader.js";
 import CircularProgress from "@mui/material/CircularProgress";
+import Helper from "../Helper/helper.js";
 
 /**
  * main page (lookup page) which displays a summary of all the information, with individual links to each of them
@@ -68,14 +69,15 @@ const Lookup = () => {
     //Removing API calls intervals once we get a response
     if (parsedRaiderIOData || raiderIOError === 404)
       clearInterval(raiderioInterval);
-    if (parsedWowlogsData || wowlogsError === 404) clearInterval(wowlogsInterval);
+    if (parsedWowlogsData || wowlogsError === 404)
+      clearInterval(wowlogsInterval);
     if (parsedPVPData || pvpError === 404) clearInterval(pvpInterval);
     //setting timeout if none of the APIs give an answer back (most likely falsy URL) OR if initial undefined state
     //also calling APIs here originally
     if (!parsedRaiderIOData && !parsedWowlogsData && !parsedPVPData) {
       timeout = setTimeout(function () {
         alert(
-          "Error getting the character's information. Please make sure the link you gave is correct or the character exists"
+          "Error getting the character's information. Please make sure the information you gave is correct or the character exists"
         );
         navigate("/");
       }, 5000);
@@ -148,8 +150,17 @@ const Lookup = () => {
         return "https://www.warcraftlogs.com/character/" + characterInfo;
       case 2:
         return "https://raider.io/characters/" + characterInfo;
+      //playing with capital letters and spacing so that the website accepts the player url
       case 3:
-        return "https://check-pvp.fr/" + characterInfo;
+        let splitURL = characterInfo.split("/");
+        let serverSection = splitURL[1].split("-");
+        let serverSectionCapitalized = serverSection.map((a, i) => {
+          return Helper.capitalizeFirstLetter(a);
+        });
+        splitURL[1] = serverSectionCapitalized.join(" ");
+        splitURL[2] = Helper.capitalizeFirstLetter(splitURL[2]);
+        splitURL = splitURL.join("/");
+        return "https://check-pvp.fr/" + splitURL;
       case -1:
         navigate("/");
         return -1;

@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
 import Helper from "../Helper/helper.js";
+import Reader from "../API/reader.js";
+import serverParser from "../API/parser/serverParser.js";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 
 /**
  * Index page which asks player for Raider.IO URL (though wowlogs or checkpvp url works as well)
@@ -18,50 +22,86 @@ const Index = () => {
   let [singleInputError, setSingleInputError] = useState(0);
   let [url, seturl] = useState(0);
   let [inputTypeURL, setInputTypeURL] = useState(0);
+  let [servers, setServers] = useState(0);
+  let [serversError, setServersError] = useState(0);
+  let [openInput, setOpenInput] = React.useState(false);
+  let [inputValue, setInputValue] = React.useState("");
   let navigate = useNavigate();
 
   useEffect(() => {
     if (
-      typeof name === "object" &&
-      typeof region === "object" &&
-      typeof server === "object" &&
-      typeof url === "object" &&
-      typeof inputTypeURL === "object" &&
-      typeof inputsError === "object" &&
-      typeof singleInputError === "object"
+      typeof name === "number" &&
+      typeof region === "number" &&
+      typeof server === "number" &&
+      typeof url === "number" &&
+      typeof inputTypeURL === "number" &&
+      typeof inputsError === "number" &&
+      typeof singleInputError === "number"
     ) {
       setName("");
       setRegion("");
       setServer("");
       seturl("");
-      setInputTypeURL(false);
+      setInputTypeURL(true);
       setSingleInputError(false);
       setInputserror(false);
     }
-  }, [name, region, server, url, inputsError, singleInputError, inputTypeURL]);
+    if (!servers) seversAPICall();
+    let serversInterval = setInterval(() => {
+      seversAPICall();
+    }, 6000);
+    if (servers || setServersError === 404) clearInterval(serversInterval);
+    return () => {
+      clearInterval(serversInterval);
+    };
+  }, [
+    name,
+    region,
+    server,
+    url,
+    inputsError,
+    singleInputError,
+    inputTypeURL,
+    servers,
+    serversError,
+  ]);
+
+  /**
+   * Get the servers from an API call
+   */
+  function seversAPICall() {
+    Reader.getServers()
+      .then(function (response) {
+        if (response) {
+          setServers(serverParser.parseServers(response));
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        setServersError(error.response.status);
+      });
+  }
 
   /**
    * Update the name state variable
-   * @param {Object} event object from which we will get the value and set the URL
+   * @param {Object} event event object from which we will get the value and set the URL
    */
   function updateName(event) {
     setName(event.target.value.replace(/[^a-z]/gi, "").toLowerCase());
   }
 
   /**
-   * Update the server state variable
-   * @param {Object} event object from which we will get the value and set the URL
+   * Update the server and region state variables
+   * @param {Object} event event object from which we will get the value and set the URL
    */
-  function updateServer(event) {
-    setServer(event.target.value.replace(/[^a-z\-\.\']/gi, "").toLowerCase());
-  }
-
-  /**
-   * Update the region state variable
-   * @param {Object} event object from which we will get the value and set the URL
-   */
-  function updateRegion(event) {
-    setRegion(event.target.value.replace(/[^a-z]/gi, "").toLowerCase());
+  function updateServerAndRegion(event) {
+    if (event && event.target && event.target.innerText) {
+      const text = event.target.innerText;
+      setServer(
+        text.substring(0, text.lastIndexOf("-")).toLowerCase().replace(" ", "-")
+      );
+      setRegion(text.substring(text.lastIndexOf("-") + 1).toLowerCase());
+    }
   }
 
   /**
@@ -147,11 +187,38 @@ const Index = () => {
   }
 
   /**
+   * Function to handle when the auto complete input menu is open
+   */
+  function handleOpenInput() {
+    if (inputValue.length > 0) {
+      setOpenInput(true);
+    }
+  }
+
+  /**
+   * Function to handle when the auto complete input menu has a change (values being written or deleted)
+   * @param {Object} event the event of the values being written or deleted
+   * @param {string} newInputValue the new input after the event has taken place
+   */
+  function handleInputChange(event, newInputValue) {
+    setInputValue(newInputValue);
+    if (newInputValue.length > 0) {
+      setOpenInput(true);
+    } else {
+      setOpenInput(false);
+    }
+  }
+
+  /**
    * Function to display user input with multiple inputs
    * @returns user inputs with multiple inputs
    */
   function getInputs() {
-    return (
+    const defaultFilterOptions = createFilterOptions();
+    const filterOptions = (options, state) => {
+      return defaultFilterOptions(options, state).slice(0, 5);
+    };
+    return servers ? (
       <div>
         <div className="name-line-index">
           <p className="name-label">Character Name: </p>
@@ -159,29 +226,43 @@ const Index = () => {
             type="text"
             className="name-input"
             name="name"
-            placeholder="Playername"
+            placeholder="Player name"
             onChange={updateName}
           />
         </div>
         <div className="server-line-index">
           <p className="server-label">Server: </p>
-          <input
-            type="text"
+          <Autocomplete
+            disablePortal
+            filterOptions={filterOptions}
             className="server-input"
-            name="server"
-            placeholder="Tichondrius"
-            onChange={updateServer}
+            options={servers}
+            onChange={updateServerAndRegion}
+            autoComplete={true}
+            autoHighlight={true}
+            autoSelect={true}
+            open={openInput}
+            onOpen={handleOpenInput}
+            onClose={() => setOpenInput(false)}
+            inputValue={inputValue}
+            onInputChange={handleInputChange}
+            getOptionLabel={(option, value) => option.label || ""}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value || ""
+            }
+            renderInput={(params) => (
+              <TextField
+                className="auto-complete-textfield"
+                placeholder="Server name"
+                {...params}
+              />
+            )}
           />
-        </div>
-        <div className="region-line-index">
-          <p className="region-label">Region: </p>
-          <input
-            type="text"
-            className="region-input"
-            name="region"
-            placeholder="US/EU/..."
-            onChange={updateRegion}
-          />
+          {serversError ? (
+            <p className="error-p">Error loading every server</p>
+          ) : (
+            <React.Fragment />
+          )}
         </div>
         {inputsError ? (
           <p className="error-p">Please do not leave an input empty</p>
@@ -197,13 +278,23 @@ const Index = () => {
           Submit
         </Button>
       </div>
+    ) : (
+      //Fragment if servers did not come back
+      <React.Fragment />
     );
   }
 
+  /**
+   * Function to display user input with a single inputs
+   * @returns user input with a single input
+   */
   function getSingleInput() {
     return (
       <div>
-        <p className="url-label">RaiderIO URL: </p>
+        <p className="url-label">Player's URL: </p>
+        <p className="sub-label">
+          This functions with RaiderIO, WarcraftLogs and CheckPVP URLs
+        </p>
         <input
           type="text"
           id="io_url"
@@ -211,14 +302,24 @@ const Index = () => {
           placeholder="https://raider.io/characters/region/server/name"
           onChange={UpdateInput}
         />
-        <IconButton
+        {/* <IconButton
           style={{ transform: "scale(1.8)", color: "white" }}
           onClick={HandleSubmitUrl}
         >
           <SendIcon />
-        </IconButton>
+        </IconButton> */}
+        <Button
+          variant="contained"
+          className="index-submit-button single-input-submit-button"
+          size="large"
+          onClick={HandleSubmitUrl}
+        >
+          Submit
+        </Button>
         {singleInputError ? (
-          <p className="error-p-url-input error-p">Please make sure to place a correct URL</p>
+          <p className="error-p-url-input error-p">
+            Please make sure to place a correct URL
+          </p>
         ) : (
           <React.Fragment />
         )}
@@ -226,6 +327,10 @@ const Index = () => {
     );
   }
 
+  /**
+   * Get the width of the form based on which input type we are on
+   * @returns the input width
+   */
   function getFormWidth() {
     return inputTypeURL ? "100%" : "50%";
   }
@@ -240,9 +345,7 @@ const Index = () => {
           size="large"
           onClick={HandleInputType}
         >
-          {inputTypeURL
-            ? "Use inputs to find player"
-            : "Use URL to find player"}
+          {inputTypeURL ? "Manually  find player" : "Use URL to find player"}
         </Button>
         <form id="lookup-form" style={{ width: getFormWidth() }}>
           {inputTypeURL ? getSingleInput() : getInputs()}

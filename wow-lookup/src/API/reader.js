@@ -1,7 +1,6 @@
 import "../CSS/main.css";
 import axios from "axios";
 import React from "react";
-import Helper from "../Helper/helper.js";
 
 /**
  * The reader class that will send requests to the APIs, read them and respond to them
@@ -69,6 +68,20 @@ class Reader extends React.Component {
         name: characterInfoArray[2].toLowerCase(),
         server: characterInfoArray[1].toLowerCase(),
         region: characterInfoArray[0].toLowerCase(),
+      },
+    };
+    return await axios.request(options);
+  }
+
+  /**
+   * API call to get all the servers
+   */
+  static async getServers() {
+    const options = {
+      method: "GET",
+      url: "http://localhost:5000/servers",
+      headers: {
+        "Content-Type": "application/json",
       },
     };
     return await axios.request(options);

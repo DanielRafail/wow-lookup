@@ -1,5 +1,5 @@
-import "../CSS/main.css";
 import React from "react";
+import Helper from "../../Helper/helper.js";
 
 /**
  * The Parser class which will take the input from the wowlogs API and convert them into usable dictionaries for raid purposes
@@ -100,7 +100,7 @@ class WowlogsParser extends React.Component {
         },
       },
       mainParseDifficulty: mainParseDifficulty,
-      class: characterData.character.gameData.global.character_class.name
+      class: characterData.character.gameData.global.character_class.name,
     };
   }
 }
@@ -148,7 +148,12 @@ function parseWowlogsDataTiers(tier, metric, characterInfo) {
   Object.values(overallMetric.rankings).map((entry, i) => {
     !characterInfo.gameData.error
       ? characterInfo.gameData.talents.specializations.map((spec, j) => {
-          if (spec.specialization.name === entry.spec)
+          //includes because will concat specs that have same name to save headache
+          if (
+            entry.spec && Helper.getSpecIDFromName(entry.spec).toString().includes(
+              spec.specialization.id.toString()
+            )
+          )
             specID = spec.specialization.id;
           return null;
         })

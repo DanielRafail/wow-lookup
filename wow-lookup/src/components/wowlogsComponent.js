@@ -112,6 +112,10 @@ const WowlogsComponent = (props) => {
     });
   }
 
+  /**
+   * Get average parses on a difficulty and spec
+   * @returns The average parses on that difficulty and spec
+   */
   function getAverageParses() {
     const averageParse = findAverageParse();
     return (
@@ -140,6 +144,10 @@ const WowlogsComponent = (props) => {
     );
   }
 
+  /**
+   * Sets the difficulty headers for the custom Table
+   * @returns MUI tab elements with the difficulty headers
+   */
   function getDifficultyHeaders() {
     return Object.keys(props.data.parsedWowlogsData.tableData[role]).map(
       (entry, i) => {
@@ -159,12 +167,24 @@ const WowlogsComponent = (props) => {
     );
   }
 
+  /**
+   * Sets the role headers for the custom Table
+   * @returns MUI tab elements with the role headers
+   */
   function getRoleHeaders() {
     return Object.keys(props.data.parsedWowlogsData.tableData).map(
       (roleEntry, i) => {
         if (
           roleEntry === "Tank" &&
           !Helper.getAllTankingClasses().includes(
+            props.data.parsedWowlogsData.class
+          )
+        ) {
+          return null;
+        }
+        if (
+          roleEntry === "Healer" &&
+          !Helper.getAllHealingClasses().includes(
             props.data.parsedWowlogsData.class
           )
         ) {
@@ -193,6 +213,10 @@ const WowlogsComponent = (props) => {
     );
   }
 
+  /**
+   * Populate the table with API data
+   * @returns the table after it has been populated
+   */
   function populateTable() {
     return Object.entries(props.data.parsedWowlogsData.tableData[role]).map(
       (entry, i) => {
@@ -233,7 +257,7 @@ const WowlogsComponent = (props) => {
           {getAverageParses()}
           {/* To string because tablist values are only strings 
            /* difficulty -1 here because parser brings back with indexes starting at 1, else 
-           /* someone without any parses wouldn't have any tables because difficulty
+           /* someone without any parses wouldn't have any tables for LFR because difficulty
            /* woulda been at 0 and therefore considered "undeclared" or "undefined" or whatever
            /* and none of the table would have appeared
           */}
@@ -270,6 +294,11 @@ const WowlogsComponent = (props) => {
     );
   }
 
+  /**
+   * Get the color associated with the parse done
+   * @param {string} cell the content of the cell
+   * @returns the color associated with the parse on that cell's content
+   */
   function getColorFromNumber(cell) {
     const colors = Object.entries(WowlogsHelper.getWowlogsColors());
     if (cell.toString().indexOf("%")) {
@@ -284,12 +313,11 @@ const WowlogsComponent = (props) => {
     }
   }
 
-
   /**
-   * Create personalized cells for the customTable 
+   * Create personalized cells for the customTable
    * @param {Dictionary} row Row dictionary which holds all the cells for a row
-   * @param {int} index The index of each cell  
-   * @param {int} parentIndex The index of each row 
+   * @param {int} index The index of each cell
+   * @param {int} parentIndex The index of each row
    * @returns The cells after they have been modified
    */
   function createPersonalizedCells(row, index, parentIndex) {

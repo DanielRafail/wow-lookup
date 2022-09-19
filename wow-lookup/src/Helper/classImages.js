@@ -41,7 +41,6 @@ import Windwalker from "../images/Windwalker.png";
  * A helper class with some static functions to limit repetition
  */
 class ClassImages extends React.Component {
-
   /**
    * Get all images for every ingame spec
    * @returns images of every spec
@@ -88,4 +87,3 @@ class ClassImages extends React.Component {
   }
 }
 export default ClassImages;
-

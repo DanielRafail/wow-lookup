@@ -20,84 +20,130 @@ const pvpComponent = (props) => {
     Elite: { Elite },
   };
 
+  /**
+   * Return the React component for the rows of the 2v2 and 3v3 pvp brackets
+   * @returns React component for the rows of the 2v2 and 3v3 pvp brackets
+   */
   function returnRowsForBrackets() {
-    const verifyIfPlayedTwos =
-      parsedData.twoRating.weeklyStats.won ||
-      parsedData.twoRating.weeklyStats.lost;
-    const verifyIfPlayedThrees =
-      parsedData.threeRating.weeklyStats.won ||
-      parsedData.threeRating.weeklyStats.lost;
-
     const two = {
       bracket: "2v2",
-      rating: parsedData.twoRating.rating.toString(),
+      rating: parsedData.twoRating.rating
+        ? parsedData.twoRating.rating.toString()
+        : "0",
       weekly:
         "Played: " +
-        parsedData.twoRating.weeklyStats.played.toString() +
+        (parsedData.twoRating.weeklyStats
+          ? parsedData.twoRating.weeklyStats.played.toString()
+          : "0") +
         " Won: " +
-        parsedData.twoRating.weeklyStats.won.toString() +
+        (parsedData.twoRating.weeklyStats
+          ? parsedData.twoRating.weeklyStats.won.toString()
+          : "0") +
         " Lost: " +
-        parsedData.twoRating.weeklyStats.lost.toString(),
-      weeklyRatio: verifyIfPlayedTwos
-        ? (
-            parsedData.twoRating.weeklyStats.won /
-            parsedData.twoRating.weeklyStats.lost
-          )
-            .toFixed(2)
-            .toString()
-            .concat("%")
-        : "-",
+        (parsedData.twoRating.weeklyStats
+          ? parsedData.twoRating.weeklyStats.lost.toString()
+          : "0"),
+      weeklyRatio:
+        parsedData.twoRating.weeklyStats &&
+        parsedData.twoRating.weeklyStats.won &&
+        parsedData.twoRating.weeklyStats.lost
+          ? (
+              parsedData.twoRating.weeklyStats.won /
+              parsedData.twoRating.weeklyStats.lost
+            )
+              .toFixed(2)
+              .toString()
+              .concat("%")
+          : "-",
       season:
         "Played: " +
-        parsedData.twoRating.seasonStats.played.toString() +
+        (parsedData.twoRating.seasonStats
+          ? parsedData.twoRating.seasonStats.played.toString()
+          : "0") +
         " Won: " +
-        parsedData.twoRating.seasonStats.won.toString() +
+        (parsedData.twoRating.seasonStats
+          ? parsedData.twoRating.seasonStats.won.toString()
+          : "0") +
         " Lost: " +
-        parsedData.twoRating.seasonStats.lost.toString(),
-      seasonRatio: (
-        parsedData.twoRating.seasonStats.won /
+        (parsedData.twoRating.seasonStats
+          ? parsedData.twoRating.seasonStats.lost.toString()
+          : "0"),
+      seasonRatio:
+        parsedData.twoRating.seasonStats &&
+        parsedData.twoRating.seasonStats.won &&
         parsedData.twoRating.seasonStats.lost
-      )
-        .toFixed(2)
-        .concat("%"),
+          ? (
+              parsedData.twoRating.seasonStats.won /
+              parsedData.twoRating.seasonStats.lost
+            )
+              .toFixed(2)
+              .concat("%")
+          : "-",
     };
     const three = {
       bracket: "3v3",
-      rating: parsedData.threeRating.rating.toString(),
+      rating: parsedData.threeRating.rating
+        ? parsedData.threeRating.rating.toString()
+        : "0",
       weekly:
         "Played: " +
-        parsedData.threeRating.weeklyStats.played.toString() +
+        (parsedData.threeRating.weeklyStats
+          ? parsedData.threeRating.weeklyStats.played.toString()
+          : "0") +
         " Won: " +
-        parsedData.threeRating.weeklyStats.won.toString() +
+        (parsedData.threeRating.weeklyStats
+          ? parsedData.threeRating.weeklyStats.won.toString()
+          : "0") +
         " Lost: " +
-        parsedData.threeRating.weeklyStats.lost.toString(),
-      weeklyRatio: verifyIfPlayedThrees
-        ? (
-            parsedData.threeRating.weeklyStats.won /
-            parsedData.threeRating.weeklyStats.lost
-          )
-            .toFixed(2)
-            .toString()
-            .concat("%")
-        : "-",
+        (parsedData.threeRating.weeklyStats
+          ? parsedData.threeRating.weeklyStats.lost.toString()
+          : "0"),
+      weeklyRatio:
+        parsedData.threeRating.weeklyStats &&
+        parsedData.threeRating.weeklyStats.won &&
+        parsedData.threeRating.weeklyStats.lost
+          ? (
+              parsedData.threeRating.weeklyStats.won /
+              parsedData.threeRating.weeklyStats.lost
+            )
+              .toFixed(2)
+              .toString()
+              .concat("%")
+          : "-",
       season:
         "Played: " +
-        parsedData.threeRating.seasonStats.played.toString() +
+        (parsedData.threeRating.seasonStats
+          ? parsedData.threeRating.seasonStats.played.toString()
+          : "0") +
         " Won: " +
-        parsedData.threeRating.seasonStats.won.toString() +
+        (parsedData.threeRating.seasonStats
+          ? parsedData.threeRating.seasonStats.won.toString()
+          : "0") +
         " Lost: " +
-        parsedData.threeRating.seasonStats.lost.toString(),
-      seasonRatio: (
-        parsedData.threeRating.seasonStats.won /
+        (parsedData.threeRating.seasonStats
+          ? parsedData.threeRating.seasonStats.lost.toString()
+          : "0"),
+      seasonRatio:
+        parsedData.threeRating.seasonStats &&
+        parsedData.threeRating.seasonStats.won &&
         parsedData.threeRating.seasonStats.lost
-      )
-        .toFixed(2)
-        .toString()
-        .concat("%"),
+          ? (
+              parsedData.threeRating.seasonStats.won /
+              parsedData.threeRating.seasonStats.lost
+            )
+              .toFixed(2)
+              .toString()
+              .concat("%")
+          : "-",
     };
     return [two, three];
   }
 
+  /**
+   * Set the accordions' content for each distinctive seasons in pvp
+   * @param {Object} seasonArray Array with all the seasons
+   * @returns React element containing the accordion's content
+   */
   function setSeasonsAccordionContent(seasonArray) {
     return (
       <div>
@@ -119,7 +165,7 @@ const pvpComponent = (props) => {
                 <p className="pvpText">
                   {Object.keys(season)[0]} : {Object.values(season)[0]}
                   <span className="pvp-achiev-desc">
-                  Completed on this character
+                    Completed on this character
                   </span>
                 </p>
               ) : (
@@ -137,10 +183,19 @@ const pvpComponent = (props) => {
     );
   }
 
+  /**
+   * Set the title for the accordion dividing each pvp seasons
+   * @param {int} index int representing the season we are on
+   * @returns the key (name) of the season
+   */
   function setSeasonsAccordionTitles(index) {
     return Object.keys(parsedData.rankHistory)[index];
   }
 
+  /**
+   * Return the all the pvp content for the pvpComponent
+   * @returns all the pvp content for the pvpComponent
+   */
   function returnPVPComponent() {
     return (
       <div>
@@ -171,10 +226,7 @@ const pvpComponent = (props) => {
 
   return (
     <div className="pvp-section">
-      {parsedData &&
-      parsedData.rankHistory &&
-      parsedData.twoRating &&
-      parsedData.twoRating.rating ? (
+      {parsedData && parsedData.rankHistory ? (
         returnPVPComponent()
       ) : props.data && props.data.pvpError && props.data.pvpError !== 404 ? (
         <p className="error-p">Error loading PVP info</p>

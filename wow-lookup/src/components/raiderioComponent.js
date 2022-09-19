@@ -57,6 +57,12 @@ const RaiderioComponent = (props) => {
     );
   }
 
+  /**
+   * Compare m+ keys and see which one is the biggest
+   * @param {string} keyOne the first M+ key level
+   * @param {string} keyTwo the second M+ key level
+   * @returns string containing the highest key
+   */
   function compareKeys(keyOne, keyTwo) {
     if (
       keyOne.substring(keyOne.lastIndexOf("+")) ===
@@ -79,6 +85,12 @@ const RaiderioComponent = (props) => {
     }
   }
 
+  /**
+   * Create personalized cells for the CustomTable
+   * @param {Object} row Dictionary holding all the elements of the row we are on
+   * @param {int} index int representing which row we are on
+   * @returns The personalized cells for said row
+   */
   function createPersonalizedCells(row, index) {
     const StyledTableCell = TableStyleDefault.styleTableCell();
     let className = "";
@@ -146,6 +158,12 @@ const RaiderioComponent = (props) => {
       </div>
     );
   }
+
+  /**
+   * In case the player has not done a single m+ key this season, return an empty table with all the dungeons
+   * @param {Object} allDungeons Dictionary representing all the dungeons of the season
+   * @returns Dictionary with all the dungeons of the season set to not done ("-")
+   */
   function createEmptyTableArray(allDungeons) {
     let returnArray = [];
     if (allDungeons) {
@@ -155,6 +173,7 @@ const RaiderioComponent = (props) => {
           tyrannical: "-",
           fortified: "-",
         });
+        return null;
       });
     }
     return returnArray;

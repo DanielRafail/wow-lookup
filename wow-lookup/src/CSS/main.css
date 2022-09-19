@@ -48,7 +48,6 @@
   height: 30px;
   width: 100%;
   font-size: 20px;
-  border-radius: 25px;
   padding: 25px;
   margin-right: 20px;
 }
@@ -58,7 +57,7 @@
   width: 50%;
   font-size: 20px;
   border-radius: 25px;
-  padding: 25px;
+  padding: 30px;
   margin-right: 20px;
   margin-top: 10px;
 }
@@ -68,15 +67,26 @@
   margin-bottom:0px;
 }
 
-.url-label, .error-p-url-input{
+.url-label, .error-p-url-input, .sub-label{
   margin-Bottom:0px;
   display: inline-flex;
   width:52%;
 }
 
+.sub-label{
+  font-size: 0.6em;
+  text-align: left;
+}
+
 .index-submit-button{
  margin-top: 70px !important;
  width: 200px !important;
+}
+
+.single-input-submit-button{
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .footer-container>footer {
@@ -208,4 +218,18 @@ div div nav div div div div .home-button-section{
 
 .wowlogs-cell{
   flex:auto;
+}
+
+.auto-complete-textfield > div > input::placeholder, .name-input::placeholder{
+  opacity: 60% !important;
+  color: black !important;
+}
+
+.auto-complete-textfield > div{
+  background-color: white !important;
+  font-size: 20px;
+}
+
+.server-input{
+  padding:0px;
 }

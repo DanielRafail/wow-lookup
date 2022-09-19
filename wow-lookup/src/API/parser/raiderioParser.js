@@ -1,6 +1,4 @@
-import "../CSS/main.css";
 import React from "react";
-import Helper from "../Helper/helper.js";
 
 /**
  * The Parser class which will take the input from the raiderio API and convert them into usable dictionaries for dungeon purposes
@@ -85,6 +83,7 @@ function getRaiderIOIfPlayed(
           seperatedDateElements[0]
         : "-",
     });
+    return null;
   });
   return { keys: keys, recentData: recentData };
 }

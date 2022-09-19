@@ -30,6 +30,84 @@ class Helper extends React.Component {
   }
 
   /**
+   * Get the id attached to each spec of the game
+   * @param {string} specName the name of the s pec
+   * @returns the id attached to it
+   */
+  static getSpecIDFromName(specName) {
+    switch (specName) {
+      case "Affliction":
+        return 265;
+      case "Protection":
+        return 7366;
+      case "Arcane":
+        return 62;
+      case "Arms":
+        return 71;
+      case "Assassination":
+        return 259;
+      case "BeastMMastery":
+        return 253;
+      case "Blood":
+        return 250;
+      case "Balance":
+        return 102;
+      case "Brewmaster":
+        return 268;
+      case "Demonology":
+        return 266;
+      case "Destruction":
+        return 267;
+      case "Discipline":
+        return 256;
+      case "Elemental":
+        return 262;
+      case "Enhancement":
+        return 263;
+      case "Feral":
+        return 103;
+      case "Fire":
+        return 63;
+      case "Frost":
+        return 64;
+      case "FrostDK":
+        return 251;
+      case "Fury":
+        return 72;
+      case "Guardian":
+        return 104;
+      case "Havoc":
+        return 577;
+      case "Holy":
+        return 25765;
+      case "Marksmanship":
+        return 254;
+      case "Mistweaver":
+        return 270;
+      case "Outlaw":
+        return 260;
+      case "Restoration":
+        return 105264;
+      case "Retribution":
+        return 70;
+      case "Shadow":
+        return 258;
+      case "Subtlety":
+        return 261;
+      case "Survival":
+        return 255;
+      case "Unholy":
+        return 252;
+      case "Vengeance":
+        return 581;
+      case "Windwalker":
+        return 269;
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Function to translate the role name to its role number
    * The return values are high so that they do not overlap with the tier values and cause
    * irregularities in the table
@@ -51,11 +129,11 @@ class Helper extends React.Component {
 
   /**
    * Function to translate the difficulty number to its tier name
-   * @param {string} name the difficulty number
+   * @param {string} number the difficulty number
    * @returns the tier name
    */
-  static wowlogsNumbersToTierNames(name) {
-    switch (name) {
+  static wowlogsNumbersToTierNames(number) {
+    switch (number) {
       case 0:
         return "lfr";
       case 1:
@@ -102,6 +180,14 @@ class Helper extends React.Component {
       "Demon Hunter",
       "Druid",
     ];
+  }
+
+  /**
+   * Function which returns an array of all classes that can heal
+   * @returns All classes that can heal
+   */
+  static getAllHealingClasses() {
+    return ["Druid", "Monk", "Paladin", "Priest", "Shaman", "Evoker"];
   }
 
   /**

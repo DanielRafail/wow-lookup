@@ -21,11 +21,9 @@ function Copyright() {
       >
         Contact me (change link later)
       </a>{" "}
-      - 
-      <a
-        href="https://github.com/DanielRafail"
-        className="a-clicked-no-change"
-      >
+      -
+      <a href="https://github.com/DanielRafail" className="a-clicked-no-change">
+        {" "}
         Github
       </a>
       <br />
