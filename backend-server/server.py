@@ -116,11 +116,19 @@ def raiderio():
 
 @app.route("/servers", methods=["GET"])
 def servers():
-    return allServers
+    if allServers !== {}:
+        return allServers
+    else 
+        getAllServers()
+        return allServers
 
 @app.route("/classes", methods=["GET"])
 def classes():
-    return allClasses
+    if allClasses !== {}
+        return allClasses
+    else
+        getAllClasses()
+        return allClasses
 
 def getWoWlogsToken():
     url = "https://www.warcraftlogs.com/oauth/token"
