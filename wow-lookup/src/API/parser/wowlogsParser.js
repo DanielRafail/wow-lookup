@@ -10,67 +10,80 @@ class WowlogsParser extends React.Component {
    * @param {Object} wowlogsData The data dictionary we get from the wowlogs APIs
    * @returns A usable dictionary
    */
-  static parseWowlogsData(wowlogsData) {
+  static parseWowlogsData(wowlogsData, classesData) {
     const characterData = wowlogsData.data.data.characterData;
     const lfrDPS = parseWowlogsDataTiers(
       characterData.lfr,
       "DPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const normalDPS = parseWowlogsDataTiers(
       characterData.normal,
       "DPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const heroicDPS = parseWowlogsDataTiers(
       characterData.heroic,
       "DPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const mythicDPS = parseWowlogsDataTiers(
       characterData.mythic,
       "DPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const lfrHealer = parseWowlogsDataTiers(
       characterData.lfr,
       "HPS",
-      characterData.character
+      characterData.character,
+      classesData,
+      characterData.character.classID
     );
     const normalHealer = parseWowlogsDataTiers(
       characterData.normal,
       "HPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const heroicHealer = parseWowlogsDataTiers(
       characterData.heroic,
       "HPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const mythicHealer = parseWowlogsDataTiers(
       characterData.mythic,
       "HPS",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const lfrTank = parseWowlogsDataTiers(
       characterData.lfr,
       "Tank",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const normalTank = parseWowlogsDataTiers(
       characterData.normal,
       "Tank",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const heroicTank = parseWowlogsDataTiers(
       characterData.heroic,
       "Tank",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     const mythicTank = parseWowlogsDataTiers(
       characterData.mythic,
       "Tank",
-      characterData.character
+      classesData,
+      characterData.character.classID
     );
     let mainParseDifficulty = verifyMainParses(
       characterData.normal,
@@ -100,7 +113,10 @@ class WowlogsParser extends React.Component {
         },
       },
       mainParseDifficulty: mainParseDifficulty,
-      class: characterData.character.gameData.global.character_class.name,
+      class:
+        characterData.character.classID && classesData.data
+          ? classesData.data[ Helper.blizzardClassIDToWowlogsClassID(characterData.character.classID)].name
+          : null,
     };
   }
 }
@@ -134,27 +150,29 @@ function verifyMainParses(normal, heroic, mythic, metric) {
   return mythicKills > 0 ? 4 : heroicKills > 0 ? 3 : normalKills > 0 ? 2 : 1;
 }
 
+function verifyMainMetric(normal, heroic, mythic) {
+  mythic["overallDPS"].rankings.map((boss, i) => {});
+}
+
 /**
- * Parses each tier to get the relevant information into a dictionary that will fit the table component
- * @param {Object} tier Dictionary holding the information regarding this tier
- * @param {string} metric The metric to be used (HPS or DPS)
- * @returns New custom made dictionary with the information put in a covenient form
+ * Parse the logs for each tier for each role
+ * @param {Object} tier Dictionary representing the tier
+ * @param {string} metric Role being parsed
+ * @param {Object} classesData Dictionary holding classes and specs
+ * @param {int} classID The id of the class currently being parsed
+ * @returns Dictionary with parsed information
  */
-function parseWowlogsDataTiers(tier, metric, characterInfo) {
+function parseWowlogsDataTiers(tier, metric, classesData, classID) {
   let returnDictionary = { spec: [], data: [] };
   const overallMetric = tier["overall".concat(metric)];
   const ilvlMetric = tier["ilvl".concat(metric)];
   let specID;
   Object.values(overallMetric.rankings).map((entry, i) => {
-    !characterInfo.gameData.error
-      ? characterInfo.gameData.talents.specializations.map((spec, j) => {
-          //includes because will concat specs that have same name to save headache
-          if (
-            entry.spec && Helper.getSpecIDFromName(entry.spec).toString().includes(
-              spec.specialization.id.toString()
-            )
-          )
-            specID = spec.specialization.id;
+    classesData.data
+      ? classesData.data[
+          Helper.blizzardClassIDToWowlogsClassID(classID)
+        ].specs.map((spec, j) => {
+          if (entry.spec && entry.spec === spec.name) specID = spec.id;
           return null;
         })
       : (specID = null);
@@ -169,7 +187,7 @@ function parseWowlogsDataTiers(tier, metric, characterInfo) {
         : "-",
       killCount: entry.totalKills,
     });
-    !characterInfo.gameData.error
+    classesData.data
       ? returnDictionary.spec.push({ spec: entry.spec, specID: specID })
       : returnDictionary.spec.push({ spec: entry.spec });
     return null;

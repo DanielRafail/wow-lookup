@@ -3,9 +3,9 @@ import React from "react";
 /**
  * The Parser class which will return all servers in the game
  */
-class ServerParser extends React.Component {
+class WowGeneralParser extends React.Component {
   /**
-   * function used to parse the response from the servers and put it in a usable format
+   * function used to parse the response with the servers and put it in a usable format
    * @param {Object} serversData Dictionary returned by the API
    * @returns Array with every single server in the game
    */
@@ -24,4 +24,4 @@ class ServerParser extends React.Component {
     return returnDict;
   }
 }
-export default ServerParser;
+export default WowGeneralParser;

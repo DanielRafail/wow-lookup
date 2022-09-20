@@ -30,6 +30,29 @@ class Helper extends React.Component {
   }
 
   /**
+   * For some god forsaken reason, wowlogs and Blizzard have different IDs to represent the classes. Leftside is wowlogs and rightside is blizzard
+   * @param {int} classID Wowlogs' class ID
+   * @returns Blizzard's class ID
+   */
+  static blizzardClassIDToWowlogsClassID(classID) {
+    const dict = {
+      1: 6,
+      2: 11,
+      3: 3,
+      4: 8,
+      5: 10,
+      6: 2,
+      7: 5,
+      8: 4,
+      9: 7,
+      10: 9,
+      11: 1,
+      12: 12,
+    };
+    return dict[classID];
+  }
+
+  /**
    * Get the id attached to each spec of the game
    * @param {string} specName the name of the s pec
    * @returns the id attached to it
@@ -218,9 +241,11 @@ class Helper extends React.Component {
 
   /**
    * Hard code method which returns a dictionary with key all of WoW's expansions and values an incrementing ID. Have to manually hard code it because Blizzard API returns it in a falsy order. Maybe use other API call and compare based on ID?
+   * Hard coded it to save API call time
    * @returns Dictionary object with keys = WoW expansions and values = incrementing ID
    */
   static getAllSeasons() {
+    //API call for this
     let everySeasons = [
       "Classic",
       "Burning Crusade",
@@ -231,7 +256,7 @@ class Helper extends React.Component {
       "Legion",
       "Battle for Azeroth",
       "Shadowlands",
-      "Dragonflight",
+      // "Dragonflight",
     ];
     let everySeasonsWithId = {};
     everySeasons.map((everySeason, i) => {

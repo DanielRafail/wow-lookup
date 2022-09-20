@@ -12,7 +12,7 @@ const customAccordion = (props) => {
           <Accordion
             key={i}
             sx={{ color: "white" }}
-            defaultExpanded={props.expanded}
+            {... props}
           >
             <AccordionSummary
               expandIcon={

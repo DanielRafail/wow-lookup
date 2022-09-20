@@ -2,11 +2,11 @@ import "../CSS/main.css";
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import SendIcon from "@mui/icons-material/Send";
+// import IconButton from "@mui/material/IconButton";
+// import SendIcon from "@mui/icons-material/Send";
 import Helper from "../Helper/helper.js";
 import Reader from "../API/reader.js";
-import serverParser from "../API/parser/serverParser.js";
+import WowGeneralParser from "../API/parser/wowGeneralParser.js";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -73,7 +73,7 @@ const Index = () => {
     Reader.getServers()
       .then(function (response) {
         if (response) {
-          setServers(serverParser.parseServers(response));
+          setServers(WowGeneralParser.parseServers(response));
         }
       })
       .catch(function (error) {

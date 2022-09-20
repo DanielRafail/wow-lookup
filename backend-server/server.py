@@ -12,6 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 allServers = {}
+allClasses = {}
 
 # Wowlogs API route
 @app.route("/wowlogs", methods=["GET"])
@@ -21,7 +22,7 @@ def wowlogs(recursiveCall = False):
     server = request.args.get('server')
     characterInfo = "character(name:\\\""+ name +"\\\", serverSlug:\\\"" + server + "\\\", serverRegion:\\\"" + region + "\\\")"
     url = "https://www.warcraftlogs.com/api/v2/client"
-    payload = '{"query":"{characterData{lfr: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 1, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 1, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}normal: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 3, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 3, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}heroic: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 4, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 4, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}mythic: ' + characterInfo + ' {overallDPS: zoneRankings(byBracket:false, difficulty: 5, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 5, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}' + characterInfo + ' {gameData}}}"}'  
+    payload = '{"query":"{characterData{lfr: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 1, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 1, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}normal: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 3, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 3, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}heroic: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 4, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 4, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}mythic: ' + characterInfo + ' {overallDPS: zoneRankings(byBracket:false, difficulty: 5, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 5, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}' + characterInfo + ' {classID}}}"}'  
     headers = {
     "Content-Type": "application/json",
     "Authorization": "Bearer " + os.environ["wowlogs_api_token"]
@@ -61,6 +62,14 @@ def pvp(recursiveCall = False):
     two_response = requests.get(twoRating_url, headers=header)
     three_response = requests.get(threeRating_url, headers=header)
     achievs_response = requests.get(allAchievs_url, headers=header)
+    if two_response.status_code == 401 and recursiveCall == False:
+        os.environ["blizzard_api_token"] = ""
+        getBlizzardToken()
+        while(os.environ["blizzard_api_token"] == ""):
+            pass
+        return pvp(True)
+    elif recursiveCall == True:
+        return {}
     if is_json(two_response.text):
         json_response_two = two_response.json()
     else:
@@ -73,14 +82,6 @@ def pvp(recursiveCall = False):
         json_response_achievs = achievs_response.json()
     else:
         raise Exception("Invalid response cannot be transformed into JSON")
-    if "error" in two_response and two_response["error"] == "Unauthenticated." and recursiveCall == False:
-        os.environ["blizzard_api_token"] = ""
-        getBlizzardToken()
-        while(os.environ["blizzard_api_token"] == ""):
-            pass
-        return pvp(True)
-    elif recursiveCall == True:
-        return {}
     return {"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three}
 
 #raiderIO API route
@@ -117,6 +118,10 @@ def raiderio():
 def servers():
     return allServers
 
+@app.route("/classes", methods=["GET"])
+def classes():
+    return allClasses
+
 def getWoWlogsToken():
     url = "https://www.warcraftlogs.com/oauth/token"
     payload = "-----i\r\nContent-Disposition: form-data; name=\"grant_type\"\r\n\r\nclient_credentials\r\n-----i--\r\n"    
@@ -152,29 +157,65 @@ def getBlizzardToken():
     return None
 
 def getAllServers(recursiveCall = False):
+    global allServers
     header = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + os.environ["blizzard_api_token"],
     }
     regionsArray = os.environ["regions"].split(",")
     for region in regionsArray:
-        # not sure if "https://us.api..." or "https://" + region + ".api..."
         url = "https://" + region + ".api.blizzard.com/data/wow/realm/index?namespace=dynamic-" + region + "&locale=en_US&access_token=" + os.environ["blizzard_api_token"]
         json_response = None
         response = requests.get(url, headers=header)
-        if is_json(response.text):
-            json_response = response.json()
-        else:
-            raise Exception("Invalid response cannot be transformed into JSON")
-        if "error" in response and response["error"] == "Unauthenticated." and recursiveCall == False:
+        if response.status_code == 401 and recursiveCall == False:
             os.environ["blizzard_api_token"] = ""
             getBlizzardToken()
             while(os.environ["blizzard_api_token"] == ""):
                 pass
-            return pvp(True)
+            return getAllServers(True)
         elif recursiveCall == True:
             return {}
+        if is_json(response.text):
+            json_response = response.json()
+        else:
+            raise Exception("Invalid response cannot be transformed into JSON")
         allServers[region] = json_response
+    return None
+
+def getAllClasses(recursiveCall = False):
+    global allClasses
+    allClassesContent = {}
+    header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + os.environ["blizzard_api_token"],
+    }
+    allClassesURL = "https://us.api.blizzard.com/data/wow/playable-class/index?namespace=static-us&locale=en_US&access_token=" + os.environ["blizzard_api_token"]
+    allClasses_json_response = None
+    allClasses_response = requests.get(allClassesURL, headers=header)
+    if allClasses_response.status_code == 401 and recursiveCall == False:
+        os.environ["blizzard_api_token"] = ""
+        getBlizzardToken()
+        while(os.environ["blizzard_api_token"] == ""):
+            pass
+        return getAllClasses(True)
+    elif recursiveCall == True:
+        return {}
+    if is_json(allClasses_response.text):
+        allClasses_json_response = allClasses_response.json()
+    else:
+        raise Exception("Invalid response cannot be transformed into JSON")
+    for class_entry in allClasses_json_response["classes"]:
+        class_entry_url = "https://us.api.blizzard.com/data/wow/playable-class/" + str(class_entry["id"]) + "?namespace=static-us&locale=en_US&access_token=" + os.environ["blizzard_api_token"]
+        class_entry_json_response = None
+        class_entry_response = requests.get(class_entry_url, headers=header)
+        allClassesContent[class_entry["id"]] = {"name": class_entry["name"], "specs": []}
+        if is_json(class_entry_response.text):
+            class_entry_json_response = class_entry_response.json()
+        else:
+            raise Exception("Invalid response cannot be transformed into JSON")
+        for class_entry_detail in class_entry_json_response["specializations"]: 
+            allClassesContent[class_entry["id"]]["specs"].append({"name": class_entry_detail["name"], "id": class_entry_detail["id"]})
+    allClasses = allClassesContent
     return None
 
 
@@ -182,4 +223,5 @@ if __name__ == "__main__":
     getWoWlogsToken()
     getBlizzardToken()
     getAllServers()
+    getAllClasses()
     app.run(debug=True) 

@@ -41,12 +41,28 @@ const Lookup = () => {
       );
     };
     const wowlogsApiCall = () => {
-      apiCall(
-        Reader.getWowlogsData(params.url),
-        setWowlogsData,
-        setWowlogsError,
-        WowlogsParser.parseWowlogsData
-      );
+      Reader.getClasses()
+        .then(function (response) {
+          if (response) {
+            Reader.getWowlogsData(params.url)
+              .then(function (secondResponse) {
+                if (response) {
+                  setWowlogsError(false);
+                  setWowlogsData(
+                    WowlogsParser.parseWowlogsData(secondResponse, response)
+                  );
+                }
+              })
+              .catch(function (secondError) {
+                console.log(secondError);
+                setWowlogsError(secondError.response.status);
+              });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          setWowlogsError(error.response.status);
+        });
     };
     const pvpApiCall = () => {
       apiCall(

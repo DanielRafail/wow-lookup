@@ -1,6 +1,7 @@
 import "../CSS/main.css";
 import axios from "axios";
 import React from "react";
+import Helper from "../Helper/helper.js"
 
 /**
  * The reader class that will send requests to the APIs, read them and respond to them
@@ -11,7 +12,6 @@ class Reader extends React.Component {
    * @param {string} urlParams The URL parameters which include the character name, server and region
    */
   static async getRaiderIOData(urlParams) {
-    // GET ALL SEASON FROM API AND USE IT HERE
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
@@ -23,7 +23,7 @@ class Reader extends React.Component {
         name: characterInfoArray[2],
         server: characterInfoArray[1],
         region: characterInfoArray[0],
-        seasonID: 8,
+        seasonID: Object.keys(Helper.getAllSeasons()).length - 3,
       },
     };
     const raiderIO = await axios.request(options);
@@ -86,6 +86,21 @@ class Reader extends React.Component {
     };
     return await axios.request(options);
   }
+
+  /**
+   * API call to get all the classes
+   */
+   static async getClasses() {
+    const options = {
+      method: "GET",
+      url: "http://localhost:5000/classes",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    return await axios.request(options);
+  }
+
 }
 
 export default Reader;

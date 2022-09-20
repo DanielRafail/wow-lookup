@@ -4,6 +4,14 @@
   - same thing for metrics
 (in wowlogsParser)
 
+2 - Add ads and google tracking
+
+1 - Show m+ role and stars and different specs options
+
+2 - about me page (replacing the memes)
+
+1 - some wowlogs bug have link open
+
 1 - bug with parses when it comes to multi-spec parses
 https://www.warcraftlogs.com/character/id/66411281?mode=detailed&zone=26#metric=hps&spec=Holy&class=Paladin&difficulty=5
 example with him, where it shows 99% ret overall but 1% ilvl and the 99% comes from holy spec
