@@ -12,105 +12,102 @@ class WowlogsParser extends React.Component {
    */
   static parseWowlogsData(wowlogsData, classesData) {
     const characterData = wowlogsData.data.data.characterData;
+    let roles = ["DPS", "HPS", "Tank"];
     const lfrDPS = parseWowlogsDataTiers(
       characterData.lfr,
-      "DPS",
+      roles[0],
       classesData,
       characterData.character.classID
     );
     const normalDPS = parseWowlogsDataTiers(
       characterData.normal,
-      "DPS",
+      roles[0],
       classesData,
       characterData.character.classID
     );
     const heroicDPS = parseWowlogsDataTiers(
       characterData.heroic,
-      "DPS",
+      roles[0],
       classesData,
       characterData.character.classID
     );
     const mythicDPS = parseWowlogsDataTiers(
       characterData.mythic,
-      "DPS",
+      roles[0],
       classesData,
       characterData.character.classID
     );
     const lfrHealer = parseWowlogsDataTiers(
       characterData.lfr,
-      "HPS",
+      roles[1],
       characterData.character,
       classesData,
       characterData.character.classID
     );
     const normalHealer = parseWowlogsDataTiers(
       characterData.normal,
-      "HPS",
+      roles[1],
       classesData,
       characterData.character.classID
     );
     const heroicHealer = parseWowlogsDataTiers(
       characterData.heroic,
-      "HPS",
+      roles[1],
       classesData,
       characterData.character.classID
     );
     const mythicHealer = parseWowlogsDataTiers(
       characterData.mythic,
-      "HPS",
+      roles[1],
       classesData,
       characterData.character.classID
     );
     const lfrTank = parseWowlogsDataTiers(
       characterData.lfr,
-      "Tank",
+      roles[2],
       classesData,
       characterData.character.classID
     );
     const normalTank = parseWowlogsDataTiers(
       characterData.normal,
-      "Tank",
+      roles[2],
       classesData,
       characterData.character.classID
     );
     const heroicTank = parseWowlogsDataTiers(
       characterData.heroic,
-      "Tank",
+      roles[2],
       classesData,
       characterData.character.classID
     );
     const mythicTank = parseWowlogsDataTiers(
       characterData.mythic,
-      "Tank",
+      roles[2],
       classesData,
       characterData.character.classID
     );
-    let dps = verifyMainParsesAndRole(characterData.lfr,
+    let dps = verifyRoleAverageParse(
+      characterData.lfr,
       characterData.normal,
       characterData.heroic,
       characterData.mythic,
-      "DPS"
+      roles[0]
     );
-    let hps = verifyMainParsesAndRole(characterData.lfr,
+    let hps = verifyRoleAverageParse(
+      characterData.lfr,
       characterData.normal,
       characterData.heroic,
       characterData.mythic,
-      "HPS"
+      roles[1]
     );
-    let tank = verifyMainParsesAndRole(characterData.lfr,
+    let tank = verifyRoleAverageParse(
+      characterData.lfr,
       characterData.normal,
       characterData.heroic,
       characterData.mythic,
-      "Tank"
+      roles[2]
     );
-    //have scores per role per difficulty at this point
-    let mainParsePerDifficulty = { mythic: {}, heroic: {}, normal: {}, lfr: {} }
-    Object.keys(mainParsePerDifficulty).map((difficulty, i) =>{
-      Object.values(dps.roleParse)[i].map((role, j) =>{
-        //difficulties should be {role: x, points: x}, have to figure out how to do that
-        mainParsePerDifficulty[difficulty] = Helper.biggerOfThree(role, )
-      })
-    })
+    const mainParsePerDifficulty = findMainParsePerDifficulty(dps, hps, tank);
     return {
       tableData: {
         DPS: {
@@ -132,10 +129,15 @@ class WowlogsParser extends React.Component {
           mythic: mythicTank,
         },
       },
-      mainParseDifficulty: dps.difficulty,
+      highestDifficulty: mainParsePerDifficulty.mythic ? 4 : mainParsePerDifficulty.heroic ? 3 : mainParsePerDifficulty.normal ? 2 : mainParsePerDifficulty.normal ? 1 : 0,
+      mainParsePerDifficulty: mainParsePerDifficulty,
       class:
         characterData.character.classID && classesData.data
-          ? classesData.data[Helper.blizzardClassIDToWowlogsClassID(characterData.character.classID)].name
+          ? classesData.data[
+              Helper.blizzardClassIDToWowlogsClassID(
+                characterData.character.classID
+              )
+            ].name
           : null,
     };
   }
@@ -143,49 +145,84 @@ class WowlogsParser extends React.Component {
 export default WowlogsParser;
 
 /**
- * Verify if the initial parses shown will be normal, heroic or mythic. No need to verify LFR as it will be the fallback
+ * Finds the highest spec you parse with per difficulty
+ * @param {Object} dps Dictionary holding the dps parses
+ * @param {Object} hps Dictionary holding the hps parses
+ * @param {Object} tank Dictionary holding the tank parses
+ * @returns Dictionary with the highest spec per tier
+ */
+function findMainParsePerDifficulty(dps, hps, tank){
+  let mainParsePerDifficulty = {
+    lfr: {},
+    normal: {},
+    heroic: {},
+    mythic: {}
+  };
+  const allParses = { DPS: dps, Healer: hps, Tank: tank };
+  Object.keys(mainParsePerDifficulty).map((difficulty, i) => {
+    let highestParseAveragePerDifficulty = 0;
+    let entryIndex = -1;
+    Object.values(allParses).map((roleParse, j) => {
+      if (
+        highestParseAveragePerDifficulty < roleParse[difficulty]
+      ) {
+        highestParseAveragePerDifficulty = roleParse[difficulty];
+        entryIndex = j;
+      }
+      return null;
+    });
+    mainParsePerDifficulty[difficulty] = Object.keys(allParses)[entryIndex];
+    return null;
+  });
+  return mainParsePerDifficulty;
+}
+
+/**
+ * Return the average parse for a given role
  * @param {Object} normal Dictionary containing the normal parses
  * @param {Object} heroic Dictionary containing the heroic parses
  * @param {Object} mythic Dictionary containing the mythic parses
- * @returns The highest tier with which you have parses
+ * @returns Dictionary containing average parses per tier for a given role
  */
-function verifyMainParsesAndRole(LFR, normal, heroic, mythic, metric) {
-  let normalKills = 0;
-  let heroicKills = 0;
-  let mythicKills = 0;
+function verifyRoleAverageParse(LFR, normal, heroic, mythic, metric) {
   let mythicScore = 0;
   let heroicScore = 0;
   let normalScore = 0;
   let LFRScore = 0;
   let bossKills = 0;
-  mythic["overall".concat(metric)].rankings.map((boss, i) => {
-    if (boss && boss.totalKills > 0) {
-      mythicKills = mythicKills + 1;
-      mythicScore =  boss.allStars ? mythicScore + boss.allStars.points : mythicScore;
-    }
-    else if (
-      heroic &&
-      heroic["overall".concat(metric)].rankings[i].totalKills > 0
+  for (var i = 0; i < mythic["overall".concat(metric)].rankings.length; i++) {
+    if (
+      mythic["overall".concat(metric)].rankings[i] &&
+      mythic["overall".concat(metric)].rankings[i].totalKills > 0
     ) {
-      heroicKills = heroicKills + 1;
-      heroicScore =  heroic["overall".concat(metric)].rankings[i].allStars ? heroicScore + heroic["overall".concat(metric)].rankings[i].allStars.points : heroicScore;
+      mythicScore = mythic["overall".concat(metric)].rankings[i].allStars
+        ? mythicScore +
+          mythic["overall".concat(metric)].rankings[i].allStars.points
+        : mythicScore;
     }
-    else if (
-      normal &&
-      normal["overall".concat(metric)].rankings[i].totalKills > 0
-    ) {
-      normalKills = normalKills + 1;
-      normalScore = normal["overall".concat(metric)].rankings[i].allStars ? normalScore + normal["overall".concat(metric)].rankings[i].allStars.points : normalScore;
+    if (heroic && heroic["overall".concat(metric)].rankings[i].totalKills > 0) {
+      heroicScore = heroic["overall".concat(metric)].rankings[i].allStars
+        ? heroicScore +
+          heroic["overall".concat(metric)].rankings[i].allStars.points
+        : heroicScore;
     }
-    else {
-      LFRScore = LFR["overall".concat(metric)].rankings[i].allStars ? LFRScore + LFR["overall".concat(metric)].rankings[i].allStars.points : LFRScore;
+    if (normal && normal["overall".concat(metric)].rankings[i].totalKills > 0) {
+      normalScore = normal["overall".concat(metric)].rankings[i].allStars
+        ? normalScore +
+          normal["overall".concat(metric)].rankings[i].allStars.points
+        : normalScore;
+    } else {
+      LFRScore = LFR["overall".concat(metric)].rankings[i].allStars
+        ? LFRScore + LFR["overall".concat(metric)].rankings[i].allStars.points
+        : LFRScore;
     }
     bossKills = bossKills + 1;
-    return null;
-  });
+  }
   return {
-    maxDifficulty: mythicKills > 0 ? 4 : heroicKills > 0 ? 3 : normalKills > 0 ? 2 : 1,
-    roleParse: { mythic: mythicScore / bossKills, heroic: heroicScore / bossKills, normal: normalScore / bossKills, lfr: LFRScore / bossKills }
+    mythic: mythicScore / bossKills,
+    heroic: heroicScore / bossKills,
+    normal: normalScore / bossKills,
+    lfr: LFRScore / bossKills,
   };
 }
 
@@ -205,11 +242,11 @@ function parseWowlogsDataTiers(tier, metric, classesData, classID) {
   Object.values(overallMetric.rankings).map((entry, i) => {
     classesData.data
       ? classesData.data[
-        Helper.blizzardClassIDToWowlogsClassID(classID)
-      ].specs.map((spec, j) => {
-        if (entry.spec && entry.spec === spec.name) specID = spec.id;
-        return null;
-      })
+          Helper.blizzardClassIDToWowlogsClassID(classID)
+        ].specs.map((spec, j) => {
+          if (entry.spec && entry.spec === spec.name) specID = spec.id;
+          return null;
+        })
       : (specID = null);
     returnDictionary.data.push({
       boss: entry.encounter.name,

@@ -5,6 +5,7 @@ import requests
 from base64 import b64encode
 import json
 from flask_cors import CORS
+import urllib.parse
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ def wowlogs(recursiveCall = False):
     name = request.args.get('name')
     region = request.args.get('region')
     server = request.args.get('server')
+    # in characterInfo, replacing name by urllib.parse.quote(name.encode('utf-8'), safe='') did not work
     characterInfo = "character(name:\\\""+ name +"\\\", serverSlug:\\\"" + server + "\\\", serverRegion:\\\"" + region + "\\\")"
     url = "https://www.warcraftlogs.com/api/v2/client"
     payload = '{"query":"{characterData{lfr: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 1, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 1, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}normal: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 3, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 3, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}heroic: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 4, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 4, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}mythic: ' + characterInfo + ' {overallDPS: zoneRankings(byBracket:false, difficulty: 5, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 5, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}' + characterInfo + ' {classID}}}"}'  
@@ -29,6 +31,8 @@ def wowlogs(recursiveCall = False):
     }
     json_response = None
     response = requests.post(url, data=payload, headers=headers)
+    print("==================================")
+    print(response.text)
     if is_json(response.text):
         json_response = response.json()
     else:
@@ -116,17 +120,17 @@ def raiderio():
 
 @app.route("/servers", methods=["GET"])
 def servers():
-    if allServers !== {}:
+    if allServers != {}:
         return allServers
-    else 
+    else:
         getAllServers()
         return allServers
 
 @app.route("/classes", methods=["GET"])
 def classes():
-    if allClasses !== {}
+    if allClasses != {}:
         return allClasses
-    else
+    else:
         getAllClasses()
         return allClasses
 

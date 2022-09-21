@@ -8,9 +8,13 @@
 
 1 - Show m+ role and stars and different specs options
 
+2 - maybe remove class API and hard code it?
+
 2 - about me page (replacing the memes)
 
 1 - some wowlogs bug have link open
+- PYTHON GETS INFO CORRECTLY BUT WHEN SENDING TO WOWLOGS ACCENTEDED CHARACTERS
+- CAUSE PROBLEMS
 
 1 - bug with parses when it comes to multi-spec parses
 https://www.warcraftlogs.com/character/id/66411281?mode=detailed&zone=26#metric=hps&spec=Holy&class=Paladin&difficulty=5

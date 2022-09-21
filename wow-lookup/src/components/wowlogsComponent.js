@@ -20,27 +20,31 @@ const WowlogsComponent = (props) => {
    * Function ran whenever the props element is modified which verifies what the current difficultyParse is (Based on page reload and tabs click)
    */
   const choseCorrectdifficultyParse = useCallback(() => {
+    const parsedWowlogsData = props.data.parsedWowlogsData;
     if (
-      props.data.parsedWowlogsData &&
-      props.data.parsedWowlogsData.mainParseDifficulty &&
-      props.data.parsedWowlogsData.tableData &&
-      props.data.parsedWowlogsData.tableData.DPS &&
-      props.data.parsedWowlogsData.tableData.DPS.lfr
+      parsedWowlogsData &&
+      parsedWowlogsData.highestDifficulty &&
+      parsedWowlogsData.tableData &&
+      parsedWowlogsData.tableData.DPS &&
+      parsedWowlogsData.tableData.DPS.lfr
     ) {
-      setDifficulty(props.data.parsedWowlogsData.mainParseDifficulty);
-      setRole("DPS");
-      switch (props.data.parsedWowlogsData.mainParseDifficulty) {
+      setDifficulty(parsedWowlogsData.highestDifficulty);
+      const currentRole = Object.values(parsedWowlogsData.mainParsePerDifficulty)[
+        parsedWowlogsData.highestDifficulty - 1
+      ];
+      setRole(currentRole);
+      switch (props.data.parsedWowlogsData.highestDifficulty) {
         case 1:
-          setdifficultyParse(props.data.parsedWowlogsData.tableData.DPS.lfr);
+          setdifficultyParse(parsedWowlogsData.tableData[currentRole].lfr);
           return null;
         case 2:
-          setdifficultyParse(props.data.parsedWowlogsData.tableData.DPS.normal);
+          setdifficultyParse(parsedWowlogsData.tableData[currentRole].normal);
           return null;
         case 3:
-          setdifficultyParse(props.data.parsedWowlogsData.tableData.DPS.heroic);
+          setdifficultyParse(parsedWowlogsData.tableData[currentRole].heroic);
           return null;
         case 4:
-          setdifficultyParse(props.data.parsedWowlogsData.tableData.DPS.mythic);
+          setdifficultyParse(parsedWowlogsData.tableData[currentRole].mythic);
           return null;
         default:
           return null;
@@ -86,13 +90,18 @@ const WowlogsComponent = (props) => {
    * @param {string} newVal The value of the new tab clicked
    */
   function handleChangeTiers(event, newVal) {
+    let newBestParsingSpec = Object.values(
+      props.data.parsedWowlogsData.mainParsePerDifficulty
+    )[Number(newVal)];
     setDifficulty((Number(newVal) + 1).toString());
-    Object.values(props.data.parsedWowlogsData.tableData[role]).map(
-      (data, i) => {
-        if (i === Number(newVal)) setdifficultyParse(data);
-        return null;
-      }
-    );
+    if (newBestParsingSpec) setRole(newBestParsingSpec);
+    else newBestParsingSpec = role;
+    Object.values(
+      props.data.parsedWowlogsData.tableData[newBestParsingSpec]
+    ).map((data, i) => {
+      if (i === Number(newVal)) setdifficultyParse(data);
+      return null;
+    });
   }
 
   /**
