@@ -225,23 +225,6 @@ class Helper extends React.Component {
   }
 
   /**
-   * Get the biggest number out of 3 numbers
-   * @param {int} firstNumber The first number
-   * @param {int} secondNumber The second number
-   * @param {int} thirdNumber The third number
-   * @returns The biggest number of all 3
-   */
-  static biggerOfThree(firstNumber, secondNumber, thirdNumber) {
-    if (firstNumber >= secondNumber && firstNumber >= thirdNumber)
-      return firstNumber
-    else if (secondNumber >= firstNumber && secondNumber >= thirdNumber)
-      return secondNumber
-    else if (thirdNumber > firstNumber && thirdNumber >= secondNumber)
-      return thirdNumber
-    return null;
-  }
-
-  /**
    * Get the substring within a startindex and endIndex
    * @param {string} string the string we will get the substring of
    * @param {int} startIndex the start index for getting the substring

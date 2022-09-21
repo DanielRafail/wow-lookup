@@ -33,12 +33,38 @@ const Lookup = () => {
     let timeout;
     //declaring all API calls since they will be used twice
     const raiderIOApiCall = () => {
-      apiCall(
-        Reader.getRaiderIOData(params.url),
-        setRaiderIOData,
-        setRaiderIOError,
-        RaiderIOParser.parseRaiderIOData
-      );
+      Reader.getColors()
+        .then(function (response) {
+          if (response) {
+            Reader.getAllDungeons()
+              .then(function (secondResponse) {
+                if (secondResponse) {
+                  Reader.getRaiderIOData(params.url)
+                    .then(function (thirdResponse) {
+                      if (thirdResponse) {
+                        setRaiderIOError(false);
+                        setRaiderIOData(
+                          RaiderIOParser.parseRaiderIOData(thirdResponse, response, secondResponse)
+                        );
+                      }
+                    })
+                    .catch(function (secondError) {
+                      console.log(secondError);
+                      setWowlogsError(secondError.response.status);
+                    });
+                }
+              })
+              .catch(function (secondError) {
+                console.log(secondError);
+                setWowlogsError(secondError.response.status);
+              });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          setWowlogsError(error.response.status);
+        });
+
     };
     const wowlogsApiCall = () => {
       Reader.getClasses()
@@ -46,7 +72,7 @@ const Lookup = () => {
           if (response) {
             Reader.getWowlogsData(params.url)
               .then(function (secondResponse) {
-                if (response) {
+                if (secondResponse) {
                   setWowlogsError(false);
                   setWowlogsData(
                     WowlogsParser.parseWowlogsData(secondResponse, response)
@@ -195,8 +221,8 @@ const Lookup = () => {
       />
       <div className="body">
         {(!parsedRaiderIOData && !parsedWowlogsData) ||
-        (!parsedPVPData && !parsedRaiderIOData) ||
-        (!parsedWowlogsData && !parsedPVPData) ? (
+          (!parsedPVPData && !parsedRaiderIOData) ||
+          (!parsedWowlogsData && !parsedPVPData) ? (
           <div>
             <CircularProgress size={100} />
           </div>

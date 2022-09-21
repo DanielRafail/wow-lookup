@@ -9,27 +9,27 @@ class RaiderIOParser extends React.Component {
    * @param {Object} raiderIOData The data dictionary we get from the raiderIO APIs
    * @returns A usable dictionary
    */
-  static parseRaiderIOData(raiderIOData) {
+  static parseRaiderIOData(raiderIOData, colors, allDungeons) {
     const mythicPlusBest =
-      raiderIOData.data.raiderIOScores.mythic_plus_best_runs;
+      raiderIOData.data.mythic_plus_best_runs;
     const mythicPlusAlternate =
-      raiderIOData.data.raiderIOScores.mythic_plus_alternate_runs;
+      raiderIOData.data.mythic_plus_alternate_runs;
     const mythicPlusRecent =
-      raiderIOData.data.raiderIOScores.mythic_plus_recent_runs;
+      raiderIOData.data.mythic_plus_recent_runs;
     const MythicPlusScore =
-      raiderIOData.data.raiderIOScores.mythic_plus_scores_by_season;
+      raiderIOData.data.mythic_plus_scores_by_season;
     const raiderIOPlayedResults = getRaiderIOIfPlayed(
       mythicPlusBest,
       mythicPlusAlternate,
       mythicPlusRecent,
-      raiderIOData.data.allDungeons.seasons[0].dungeons
+      allDungeons.data.seasons[0].dungeons
     );
     return {
       keys: raiderIOPlayedResults.keys,
       recentRuns: raiderIOPlayedResults.recentData,
       score: MythicPlusScore[0].scores,
-      allDungeons: raiderIOData.data.allDungeons.seasons[0].dungeons,
-      scoreColors: raiderIOData.data.scoreColors,
+      allDungeons: allDungeons.data.seasons[0].dungeons,
+      scoreColors: colors,
     };
   }
 }

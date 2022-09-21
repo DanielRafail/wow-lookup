@@ -22,8 +22,7 @@ class Reader extends React.Component {
       params: {
         name: characterInfoArray[2],
         server: characterInfoArray[1],
-        region: characterInfoArray[0],
-        seasonID: Object.keys(Helper.getAllSeasons()).length - 3,
+        region: characterInfoArray[0]
       },
     };
     const raiderIO = await axios.request(options);
@@ -74,7 +73,8 @@ class Reader extends React.Component {
   }
 
   /**
-   * API call to get all the servers
+   * API call to get all servers
+   * @returns Dictionary with all servers
    */
   static async getServers() {
     const options = {
@@ -87,10 +87,41 @@ class Reader extends React.Component {
     return await axios.request(options);
   }
 
+    /**
+   * API call to get all servers
+   * @returns Dictionary with all servers
+   */
+     static async getColors() {
+      const options = {
+        method: "GET",
+        url: "http://localhost:5000/colors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      return await axios.request(options);
+    }
+
+      /**
+   * API call to get all servers
+   * @returns Dictionary with all servers
+   */
+  static async getAllDungeons() {
+    const options = {
+      method: "GET",
+      url: "http://localhost:5000/allDungeons",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    };
+    return await axios.request(options);
+  }
+
   /**
    * API call to get all the classes
+   * @returns Dictionary with all classes
    */
-   static async getClasses() {
+  static async getClasses() {
     const options = {
       method: "GET",
       url: "http://localhost:5000/classes",
