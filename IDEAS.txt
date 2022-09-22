@@ -1,5 +1,3 @@
-1 - ON BACKEND, API CALL TO EXPANSIONS
-
 1 - Figure out main spec instead of defaulting to DPS
   - same thing for metrics
 (in wowlogsParser)
@@ -14,11 +12,7 @@
 
 1 - some wowlogs bug have link open
 - PYTHON GETS INFO CORRECTLY BUT WHEN SENDING TO WOWLOGS ACCENTEDED CHARACTERS
-- CAUSE PROBLEMS
-
-1 - bug with parses when it comes to multi-spec parses
-https://www.warcraftlogs.com/character/id/66411281?mode=detailed&zone=26#metric=hps&spec=Holy&class=Paladin&difficulty=5
-example with him, where it shows 99% ret overall but 1% ilvl and the 99% comes from holy spec
+- CAUSE PROBLEMS	
 
 1 - MAYBE SHOW PREVIOUS RAID TIERS
 - would have to call Blizz API to get journal index, find latest xpac journal id

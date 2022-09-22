@@ -145,6 +145,9 @@ div div nav div div div div .home-button-section{
 }
 .hidden{
   visibility: hidden;
+}
+
+.small-margin-bottom{
   margin-bottom: -21px;
 }
 
@@ -232,4 +235,18 @@ div div nav div div div div .home-button-section{
 
 .server-input{
   padding:0px;
+}
+
+.raider-io-star{
+  color:yellow;
+  transform: scale(0.7);
+  transform-origin: bottom;
+}
+
+.raider-io-star:not(:first-child){
+  margin-left:-10px;
+}
+
+.raider-io-stars-container{
+  display:inline-block;
 }

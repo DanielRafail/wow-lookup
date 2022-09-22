@@ -23,16 +23,15 @@ const WowlogsComponent = (props) => {
     const parsedWowlogsData = props.data.parsedWowlogsData;
     if (
       parsedWowlogsData &&
-      parsedWowlogsData.highestDifficulty &&
       parsedWowlogsData.tableData &&
       parsedWowlogsData.tableData.DPS &&
       parsedWowlogsData.tableData.DPS.lfr
     ) {
-      setDifficulty(parsedWowlogsData.highestDifficulty);
+      setDifficulty(parsedWowlogsData.highestDifficulty ? parsedWowlogsData.highestDifficulty : 1);
       const currentRole = Object.values(parsedWowlogsData.mainParsePerDifficulty)[
         parsedWowlogsData.highestDifficulty - 1
       ];
-      setRole(currentRole);
+      setRole(currentRole ? currentRole : "DPS");
       switch (props.data.parsedWowlogsData.highestDifficulty) {
         case 1:
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].lfr);
@@ -47,6 +46,7 @@ const WowlogsComponent = (props) => {
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].mythic);
           return null;
         default:
+          setdifficultyParse(parsedWowlogsData.tableData.DPS.lfr);
           return null;
       }
     } else return null;
@@ -372,7 +372,7 @@ const WowlogsComponent = (props) => {
   return (
     <div className="wowlogs-section">
       {props.data.parsedWowlogsData.tableData &&
-      props.data.parsedWowlogsData.tableData.DPS &&
+      props.data.parsedWowlogsData.tableData.DPS && 
       difficultyParse ? (
         returnWowlogsContent()
       ) : props.data && props.data.wowlogsError ? (

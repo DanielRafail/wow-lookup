@@ -5,11 +5,13 @@ import requests
 from base64 import b64encode
 import json
 from flask_cors import CORS
-import urllib.parse
-
-load_dotenv()
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
+
+load_dotenv()
+limiter = Limiter(app, key_func=get_remote_address)
 CORS(app)
 
 allServers = {}
@@ -20,6 +22,7 @@ json_error_message = "Invalid response cannot be transformed into JSON"
 
 # Wowlogs API route
 @app.route("/wowlogs", methods=["GET"])
+@limiter.limit("60/minute")
 def wowlogs(recursiveCall = False):
     name = request.args.get('name')
     region = request.args.get('region')
@@ -51,6 +54,7 @@ def wowlogs(recursiveCall = False):
 
 #pvp API route
 @app.route("/pvp", methods=["GET"])
+@limiter.limit("60/minute")
 def pvp(recursiveCall = False):
     global json_error_message
     name = request.args.get('name')
@@ -96,6 +100,7 @@ def pvp(recursiveCall = False):
 
 #raiderIO API route
 @app.route("/raiderio", methods=["GET"])
+@limiter.limit("60/minute")
 def raiderio():
     global json_error_message
     name = request.args.get('name')

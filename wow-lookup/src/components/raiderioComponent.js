@@ -3,6 +3,7 @@ import Helper from "../Helper/helper.js";
 import React from "react";
 import CustomTable from "./table";
 import TableStyleDefault from "../Helper/tableStyleDefault.js";
+import StarRateIcon from "@mui/icons-material/StarRate";
 
 const RaiderioComponent = (props) => {
   /**
@@ -14,8 +15,8 @@ const RaiderioComponent = (props) => {
     return (
       <div className="best-keys">
         <h4 style={{ marginBottom: "0px" }}>
-          {props.data.name} - {Helper.capitalizeFirstLetter(props.data.server)}{" "}
-          (
+          {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
+          {Helper.capitalizeFirstLetter(props.data.server)} (
           <span
             style={{
               color: getRaiderIOScoreColor(
@@ -109,9 +110,23 @@ const RaiderioComponent = (props) => {
     ) {
       className = "underline veryBold";
     }
+    let rowAsArray = [...row[rowKeys[index]]];
+    let counter = 3;
+    //missing stars misalignes the content, so add invisible stars to make them all aligned
+    while (row[rowKeys[index]].split("+").length < counter) {
+      rowAsArray.unshift("+");
+      counter = counter - 1;
+    }
     return (
       <StyledTableCell key={index} align="center" className={className}>
-        {row[rowKeys[index]]}
+        {row[rowKeys[index]].substring(row[rowKeys[index]].lastIndexOf("+"))}
+        <div className="raider-io-stars-container">
+          {rowAsArray.map((char, i) => {
+            if ([...row[rowKeys[index]]][i] === "+")
+              return <StarRateIcon key={i} className="raider-io-star" />;
+            return <StarRateIcon key={i} className="raider-io-star hidden" />;
+          })}
+        </div>
       </StyledTableCell>
     );
   }
@@ -122,9 +137,15 @@ const RaiderioComponent = (props) => {
    * @returns the color associated with that score
    */
   function getRaiderIOScoreColor(roleScore) {
-    for (var i = 0; i < props.data.parsedRaiderIOData.scoreColors.length; i++) {
-      if (roleScore >= props.data.parsedRaiderIOData.scoreColors[i].score) {
-        return props.data.parsedRaiderIOData.scoreColors[i].rgbHex;
+    for (
+      var i = 0;
+      i < props.data.parsedRaiderIOData.scoreColors.data.length;
+      i++
+    ) {
+      if (
+        roleScore >= props.data.parsedRaiderIOData.scoreColors.data[i].score
+      ) {
+        return props.data.parsedRaiderIOData.scoreColors.data[i].rgbHex;
       }
     }
   }
@@ -142,6 +163,18 @@ const RaiderioComponent = (props) => {
     );
   }
 
+  function createPersonalizedCellsMostRecent(row, index) {
+    const StyledTableCell = TableStyleDefault.styleTableCell();
+    const rowKeys = Object.keys(row);
+    //adding invisible star so both this table and best dungeons table heights aline
+    return (
+      <StyledTableCell key={index} align="center">
+        {row[rowKeys[index]]}
+        <StarRateIcon key={index} className="raider-io-star hidden" />
+      </StyledTableCell>
+    );
+  }
+
   /**
    * Function which returns the most recent keys you have run this season (number of keys equivalent to the number of dungeons this season)
    * @returns The most recents keys you have run this season
@@ -149,11 +182,14 @@ const RaiderioComponent = (props) => {
   function returnRaiderIORecentKeys(headers) {
     return (
       <div className="recent-keys">
-        <h6 className="hidden">.</h6>
+        <h6 className="hidden small-margin-bottom">.</h6>
         <h4>Most Recent Runs</h4>
         <CustomTable
           headers={headers}
           rows={props.data.parsedRaiderIOData.recentRuns}
+          personalizedCells={(row, index) =>
+            createPersonalizedCellsMostRecent(row, index)
+          }
         />
       </div>
     );
