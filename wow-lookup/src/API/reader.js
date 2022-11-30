@@ -15,7 +15,7 @@ class Reader extends React.Component {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
-      url: "http://localhost:5000/raiderio",
+      url:  process.env.REACT_APP_API_URL_BASE + "raiderio",
       headers: {
         "Content-Type": "application/json",
       },
@@ -38,7 +38,7 @@ class Reader extends React.Component {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
-      url: "http://localhost:5000/wowlogs",
+      url: process.env.REACT_APP_API_URL_BASE + "wowlogs",
       headers: {
         "Content-Type": "application/json",
       },
@@ -59,7 +59,7 @@ class Reader extends React.Component {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
-      url: "http://localhost:5000/pvp",
+      url: process.env.REACT_APP_API_URL_BASE + "pvp",
       headers: {
         "Content-Type": "application/json",
       },
@@ -77,9 +77,10 @@ class Reader extends React.Component {
    * @returns Dictionary with all servers
    */
   static async getServers() {
+    console.log(process.env.REACT_APP_API_URL_BASE)
     const options = {
       method: "GET",
-      url: "http://localhost:5000/servers",
+      url: process.env.REACT_APP_API_URL_BASE + "servers",
       headers: {
         "Content-Type": "application/json",
       },
@@ -94,7 +95,7 @@ class Reader extends React.Component {
      static async getColors() {
       const options = {
         method: "GET",
-        url: "http://localhost:5000/colors",
+        url: process.env.REACT_APP_API_URL_BASE + "colors",
         headers: {
           "Content-Type": "application/json",
         },
@@ -109,7 +110,7 @@ class Reader extends React.Component {
   static async getAllDungeons() {
     const options = {
       method: "GET",
-      url: "http://localhost:5000/allDungeons",
+      url: process.env.REACT_APP_API_URL_BASE + "allDungeons",
       headers: {
         "Content-Type": "application/json",
       }
@@ -124,7 +125,7 @@ class Reader extends React.Component {
   static async getClasses() {
     const options = {
       method: "GET",
-      url: "http://localhost:5000/classes",
+      url: process.env.REACT_APP_API_URL_BASE + "classes",
       headers: {
         "Content-Type": "application/json",
       },

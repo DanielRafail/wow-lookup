@@ -15,37 +15,20 @@ import TextField from "@mui/material/TextField";
  * @returns HTML and logic components for the index page
  */
 const Index = () => {
-  let [name, setName] = useState(0);
-  let [region, setRegion] = useState(0);
-  let [server, setServer] = useState(0);
-  let [inputsError, setInputserror] = useState(0);
-  let [singleInputError, setSingleInputError] = useState(0);
-  let [url, seturl] = useState(0);
-  let [inputTypeURL, setInputTypeURL] = useState(0);
+  let [name, setName] = useState("");
+  let [region, setRegion] = useState("");
+  let [server, setServer] = useState("");
+  let [inputsError, setInputserror] = useState(false);
+  let [singleInputError, setSingleInputError] = useState(false);
+  let [url, seturl] = useState("");
+  let [inputTypeURL, setInputTypeURL] = useState(false);
   let [servers, setServers] = useState(0);
-  let [serversError, setServersError] = useState(0);
-  let [openInput, setOpenInput] = React.useState(false);
-  let [inputValue, setInputValue] = React.useState("");
+  let [serversError, setServersError] = useState(false);
+  let [openInput, setOpenInput] = useState(false);
+  let [inputValue, setInputValue] = useState("");
   let navigate = useNavigate();
 
   useEffect(() => {
-    if (
-      typeof name === "number" &&
-      typeof region === "number" &&
-      typeof server === "number" &&
-      typeof url === "number" &&
-      typeof inputTypeURL === "number" &&
-      typeof inputsError === "number" &&
-      typeof singleInputError === "number"
-    ) {
-      setName("");
-      setRegion("");
-      setServer("");
-      seturl("");
-      setInputTypeURL(true);
-      setSingleInputError(false);
-      setInputserror(false);
-    }
     if (!servers) seversAPICall();
     let serversInterval = setInterval(() => {
       seversAPICall();
@@ -88,20 +71,6 @@ const Index = () => {
    */
   function updateName(event) {
     setName(event.target.value.replace(/[^a-z]/gi, "").toLowerCase());
-  }
-
-  /**
-   * Update the server and region state variables
-   * @param {Object} event event object from which we will get the value and set the URL
-   */
-  function updateServerAndRegion(event) {
-    if (event && event.target && event.target.innerText) {
-      const text = event.target.innerText;
-      setServer(
-        text.substring(0, text.lastIndexOf("-")).toLowerCase().replace(" ", "-")
-      );
-      setRegion(text.substring(text.lastIndexOf("-") + 1).toLowerCase());
-    }
   }
 
   /**
@@ -201,11 +170,24 @@ const Index = () => {
    * @param {string} newInputValue the new input after the event has taken place
    */
   function handleInputChange(event, newInputValue) {
-    setInputValue(newInputValue);
-    if (newInputValue.length > 0) {
-      setOpenInput(true);
-    } else {
-      setOpenInput(false);
+    if (typeof newInputValue === "string") {
+      setInputValue(newInputValue);
+      if (newInputValue.length > 0) {
+        setOpenInput(true);
+        setServer(
+          newInputValue
+            .substring(0, newInputValue.lastIndexOf("-"))
+            .toLowerCase()
+            .replace(" ", "-")
+        );
+        setRegion(
+          newInputValue
+            .substring(newInputValue.lastIndexOf("-") + 1)
+            .toLowerCase()
+        );
+      } else {
+        setOpenInput(false);
+      }
     }
   }
 
@@ -218,7 +200,7 @@ const Index = () => {
     const filterOptions = (options, state) => {
       return defaultFilterOptions(options, state).slice(0, 5);
     };
-    return servers ? (
+    return (
       <div>
         <div className="name-line-index">
           <p className="name-label">Character Name: </p>
@@ -236,8 +218,8 @@ const Index = () => {
             disablePortal
             filterOptions={filterOptions}
             className="server-input"
-            options={servers}
-            onChange={updateServerAndRegion}
+            options={servers ? servers : []}
+            onChange={handleInputChange}
             autoComplete={true}
             autoHighlight={true}
             autoSelect={true}
@@ -278,9 +260,6 @@ const Index = () => {
           Submit
         </Button>
       </div>
-    ) : (
-      //Fragment if servers did not come back
-      <React.Fragment />
     );
   }
 
@@ -345,7 +324,7 @@ const Index = () => {
           size="large"
           onClick={HandleInputType}
         >
-          {inputTypeURL ? "Manually  find player" : "Use URL to find player"}
+          {inputTypeURL ? "Find player with Name and Server" : "Find player with URL"}
         </Button>
         <form id="lookup-form" style={{ width: getFormWidth() }}>
           {inputTypeURL ? getSingleInput() : getInputs()}

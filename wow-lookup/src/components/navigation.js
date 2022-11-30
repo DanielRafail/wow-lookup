@@ -21,13 +21,15 @@ const Navigation = (props) => {
               animation: "none",
             },
           }}
+          allowScrollButtonsMobile
+          scrollButtons="auto"
+          variant="scrollable"
           value={props.navigationTabValue}
           onChange={(e, v) => props.HandleChange(e, v)}
-          centered
         >
           {props.homeButton ? (
             <Tab
-              className="home-button-section"
+              className="home-button-section nav_tab"
               label="WoW-Lookup"
               icon={<HomeIcon />}
               iconPosition="start"

@@ -332,7 +332,6 @@ const WowlogsComponent = (props) => {
   function createPersonalizedCells(row, index, parentIndex) {
     const StyledTableCell = TableStyleDefault.styleTableCell();
     let textColor;
-
     Object.values(row).map((cell, i) => {
       textColor = textColor ? textColor : getColorFromNumber(cell);
       return null;
@@ -351,7 +350,7 @@ const WowlogsComponent = (props) => {
         }}
       >
         <div className="wowlogs-cell-container">
-          {index === 1 && specID ? (
+          {index === 1 && specID && row.killCount > 0 ? (
             <div className="wowlogs-spec-container">
               <img
                 src={ClassImages.getSpecImages()[specID]}

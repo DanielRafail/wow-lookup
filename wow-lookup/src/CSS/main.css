@@ -112,8 +112,33 @@ footer {
 }
 div div nav div div div div .home-button-section{
   font-weight: bold;
-  font-size: large;
   color:#282c34 !important;
+}
+
+@media (min-width: 1200px) {
+  div div nav div div div div .home-button-section {
+    padding-left: 80px;
+  }
+}
+
+@media (max-width: 747px) {
+  div div nav div div div div button {
+    font-size: small !important;
+    padding:5px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  div div nav div div div div button {
+    font-size: 10px !important;
+    padding:0px !important;
+  }
+}
+
+@media (min-width: 747px) {
+  div div nav div div div div button {
+    font-size: large !important;
+  }
 }
 
 .error-p{

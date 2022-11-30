@@ -18,61 +18,77 @@ import Helper from "../Helper/helper.js";
  */
 const Lookup = () => {
   let [navigationTabValue, setNavigationTabValue] = useState(0);
-  let [raiderIOError, setRaiderIOError] = useState(0);
-  let [wowlogsError, setWowlogsError] = useState(0);
-  let [pvpError, setPVPError] = useState(0);
+  let [raiderIOError, setRaiderIOError] = useState(false);
+  let [wowlogsError, setWowlogsError] = useState(false);
+  let [pvpError, setPVPError] = useState(false);
   let [parsedRaiderIOData, setRaiderIOData] = useState(0);
   let [parsedWowlogsData, setWowlogsData] = useState(0);
   let [parsedPVPData, setPVPParsedData] = useState(0);
+  let [firstLoad, setFirstLoad] = useState(true);
   let params = useParams();
   let navigate = useNavigate();
-  let headers = ["Summary", "WoWlogs", "Raider.IO", "CheckPVP"];
+  let headers = ["Summary", "Raider.IO", "WoWlogs", "CheckPVP"];
 
   useEffect(() => {
-    //declaring timeout to show error message after 5 seconds
     let timeout;
+    let raiderioInterval;
+    let pvpInterval;
+    let wowlogsInterval;
+    //declaring timeout to show error message after 5 seconds
     //declaring all API calls since they will be used twice
-    const raiderIOApiCall = () => {
+    function raiderIOApiCall() {
       Reader.getColors()
         .then(function (response) {
-          if (response) {
+          if (response && response.status === 200) {
             Reader.getAllDungeons()
               .then(function (secondResponse) {
-                if (secondResponse) {
+                if (secondResponse && secondResponse.status === 200) {
                   Reader.getRaiderIOData(params.url)
                     .then(function (thirdResponse) {
-                      if (thirdResponse) {
+                      if (thirdResponse && thirdResponse.status === 200) {
                         setRaiderIOError(false);
                         setRaiderIOData(
-                          RaiderIOParser.parseRaiderIOData(thirdResponse, response, secondResponse)
+                          RaiderIOParser.parseRaiderIOData(
+                            thirdResponse,
+                            response,
+                            secondResponse
+                          )
                         );
                       }
                     })
-                    .catch(function (secondError) {
-                      console.log(secondError);
-                      setWowlogsError(secondError.response.status);
+                    .catch(function (thirdResponse) {
+                      setWowlogsError(
+                        thirdResponse.response && thirdResponse.response.status
+                          ? thirdResponse.response.status
+                          : 0
+                      );
                     });
                 }
               })
               .catch(function (secondError) {
-                console.log(secondError);
-                setWowlogsError(secondError.response.status);
+                setWowlogsError(
+                  secondError.response && secondError.response.status
+                    ? secondError.response.status
+                    : 404
+                );
               });
           }
         })
         .catch(function (error) {
-          console.log(error);
-          setWowlogsError(error.response.status);
+          setWowlogsError(
+            error.response && error.response.status
+              ? error.response.status
+              : 404
+          );
         });
-
-    };
-    const wowlogsApiCall = () => {
+    }
+    function wowlogsApiCall() {
       Reader.getClasses()
         .then(function (response) {
-          if (response) {
+          if (response && response.status === 200) {
             Reader.getWowlogsData(params.url)
               .then(function (secondResponse) {
-                if (secondResponse) {
+                if (secondResponse && secondResponse.status === 200) {
                   setWowlogsError(false);
                   setWowlogsData(
                     WowlogsParser.parseWowlogsData(secondResponse, response)
@@ -80,34 +96,50 @@ const Lookup = () => {
                 }
               })
               .catch(function (secondError) {
-                console.log(secondError);
-                setWowlogsError(secondError.response.status);
+                setWowlogsError(
+                  secondError.response && secondError.response.status
+                    ? secondError.response.status
+                    : 404
+                );
               });
           }
         })
         .catch(function (error) {
-          console.log(error);
-          setWowlogsError(error.response.status);
+          setWowlogsError(
+            error.response && error.response.status
+              ? error.response.status
+              : 404
+          );
         });
-    };
-    const pvpApiCall = () => {
+    }
+    function pvpApiCall() {
       apiCall(
         Reader.getPVPData(params.url),
         setPVPParsedData,
         setPVPError,
         PvpParser.parsePVPData
       );
-    };
-    //setting intervals to call APIs (will be removed once we get a response)
-    let raiderioInterval = setInterval(() => {
+    }
+    if (firstLoad) {
       raiderIOApiCall();
-    }, 6000);
-    let wowlogsInterval = setInterval(() => {
       wowlogsApiCall();
-    }, 6000);
-    let pvpInterval = setInterval(() => {
       pvpApiCall();
-    }, 6000);
+      setFirstLoad(false);
+    }
+
+    //setting intervals to call APIs (will be removed once we get a response)
+    if (!parsedRaiderIOData)
+      raiderioInterval = setInterval(() => {
+        raiderIOApiCall();
+      }, 6000);
+    if (!parsedWowlogsData)
+      wowlogsInterval = setInterval(() => {
+        wowlogsApiCall();
+      }, 6000);
+    if (!parsedPVPData)
+      pvpInterval = setInterval(() => {
+        pvpApiCall();
+      }, 6000);
     //Removing API calls intervals once we get a response
     if (parsedRaiderIOData || raiderIOError === 404)
       clearInterval(raiderioInterval);
@@ -123,9 +155,6 @@ const Lookup = () => {
         );
         navigate("/");
       }, 5000);
-      raiderIOApiCall();
-      wowlogsApiCall();
-      pvpApiCall();
     }
     //clear everything on unmount
     return () => {
@@ -143,6 +172,7 @@ const Lookup = () => {
     raiderIOError,
     wowlogsError,
     navigate,
+    firstLoad,
   ]);
 
   /**
@@ -154,14 +184,15 @@ const Lookup = () => {
   function apiCall(apiCallFunction, setData, setError, parserFunction) {
     apiCallFunction
       .then(function (response) {
-        if (response) {
+        if (response && response.status === 200) {
           setError(false);
           setData(parserFunction(response));
         }
       })
       .catch(function (error) {
-        console.log(error);
-        setError(error.response.status);
+        setError(
+          error.response && error.response.status ? error.response.status : 404
+        );
       });
   }
 
@@ -189,11 +220,11 @@ const Lookup = () => {
       case 0:
         return null;
       case 1:
-        return "https://www.warcraftlogs.com/character/" + characterInfo;
-      case 2:
         return "https://raider.io/characters/" + characterInfo;
-      //playing with capital letters and spacing so that the website accepts the player url
+      case 2:
+        return "https://www.warcraftlogs.com/character/" + characterInfo;
       case 3:
+        //playing with capital letters and spacing so that the website accepts the player url
         let splitURL = characterInfo.split("/");
         let serverSection = splitURL[1].split("-");
         let serverSectionCapitalized = serverSection.map((a, i) => {
@@ -221,8 +252,8 @@ const Lookup = () => {
       />
       <div className="body">
         {(!parsedRaiderIOData && !parsedWowlogsData) ||
-          (!parsedPVPData && !parsedRaiderIOData) ||
-          (!parsedWowlogsData && !parsedPVPData) ? (
+        (!parsedPVPData && !parsedRaiderIOData) ||
+        (!parsedWowlogsData && !parsedPVPData) ? (
           <div>
             <CircularProgress size={100} />
           </div>

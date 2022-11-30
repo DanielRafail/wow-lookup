@@ -129,7 +129,15 @@ class WowlogsParser extends React.Component {
           mythic: mythicTank,
         },
       },
-      highestDifficulty: mainParsePerDifficulty.mythic ? 4 : mainParsePerDifficulty.heroic ? 3 : mainParsePerDifficulty.normal ? 2 : mainParsePerDifficulty.normal ? 1 : 0,
+      highestDifficulty: mainParsePerDifficulty.mythic
+        ? 4
+        : mainParsePerDifficulty.heroic
+        ? 3
+        : mainParsePerDifficulty.normal
+        ? 2
+        : mainParsePerDifficulty.normal
+        ? 1
+        : 0,
       mainParsePerDifficulty: mainParsePerDifficulty,
       class:
         characterData.character.classID && classesData.data
@@ -151,21 +159,19 @@ export default WowlogsParser;
  * @param {Object} tank Dictionary holding the tank parses
  * @returns Dictionary with the highest spec per tier
  */
-function findMainParsePerDifficulty(dps, hps, tank){
+function findMainParsePerDifficulty(dps, hps, tank) {
   let mainParsePerDifficulty = {
     lfr: {},
     normal: {},
     heroic: {},
-    mythic: {}
+    mythic: {},
   };
   const allParses = { DPS: dps, Healer: hps, Tank: tank };
   Object.keys(mainParsePerDifficulty).map((difficulty, i) => {
     let highestParseAveragePerDifficulty = 0;
     let entryIndex = -1;
     Object.values(allParses).map((roleParse, j) => {
-      if (
-        highestParseAveragePerDifficulty < roleParse[difficulty]
-      ) {
+      if (highestParseAveragePerDifficulty < roleParse[difficulty]) {
         highestParseAveragePerDifficulty = roleParse[difficulty];
         entryIndex = j;
       }

@@ -41,7 +41,7 @@ const Summary = (props) => {
           />,
         ]}
         titles={["RaiderIO", "WarcraftLogs", "PVP"]}
-        defaultExpanded = {true}
+        defaultExpanded = {false}
       />
     </div>
   );

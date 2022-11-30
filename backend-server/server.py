@@ -7,6 +7,7 @@ import json
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask import abort
 
 app = Flask(__name__)
 
@@ -24,32 +25,34 @@ json_error_message = "Invalid response cannot be transformed into JSON"
 @app.route("/wowlogs", methods=["GET"])
 @limiter.limit("60/minute")
 def wowlogs(recursiveCall = False):
+    global json_error_message
     name = request.args.get('name')
     region = request.args.get('region')
     server = request.args.get('server')
     # in characterInfo, replacing name by urllib.parse.quote(name.encode('utf-8'), safe='') did not work
-    characterInfo = "character(name:\\\""+ name +"\\\", serverSlug:\\\"" + server + "\\\", serverRegion:\\\"" + region + "\\\")"
+    characterInfo = "character(name:\""+ name +"\", serverSlug:\"" + server + "\", serverRegion:\"" + region + "\")"
     url = "https://www.warcraftlogs.com/api/v2/client"
-    payload = '{"query":"{characterData{lfr: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 1, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 1, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}normal: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 3, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 3, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}heroic: ' + characterInfo + '{overallDPS: zoneRankings(byBracket:false, difficulty: 4, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 4, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}mythic: ' + characterInfo + ' {overallDPS: zoneRankings(byBracket:false, difficulty: 5, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 5, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}' + characterInfo + ' {classID}}}"}'  
+    payload = {"query":"{characterData{lfr: " + characterInfo + "{overallDPS: zoneRankings(byBracket:false, difficulty: 1, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 1, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 1, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 1, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 1, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 1, role:Tank)}normal: " + characterInfo + "{overallDPS: zoneRankings(byBracket:false, difficulty: 3, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 3, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 3, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 3, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 3, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 3, role:Tank)}heroic: " + characterInfo + "{overallDPS: zoneRankings(byBracket:false, difficulty: 4, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 4, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 4, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 4, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 4, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 4, role:Tank)}mythic: " + characterInfo + "{overallDPS: zoneRankings(byBracket:false, difficulty: 5, role:DPS)ilvlDPS: zoneRankings(byBracket:true, difficulty: 5, role:DPS)overallHPS: zoneRankings(byBracket:false, difficulty: 5, role:Healer, metric:hps)ilvlHPS: zoneRankings(byBracket:true, difficulty: 5, role:Healer, metric:hps)overallTank: zoneRankings(byBracket:false, difficulty: 5, role:Tank)ilvlTank: zoneRankings(byBracket:true, difficulty: 5, role:Tank)}" + characterInfo + "{classID}}}"}
     headers = {
-    "Content-Type": "application/json",
     "Authorization": "Bearer " + os.environ["wowlogs_api_token"]
     }
     json_response = None
-    response = requests.post(url, data=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers)
     if is_json(response.text):
         json_response = response.json()
     else:
-        print("Invalid response cannot be transformed into JSON")
+        print(json_error_message)
         return None
-    if "error" in json_response and json_response["error"] == "Unauthenticated." and recursiveCall == False:
+    if response.status_code == 401 and recursiveCall == False:
         os.environ["wowlogs_api_token"] = ""
         getWoWlogsToken()
         while(os.environ["wowlogs_api_token"] == ""):
             pass
         return wowlogs(True)
     if recursiveCall == True:
-        return {}
+        abort(404)
+    if (response.status_code >= 400):
+        abort(404)
     return json_response
 
 #pvp API route
@@ -80,22 +83,22 @@ def pvp(recursiveCall = False):
             pass
         return pvp(True)
     elif recursiveCall == True:
-        return {}
+        abort(404)
     if is_json(two_response.text):
         json_response_two = two_response.json()
     else:
         print(json_error_message)
-        return None
     if is_json(three_response.text):
         json_response_three = three_response.json()
     else:
         print(json_error_message)
-        return None
     if is_json(achievs_response.text):
         json_response_achievs = achievs_response.json()
     else:
         print(json_error_message)
-        return None
+        abort(404)
+    if (achievs_response.status_code >= 400):
+        abort(404)
     return {"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three}
 
 #raiderIO API route
@@ -113,7 +116,9 @@ def raiderio():
         json_response_dungeons = dungeons_response.json()
     else:
         print(json_error_message)
-        return None
+        abort(404)
+    if (dungeons_response.status_code >= 400):
+        abort(404)
     return json_response_dungeons
 
 def getRaiderIOColors():
@@ -126,7 +131,7 @@ def getRaiderIOColors():
         json_response_scoreColors = colors_response.json()
     else:
         print(json_error_message)
-        return None
+        abort(404)
     colors = json_response_scoreColors
     return None
 
@@ -142,15 +147,16 @@ def raiderIOColors():
 def getRaiderIOAllDungeons(seasons):
     global json_error_message
     global allDungeons
-    seasonID = len(seasons) - 1
-    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id=" + str(seasonID)
+    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id=" + str(len(seasons) - 2)
     json_response_allDungeons = None
     allDungeons_response = requests.get(url_allDungeons)
     if is_json(allDungeons_response.text):
         json_response_allDungeons = allDungeons_response.json()
     else:
         print(json_error_message)
-        return None    
+        abort(404)
+    if (allDungeons_response.status_code >= 400):
+        abort(404)    
     allDungeons = json_response_allDungeons
     return None
 
@@ -181,12 +187,14 @@ def getAllExpansions(recursiveCall = False):
             pass
         return getAllExpansions(True)
     elif recursiveCall == True:
-        return {}
+        abort(404)
     if is_json(response.text):
         json_response = response.json()
     else:
         print(json_error_message)
-        return None
+        abort(404)
+    if(response.status_code >= 404):
+        abort(404)
     allExpansions = json_response["tiers"]
     getRaiderIOAllDungeons(allExpansions)
     return 1
@@ -260,12 +268,14 @@ def getAllServers(recursiveCall = False):
                 pass
             return getAllServers(True)
         elif recursiveCall == True:
-            return {}
+            abort(404)
+        if response.status_code >= 400:
+            abort(404)
         if is_json(response.text):
             json_response = response.json()
         else:
             print(json_error_message)
-            return None
+            abort(404)
         allServers[region] = json_response
     return None
 
@@ -287,12 +297,14 @@ def getAllClasses(recursiveCall = False):
             pass
         return getAllClasses(True)
     elif recursiveCall == True:
-        return {}
+        abort(404)
+    if allClasses_response.status_code >= 400:
+        abort(404)
     if is_json(allClasses_response.text):
         allClasses_json_response = allClasses_response.json()
     else:
         print(json_error_message)
-        return None    
+        abort(404)   
     for class_entry in allClasses_json_response["classes"]:
         class_entry_url = "https://us.api.blizzard.com/data/wow/playable-class/" + str(class_entry["id"]) + "?namespace=static-us&locale=en_US&access_token=" + os.environ["blizzard_api_token"]
         class_entry_json_response = None
@@ -302,7 +314,7 @@ def getAllClasses(recursiveCall = False):
             class_entry_json_response = class_entry_response.json()
         else:
             print(json_error_message)
-            return None
+            abort(404)
         for class_entry_detail in class_entry_json_response["specializations"]: 
             allClassesContent[class_entry["id"]]["specs"].append({"name": class_entry_detail["name"], "id": class_entry_detail["id"]})
     allClasses = allClassesContent

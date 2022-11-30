@@ -1,29 +1,30 @@
-1 - Figure out main spec instead of defaulting to DPS
-  - same thing for metrics
-(in wowlogsParser)
+2 - Add ads and google tracking (LAST THING TO DO)
 
-2 - Add ads and google tracking
+1 - Show m+ role and stars and different specs options (WAITING EMAIL ANSWER)
 
-1 - Show m+ role and stars and different specs options
+2 - about me page (BEFORE LAST THING TO DO)(replacing the memes)
 
-2 - maybe remove class API and hard code it?
-
-2 - about me page (replacing the memes)
-
-1 - some wowlogs bug have link open
+1 - some wowlogs bug have link open (WAITING EMAIL ANSWER)
 - PYTHON GETS INFO CORRECTLY BUT WHEN SENDING TO WOWLOGS ACCENTEDED CHARACTERS
-- CAUSE PROBLEMS	
+- CAUSE PROBLEMS
 
-1 - MAYBE SHOW PREVIOUS RAID TIERS
+1 - Parsing on backend	
+
+1 - wowlogs goes to ITS default scores, for some reason during DF before raid came out, it went to 9.2.5 for ZM raid instaed of prepatch or something
+
+1 - PvP Show main/highest rank and alt rank during the same ssn
+
+1 - MAYBE SHOW PREVIOUS RAID TIERS (NOT PART OF ALPHA RELEASE)
 - would have to call Blizz API to get journal index, find latest xpac journal id
 - call journals with it, then iterate through all of its ids and call 
 - wowlogs with them
 
-4 - Maybe add languages to footer
+4 - Maybe add languages to footer (NOT PART OF ALPHA RELEASE)
 
-10 - Maybe phone friendly? (not priority)
+10 - Maybe phone friendly? (NOT PART OF ALPHA RELEASE) (not priority)
 
-11 - Maybe I18N (not priority, option would be a dropdown in footer)
+11 - Maybe I18N (NOT PART OF ALPHA RELEASE) 
+(not priority, option would be a dropdown in footer)
 
 
 

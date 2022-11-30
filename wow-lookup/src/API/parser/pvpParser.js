@@ -75,7 +75,7 @@ function getAllPVPAchievs(allAchievs) {
   allAchievs.map((achievement, i) => {
     if (pvpAchievsRegex.test(achievement.achievement.name)) {
       doneOnThisChar.push(
-        achievement.criteria ? achievement.criteria.is_completed : true
+        achievement.criteria ? achievement.criteria.is_completed : false
       );
       //Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
       //Blizzard, why are your APIs so shit
@@ -120,6 +120,7 @@ function findHighestPVPAchievBySeason(
     Gladiator: 5,
   };
   let counter = Object.keys(pvpRanking).length;
+  let doneOnThisCharCounter = 0;
   Object.values(seasonsPerExpansions).map((seasons, i) => {
     Object.values(seasons).map((season, j) => {
       const seasonName = Object.keys(season)[0];
@@ -141,7 +142,8 @@ function findHighestPVPAchievBySeason(
         return null;
       });
       season[seasonName] = Object.keys(pvpRanking)[highestRank];
-      season["doneOnThisChar"] = doneOnThisChar[i];
+      season["doneOnThisChar"] = doneOnThisChar[doneOnThisCharCounter];
+      doneOnThisCharCounter = doneOnThisCharCounter + 1;
       return null;
     });
     return null;
