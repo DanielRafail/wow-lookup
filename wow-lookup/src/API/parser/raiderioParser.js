@@ -10,25 +10,20 @@ class RaiderIOParser extends React.Component {
    * @returns A usable dictionary
    */
   static parseRaiderIOData(raiderIOData, colors, allDungeons) {
-    const mythicPlusBest =
-      raiderIOData.data.mythic_plus_best_runs;
-    const mythicPlusAlternate =
-      raiderIOData.data.mythic_plus_alternate_runs;
-    const mythicPlusRecent =
-      raiderIOData.data.mythic_plus_recent_runs;
-    const MythicPlusScore =
-      raiderIOData.data.mythic_plus_scores_by_season;
+    const mythicPlusBest = raiderIOData.mythic_plus_best_runs;
+    const mythicPlusAlternate = raiderIOData.mythic_plus_alternate_runs;
+    const mythicPlusRecent = raiderIOData.mythic_plus_recent_runs;
+    const MythicPlusScore = raiderIOData.mythic_plus_scores_by_season;
     const raiderIOPlayedResults = getRaiderIOIfPlayed(
       mythicPlusBest,
       mythicPlusAlternate,
-      mythicPlusRecent,
-      allDungeons.data.seasons[0].dungeons
+      mythicPlusRecent
     );
     return {
       keys: raiderIOPlayedResults.keys,
       recentRuns: raiderIOPlayedResults.recentData,
       score: MythicPlusScore[0].scores,
-      allDungeons: allDungeons.data.seasons[0].dungeons,
+      allDungeons: allDungeons.seasons[0].dungeons,
       scoreColors: colors,
     };
   }
@@ -46,19 +41,16 @@ export default RaiderIOParser;
 function getRaiderIOIfPlayed(
   mythicPlusBest,
   mythicPlusAlternate,
-  mythicPlusRecent,
-  allDungeons
+  mythicPlusRecent
 ) {
   let keys = [];
   let recentData = [];
-  allDungeons.map((entry, i) => {
-    if (
-      mythicPlusBest[i] &&
-      mythicPlusBest[i].affixes[0].name === "Tyrannical"
-    ) {
-      keys = pushToDictionary(keys, mythicPlusAlternate[i], mythicPlusBest[i]);
-    } else if (mythicPlusBest[i]) {
-      keys = pushToDictionary(keys, mythicPlusAlternate[i], mythicPlusBest[i]);
+  mythicPlusBest.map((entry, i) => {
+    if (entry) {
+      if(entry.affixes[0].name === "Tyrannical")
+        keys = pushToDictionary(keys, entry, mythicPlusAlternate, true);
+      else
+        keys = pushToDictionary(keys, entry, mythicPlusAlternate, false);
     } else {
       keys.push({ dungeon: entry.name, tyrannical: "-", fortified: "-" });
     }
@@ -68,7 +60,7 @@ function getRaiderIOIfPlayed(
           .split("-")
       : null;
     recentData.push({
-      dungeons: entry.name,
+      dungeons: mythicPlusRecent[i].dungeon,
       key: mythicPlusRecent[i]
         ? calculateUpgrades(
             mythicPlusRecent[i].mythic_level,
@@ -109,18 +101,40 @@ function calculateUpgrades(key_level, num_keystone_upgrades) {
  * @param {Dictionary} secondEntry The second dictionary which will be added to fortified keys
  * @returns The dictionary onbject after it has been pushed
  */
-function pushToDictionary(dict, entry, secondEntry) {
-  dict.push({
-    dungeon: secondEntry.dungeon,
-    tyrannical: entry
-      ? calculateUpgrades(entry.mythic_level, entry.num_keystone_upgrades)
-      : "-",
-    fortified: secondEntry
-      ? calculateUpgrades(
-          secondEntry.mythic_level,
-          secondEntry.num_keystone_upgrades
-        )
-      : "-",
-  });
+function pushToDictionary(dict, entry, secondEntryJSON, bool) {
+  let secondEntry = null;
+  for (let item in secondEntryJSON) {
+    if (secondEntryJSON[item].dungeon === entry.dungeon) {
+      secondEntry = secondEntryJSON[item];
+      break;
+    }
+  }
+  if (!bool) {
+    dict.push({
+      dungeon: entry.dungeon,
+      tyrannical: entry
+        ? calculateUpgrades(entry.mythic_level, entry.num_keystone_upgrades)
+        : "-",
+      fortified: secondEntry
+        ? calculateUpgrades(
+            secondEntry.mythic_level,
+            secondEntry.num_keystone_upgrades
+          )
+        : "-",
+    });
+  } else {
+    dict.push({
+      dungeon: entry.dungeon,
+      tyrannical: secondEntry
+        ? calculateUpgrades(secondEntry.mythic_level, secondEntry.num_keystone_upgrades)
+        : "-",
+      fortified: entry
+        ? calculateUpgrades(
+          entry.mythic_level,
+          entry.num_keystone_upgrades
+          )
+        : "-",
+    });
+  }
   return dict;
 }

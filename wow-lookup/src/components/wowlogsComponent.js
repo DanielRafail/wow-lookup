@@ -27,10 +27,14 @@ const WowlogsComponent = (props) => {
       parsedWowlogsData.tableData.DPS &&
       parsedWowlogsData.tableData.DPS.lfr
     ) {
-      setDifficulty(parsedWowlogsData.highestDifficulty ? parsedWowlogsData.highestDifficulty : 1);
-      const currentRole = Object.values(parsedWowlogsData.mainParsePerDifficulty)[
-        parsedWowlogsData.highestDifficulty - 1
-      ];
+      setDifficulty(
+        parsedWowlogsData.highestDifficulty
+          ? parsedWowlogsData.highestDifficulty
+          : 1
+      );
+      const currentRole = Object.values(
+        parsedWowlogsData.mainParsePerDifficulty
+      )[parsedWowlogsData.highestDifficulty - 1];
       setRole(currentRole ? currentRole : "DPS");
       switch (props.data.parsedWowlogsData.highestDifficulty) {
         case 1:
@@ -130,22 +134,22 @@ const WowlogsComponent = (props) => {
     return (
       <div>
         {averageParse.overall !== "-" ? (
-          <h6>
+          <h5>
             <span style={{ color: getColorFromNumber(averageParse.overall) }}>
               {averageParse.overall}
             </span>{" "}
             Average Overall Parse
-          </h6>
+          </h5>
         ) : (
           <h6>No Average Parse</h6>
         )}
         {averageParse.ilvl !== "-" ? (
-          <h6 className="wowlogs-ilvl-average-parse">
+          <h5 className="wowlogs-ilvl-average-parse">
             <span style={{ color: getColorFromNumber(averageParse.ilvl) }}>
               {averageParse.ilvl}
             </span>{" "}
             Average Ilvl Parse
-          </h6>
+          </h5>
         ) : (
           <React.Fragment />
         )}
@@ -261,9 +265,14 @@ const WowlogsComponent = (props) => {
     return (
       <div className="wowlogs-section">
         <div className="wowlogs-section-data">
-          {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
-          {Helper.capitalizeFirstLetter(props.data.server)}
-          {getAverageParses()}
+          <div className="wowlogs-section-data-text">
+            <h3>
+              {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
+              {Helper.capitalizeFirstLetter(props.data.server)}
+            </h3>
+            {getAverageParses()}
+          </div>
+
           {/* To string because tablist values are only strings 
            /* difficulty -1 here because parser brings back with indexes starting at 1, else 
            /* someone without any parses wouldn't have any tables for LFR because difficulty
@@ -371,7 +380,7 @@ const WowlogsComponent = (props) => {
   return (
     <div className="wowlogs-section">
       {props.data.parsedWowlogsData.tableData &&
-      props.data.parsedWowlogsData.tableData.DPS && 
+      props.data.parsedWowlogsData.tableData.DPS &&
       difficultyParse ? (
         returnWowlogsContent()
       ) : props.data && props.data.wowlogsError ? (

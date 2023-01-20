@@ -14,39 +14,42 @@ const RaiderioComponent = (props) => {
     const roles = ["DPS", "Tank", "Healer"];
     return (
       <div className="best-keys">
-        <h4 style={{ marginBottom: "0px" }}>
-          {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
-          {Helper.capitalizeFirstLetter(props.data.server)} (
-          <span
-            style={{
-              color: getRaiderIOScoreColor(
-                props.data.parsedRaiderIOData.score.all
-              ),
-            }}
-          >
-            {props.data.parsedRaiderIOData.score.all} IO
-          </span>
-          )
-        </h4>
-        <h6 style={{ marginTop: "20px" }}>
-          {roles.map((role, i) => {
-            return (
-              <span key={i}>
-                {role}(
-                <span
-                  style={{
-                    color: getRaiderIOScoreColor(
-                      props.data.parsedRaiderIOData.score[role.toLowerCase()]
-                    ),
-                  }}
-                >
-                  {props.data.parsedRaiderIOData.score[role.toLowerCase()]} IO
+        <div className="best-keys-headers">
+          <h3 style={{ marginBottom: "0px" }}>
+            {Helper.capitalizeFirstLetter(props.data.name)} -{" "}
+            {Helper.capitalizeFirstLetter(props.data.server)} (
+            <span
+              style={{
+                color: getRaiderIOScoreColor(
+                  props.data.parsedRaiderIOData.score.all
+                ),
+              }}
+            >
+              {props.data.parsedRaiderIOData.score.all} IO
+            </span>
+            )
+          </h3>
+          <h5 style={{ marginTop: "20px" }}>
+            {roles.map((role, i) => {
+              return (
+                <span key={i}>
+                  {role}(
+                  <span
+                    style={{
+                      color: getRaiderIOScoreColor(
+                        props.data.parsedRaiderIOData.score[role.toLowerCase()]
+                      ),
+                    }}
+                  >
+                    {props.data.parsedRaiderIOData.score[role.toLowerCase()]} IO
+                  </span>
+                  ){" "}
                 </span>
-                ){" "}
-              </span>
-            );
-          })}
-        </h6>
+              );
+            })}
+          </h5>
+        </div>
+
         <CustomTable
           headers={headers}
           rows={props.data.parsedRaiderIOData.keys}
@@ -139,13 +142,13 @@ const RaiderioComponent = (props) => {
   function getRaiderIOScoreColor(roleScore) {
     for (
       var i = 0;
-      i < props.data.parsedRaiderIOData.scoreColors.data.length;
+      i < props.data.parsedRaiderIOData.scoreColors.length;
       i++
     ) {
       if (
-        roleScore >= props.data.parsedRaiderIOData.scoreColors.data[i].score
+        roleScore >= props.data.parsedRaiderIOData.scoreColors[i].score
       ) {
-        return props.data.parsedRaiderIOData.scoreColors.data[i].rgbHex;
+        return props.data.parsedRaiderIOData.scoreColors[i].rgbHex;
       }
     }
   }

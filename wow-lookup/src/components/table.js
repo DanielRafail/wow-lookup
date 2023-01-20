@@ -29,7 +29,7 @@ const CustomTable = (props) => {
   const StyledTableRow = TableStyleDefault.styleTableRow();
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="customized table" sx={{ borderStyle: "solid" }}>
+      <Table aria-label="customized table" sx={{ borderStyle: "solid", borderColor:"RGB(115,115,115)"}}>
         <TableHead>
           <TableRow>
             {props.headers.map((header, i) => {

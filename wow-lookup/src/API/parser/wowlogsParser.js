@@ -11,7 +11,7 @@ class WowlogsParser extends React.Component {
    * @returns A usable dictionary
    */
   static parseWowlogsData(wowlogsData, classesData) {
-    const characterData = wowlogsData.data.data.characterData;
+    const characterData = wowlogsData.data.characterData;
     let roles = ["DPS", "HPS", "Tank"];
     const lfrDPS = parseWowlogsDataTiers(
       characterData.lfr,
@@ -40,7 +40,6 @@ class WowlogsParser extends React.Component {
     const lfrHealer = parseWowlogsDataTiers(
       characterData.lfr,
       roles[1],
-      characterData.character,
       classesData,
       characterData.character.classID
     );
@@ -140,8 +139,8 @@ class WowlogsParser extends React.Component {
         : 0,
       mainParsePerDifficulty: mainParsePerDifficulty,
       class:
-        characterData.character.classID && classesData.data
-          ? classesData.data[
+        characterData.character.classID && classesData
+          ? classesData[
               Helper.blizzardClassIDToWowlogsClassID(
                 characterData.character.classID
               )
@@ -245,9 +244,10 @@ function parseWowlogsDataTiers(tier, metric, classesData, classID) {
   const overallMetric = tier["overall".concat(metric)];
   const ilvlMetric = tier["ilvl".concat(metric)];
   let specID;
+  console.log(classesData);
   Object.values(overallMetric.rankings).map((entry, i) => {
-    classesData.data
-      ? classesData.data[
+    classesData
+      ? classesData[
           Helper.blizzardClassIDToWowlogsClassID(classID)
         ].specs.map((spec, j) => {
           if (entry.spec && entry.spec === spec.name) specID = spec.id;
@@ -265,7 +265,7 @@ function parseWowlogsDataTiers(tier, metric, classesData, classID) {
         : "-",
       killCount: entry.totalKills,
     });
-    classesData.data
+    classesData
       ? returnDictionary.spec.push({ spec: entry.spec, specID: specID })
       : returnDictionary.spec.push({ spec: entry.spec });
     return null;

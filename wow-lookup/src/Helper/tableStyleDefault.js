@@ -14,8 +14,8 @@ class TableStyleDefault extends React.Component {
   static styleTableCell() {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
-        backgroundColor: "rgb(5, 5, 5)",
         fontWeight: "bold",
+        backgroundColor: "rgb(18, 18, 18)",
         color: theme.palette.common.white,
         fontSize: 24,
       },
@@ -36,6 +36,9 @@ class TableStyleDefault extends React.Component {
     const StyledTableRow = styled(TableRow)(({ theme }) => ({
       "&": {
         backgroundColor: "rgb(18, 18, 18)",
+      },
+      '&:nth-of-type(odd)': {
+        backgroundColor: "rgb(50, 50, 50)",
       },
       // hide last border
       "&:last-child td, &:last-child th": {

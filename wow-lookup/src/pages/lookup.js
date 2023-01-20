@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import PvpParser from "../API/parser/pvpParser";
 import WowlogsParser from "../API/parser/wowlogsParser";
 import RaiderIOParser from "../API/parser/raiderioParser";
-import Reader from "../API/reader.js";
+import ApiCaller from "../API/apiCaller.js";
 import CircularProgress from "@mui/material/CircularProgress";
 import Helper from "../Helper/helper.js";
 
@@ -37,71 +37,36 @@ const Lookup = () => {
     //declaring timeout to show error message after 5 seconds
     //declaring all API calls since they will be used twice
     function raiderIOApiCall() {
-      Reader.getColors()
+      ApiCaller.getRaiderIOData(params.url)
         .then(function (response) {
           if (response && response.status === 200) {
-            Reader.getAllDungeons()
-              .then(function (secondResponse) {
-                if (secondResponse && secondResponse.status === 200) {
-                  Reader.getRaiderIOData(params.url)
-                    .then(function (thirdResponse) {
-                      if (thirdResponse && thirdResponse.status === 200) {
-                        setRaiderIOError(false);
-                        setRaiderIOData(
-                          RaiderIOParser.parseRaiderIOData(
-                            thirdResponse,
-                            response,
-                            secondResponse
-                          )
-                        );
-                      }
-                    })
-                    .catch(function (thirdResponse) {
-                      setWowlogsError(
-                        thirdResponse.response && thirdResponse.response.status
-                          ? thirdResponse.response.status
-                          : 0
-                      );
-                    });
-                }
-              })
-              .catch(function (secondError) {
-                setWowlogsError(
-                  secondError.response && secondError.response.status
-                    ? secondError.response.status
-                    : 404
-                );
-              });
+            setRaiderIOError(false);
+            setRaiderIOData(
+              RaiderIOParser.parseRaiderIOData(
+                response.data.raiderIO,
+                response.data.colors,
+                response.data.dungeons
+              )
+            );
           }
         })
         .catch(function (error) {
           setWowlogsError(
-            error.response && error.response.status
-              ? error.response.status
-              : 404
+            error.response && error.response.status ? error.response.status : 0
           );
         });
     }
     function wowlogsApiCall() {
-      Reader.getClasses()
+      ApiCaller.getWowlogsData(params.url)
         .then(function (response) {
           if (response && response.status === 200) {
-            Reader.getWowlogsData(params.url)
-              .then(function (secondResponse) {
-                if (secondResponse && secondResponse.status === 200) {
-                  setWowlogsError(false);
-                  setWowlogsData(
-                    WowlogsParser.parseWowlogsData(secondResponse, response)
-                  );
-                }
-              })
-              .catch(function (secondError) {
-                setWowlogsError(
-                  secondError.response && secondError.response.status
-                    ? secondError.response.status
-                    : 404
-                );
-              });
+            setWowlogsError(false);
+            setWowlogsData(
+              WowlogsParser.parseWowlogsData(
+                response.data.wowlogs,
+                response.data.classes
+              )
+            );
           }
         })
         .catch(function (error) {
@@ -113,12 +78,20 @@ const Lookup = () => {
         });
     }
     function pvpApiCall() {
-      apiCall(
-        Reader.getPVPData(params.url),
-        setPVPParsedData,
-        setPVPError,
-        PvpParser.parsePVPData
-      );
+      ApiCaller.getPVPData(params.url)
+        .then(function (response) {
+          if (response && response.status === 200) {
+            setPVPError(false);
+            setPVPParsedData(PvpParser.parsePVPData(response));
+          }
+        })
+        .catch(function (error) {
+          setPVPError(
+            error.response && error.response.status
+              ? error.response.status
+              : 404
+          );
+        });
     }
     if (firstLoad) {
       raiderIOApiCall();
@@ -174,27 +147,6 @@ const Lookup = () => {
     navigate,
     firstLoad,
   ]);
-
-  /**
-   * Function used to call a API, set data upon a response, and set an error upno a failure
-   * @param {Function} apiCallFunction Function which decides which API to call
-   * @param {Function} setData Function which sets the data in this class's state
-   * @param {Function} setError Function which sets the appropriate error variable in this class's state
-   */
-  function apiCall(apiCallFunction, setData, setError, parserFunction) {
-    apiCallFunction
-      .then(function (response) {
-        if (response && response.status === 200) {
-          setError(false);
-          setData(parserFunction(response));
-        }
-      })
-      .catch(function (error) {
-        setError(
-          error.response && error.response.status ? error.response.status : 404
-        );
-      });
-  }
 
   /**
    * Function to handle changing tabs on the navigation menu

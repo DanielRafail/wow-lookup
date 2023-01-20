@@ -147,6 +147,8 @@ div div nav div div div div .home-button-section{
 
 .summary-main{
   width: 90%;
+  margin-bottom:25px;
+  margin-top:25px;
 }
 
 .raiderIO-section{
@@ -246,6 +248,14 @@ div div nav div div div div .home-button-section{
 
 .wowlogs-cell{
   flex:auto;
+}
+
+.wowlogs-section-data-text, .best-keys{
+  margin-left:24px;
+}
+
+.best-keys-headers, .wowlogs-section-data-text{
+  font-size:25px;
 }
 
 .auto-complete-textfield > div > input::placeholder, .name-input::placeholder{

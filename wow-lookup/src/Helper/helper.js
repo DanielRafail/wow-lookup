@@ -54,7 +54,7 @@ class Helper extends React.Component {
 
   /**
    * Get the id attached to each spec of the game
-   * @param {string} specName the name of the s pec
+   * @param {string} specName the name of the spec
    * @returns the id attached to it
    */
   static getSpecIDFromName(specName) {
@@ -256,7 +256,7 @@ class Helper extends React.Component {
       "Legion",
       "Battle for Azeroth",
       "Shadowlands",
-      // "Dragonflight",
+      "Dragonflight",
     ];
     let everySeasonsWithId = {};
     everySeasons.map((everySeason, i) => {

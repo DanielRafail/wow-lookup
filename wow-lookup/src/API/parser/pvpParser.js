@@ -21,11 +21,16 @@ class PvpParser extends React.Component {
     );
     const twoRating = getRating(pvpData.data.two);
     const threeRating = getRating(pvpData.data.three);
-    return {
+    const returnDict = {
       rankHistory: seasonsPerExpansions,
-      twoRating: twoRating,
-      threeRating: threeRating,
-    };
+      brackets:{
+        twoRating: twoRating,
+        threeRating: threeRating,
+      }}
+    for (let spec in pvpData.data.solo){
+      returnDict.brackets[spec] = getRating(pvpData.data.solo[spec])
+    }
+    return returnDict
   }
 }
 export default PvpParser;
@@ -56,11 +61,20 @@ function divideSeasonsPerExpansion(seasons) {
  * @returns the player's rating and weekly and season stats
  */
 function getRating(bracket) {
-  return {
-    rating: bracket.rating,
-    seasonStats: bracket.season_match_statistics,
-    weeklyStats: bracket.weekly_match_statistics,
-  };
+  if(bracket.weekly_round_statistics){
+    return {
+      rating: bracket.rating,
+      seasonStats: bracket.season_round_statistics,
+      weeklyStats: bracket.weekly_round_statistics,
+    };
+  }
+  else{
+    return {
+      rating: bracket.rating,
+      seasonStats: bracket.season_match_statistics,
+      weeklyStats: bracket.weekly_match_statistics,
+    };
+  }
 }
 
 /**
@@ -120,9 +134,9 @@ function findHighestPVPAchievBySeason(
     Gladiator: 5,
   };
   let counter = Object.keys(pvpRanking).length;
-  let doneOnThisCharCounter = 0;
   Object.values(seasonsPerExpansions).map((seasons, i) => {
     Object.values(seasons).map((season, j) => {
+      let doneOnThisCharCounter = 0;
       const seasonName = Object.keys(season)[0];
       let highestRank = 0;
       pvpAchievs.map((achievement, k) => {
@@ -139,11 +153,11 @@ function findHighestPVPAchievBySeason(
             highestRank = pvpRanking[correctRank];
           }
         }
+        doneOnThisCharCounter++;
         return null;
       });
       season[seasonName] = Object.keys(pvpRanking)[highestRank];
-      season["doneOnThisChar"] = doneOnThisChar[doneOnThisCharCounter];
-      doneOnThisCharCounter = doneOnThisCharCounter + 1;
+      season["doneOnThisChar"] = doneOnThisChar[doneOnThisCharCounter - 1];
       return null;
     });
     return null;

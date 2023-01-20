@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // import IconButton from "@mui/material/IconButton";
 // import SendIcon from "@mui/icons-material/Send";
 import Helper from "../Helper/helper.js";
-import Reader from "../API/reader.js";
+import ApiCaller from "../API/apiCaller.js";
 import WowGeneralParser from "../API/parser/wowGeneralParser.js";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -53,7 +53,7 @@ const Index = () => {
    * Get the servers from an API call
    */
   function seversAPICall() {
-    Reader.getServers()
+    ApiCaller.getServers()
       .then(function (response) {
         if (response) {
           setServers(WowGeneralParser.parseServers(response));
