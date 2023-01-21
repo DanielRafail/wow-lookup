@@ -5,7 +5,6 @@ import Navigation from "../components/navigation.js";
 import { useParams } from "react-router-dom";
 import Summary from "../components/summary.js";
 import { useNavigate } from "react-router-dom";
-import PvpParser from "../API/parser/pvpParser";
 import WowlogsParser from "../API/parser/wowlogsParser";
 import RaiderIOParser from "../API/parser/raiderioParser";
 import ApiCaller from "../API/apiCaller.js";
@@ -82,7 +81,7 @@ const Lookup = () => {
         .then(function (response) {
           if (response && response.status === 200) {
             setPVPError(false);
-            setPVPParsedData(PvpParser.parsePVPData(response));
+            setPVPParsedData(response.data);
           }
         })
         .catch(function (error) {
@@ -203,9 +202,7 @@ const Lookup = () => {
         homeButton={true}
       />
       <div className="body">
-        {(!parsedRaiderIOData && !parsedWowlogsData) ||
-        (!parsedPVPData && !parsedRaiderIOData) ||
-        (!parsedWowlogsData && !parsedPVPData) ? (
+        {!parsedRaiderIOData || !parsedWowlogsData || !parsedPVPData ? (
           <div>
             <CircularProgress size={100} />
           </div>

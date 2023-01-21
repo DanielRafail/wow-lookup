@@ -8,9 +8,9 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import abort
-import parser.pvp
-import parser.raiderIO
-import parser.wowlogs
+from parser.pvp import parsePVPData 
+from parser.raiderIO import parseRaiderIOData 
+from parser.wowlogs import parseWowlogsData 
 
 app = Flask(__name__)
 
@@ -22,6 +22,7 @@ allServers = {}
 allClasses = {}
 colors = {}
 allDungeons = {}
+allExpansions = {}
 json_error_message = "Invalid response cannot be transformed into JSON"
 
 # Wowlogs API route
@@ -48,6 +49,7 @@ def wowlogs(recursiveCall = False):
 def pvp(recursiveCall = False):
     global json_error_message
     global allClasses
+    global allExpansions
     name = request.args.get('name')
     region = request.args.get('region')
     server = request.args.get('server')
@@ -96,7 +98,7 @@ def pvp(recursiveCall = False):
         abort(404)
     if (achievs_response.status_code >= 400):
         abort(404)
-    return {"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}
+    return parsePVPData({"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}, allExpansions)
 
 # raiderIO API route
 @app.route("/raiderio", methods=["GET"])
@@ -131,9 +133,9 @@ def raiderIOColors():
         return colors
 
 # Get RaiderIO score for all M+ dungeons
-def getRaiderIOAllDungeons(seasons):
+def getRaiderIOAllDungeons(allExpansions):
     global allDungeons
-    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id={seasonID}".format(seasonID=str(len(seasons) - 2))
+    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id={seasonID}".format(seasonID=str(len(allExpansions) - 2))
     allDungeons_response = requests.get(url_allDungeons)
     allDungeons = verifyAPIAnswer(allDungeons_response, "getRaiderIOAllDungeons")  
     return None
@@ -160,9 +162,12 @@ def getAllExpansions(recursiveCall = False):
     response = requests.get(url, headers=header)
     verifyBlizzardToken(response, recursiveCall, getAllExpansions)
     json_response = verifyAPIAnswer(response, "getAllExpansions")
-    allExpansions = json_response["tiers"]
+    allExpansions = sorted(json_response["tiers"], key=lambda d: d['id'])
+    # remove last item because it is m+
+    allExpansions.pop(len(allExpansions) - 1)
     getRaiderIOAllDungeons(allExpansions)
     return 1
+
 
 # Route for getting servers 
 @app.route("/servers", methods=["GET"])
@@ -265,7 +270,7 @@ def verifyAPIAnswer(jsonResponse, caller):
     if jsonResponse.status_code <= 300 and jsonResponse.status_code >= 200 and is_json(jsonResponse.text):
         return jsonResponse.json()
     else:
-        print(json_error_message + "from : " + caller)
+        print(json_error_message + " from : " + caller)
         abort(404)
 
 # If Blizzard token is unauthorized, get new one and call original function. If its a recursive call, abort

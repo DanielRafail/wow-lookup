@@ -8,7 +8,10 @@
 
 1 - PvP Show main/highest rank and alt rank during the same ssn
 
+2 - modify website icon
 
+1 - API CALL FOR CHAR INFO ON INDEX PAGE AND GIVE THAT TO SUMMARY SO I DONT HAVE TO DO API CALL WITHIN
+    PVP API CALL FOR THAT INFO
 
 
 

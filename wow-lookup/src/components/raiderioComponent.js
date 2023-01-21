@@ -2,7 +2,7 @@ import "../CSS/main.css";
 import Helper from "../Helper/helper.js";
 import React from "react";
 import CustomTable from "./table";
-import TableStyleDefault from "../Helper/tableStyleDefault.js";
+import TableStyleDefault from "../CSS/tableStyleDefault.js";
 import StarRateIcon from "@mui/icons-material/StarRate";
 
 const RaiderioComponent = (props) => {

@@ -25,71 +25,53 @@ const pvpComponent = (props) => {
    * @returns React component for the rows of the 2v2 and 3v3 pvp brackets
    */
   function returnRowsForBrackets() {
-    const bracketTitle = ["2v2", "3v3"]
-    let count = 0
-    var returnArray = []
-    for (const [key, bracket] of Object.entries(parsedData.brackets)){
-      if(count >= 2){
-        bracketTitle.push("Solo Shuffle (" + key + ")")
-      }
+    var returnArray = [];
+    for (const [key, bracket] of Object.entries(parsedData.brackets)) {
+      const name =
+        !key.includes("two") && !key.includes("three")
+          ? "Solo Shuffle (" + key + ")"
+          : !key.includes("three")
+          ? "2v2"
+          : "3v3";
       returnArray.push({
-        bracket: bracketTitle[count],
-        rating: bracket.rating
-        ? bracket.rating.toString()
-        : "0",
-      weekly:
-        "Played: " +
-        (bracket.weeklyStats
-          ? bracket.weeklyStats.played.toString()
-          : "0") +
-        " Won: " +
-        (bracket.weeklyStats
-          ? bracket.weeklyStats.won.toString()
-          : "0") +
-        " Lost: " +
-        (bracket.weeklyStats
-          ? bracket.weeklyStats.lost.toString()
-          : "0"),
-      weeklyRatio:
-        bracket.weeklyStats &&
-        bracket.weeklyStats.won &&
-        bracket.weeklyStats.lost
-          ? (
-              bracket.weeklyStats.won /
-              bracket.weeklyStats.lost
-            )
-              .toFixed(2)
-              .toString()
-              .concat("%")
-          : "-",
-      season:
-        "Played: " +
-        (bracket.seasonStats
-          ? bracket.seasonStats.played.toString()
-          : "0") +
-        " Won: " +
-        (bracket.seasonStats
-          ? bracket.seasonStats.won.toString()
-          : "0") +
-        " Lost: " +
-        (bracket.seasonStats
-          ? bracket.seasonStats.lost.toString()
-          : "0"),
-      seasonRatio:
-        bracket.seasonStats &&
-        bracket.seasonStats.won &&
-        bracket.seasonStats.lost
-          ? (
-              bracket.seasonStats.won /
-              bracket.seasonStats.lost
-            )
-              .toFixed(2)
-              .concat("%")
-          : "-",
-      })
-      count++
+        bracket: name,
+        rating: bracket.rating ? bracket.rating.toString() : "0",
+        weekly:
+          "Played: " +
+          (bracket.weeklyStats ? bracket.weeklyStats.played.toString() : "0") +
+          " Won: " +
+          (bracket.weeklyStats ? bracket.weeklyStats.won.toString() : "0") +
+          " Lost: " +
+          (bracket.weeklyStats ? bracket.weeklyStats.lost.toString() : "0"),
+        weeklyRatio:
+          bracket.weeklyStats &&
+          bracket.weeklyStats.won &&
+          bracket.weeklyStats.lost
+            ? (bracket.weeklyStats.won / bracket.weeklyStats.lost)
+                .toFixed(2)
+                .toString()
+                .concat("%")
+            : "-",
+        season:
+          "Played: " +
+          (bracket.seasonStats ? bracket.seasonStats.played.toString() : "0") +
+          " Won: " +
+          (bracket.seasonStats ? bracket.seasonStats.won.toString() : "0") +
+          " Lost: " +
+          (bracket.seasonStats ? bracket.seasonStats.lost.toString() : "0"),
+        seasonRatio:
+          bracket.seasonStats &&
+          bracket.seasonStats.won &&
+          bracket.seasonStats.lost
+            ? (bracket.seasonStats.won / bracket.seasonStats.lost)
+                .toFixed(2)
+                .concat("%")
+            : "-",
+      });
     }
-    return returnArray
+    return returnArray.sort(function (first, second) {
+      return first.bracket > second.bracket;
+    });
   }
 
   /**
@@ -137,19 +119,20 @@ const pvpComponent = (props) => {
   }
 
   /**
-   * Set the title for the accordion dividing each pvp seasons
-   * @param {int} index int representing the season we are on
-   * @returns the key (name) of the season
-   */
-  function setSeasonsAccordionTitles(index) {
-    return Object.keys(parsedData.rankHistory)[index];
-  }
-
-  /**
    * Return the all the pvp content for the pvpComponent
    * @returns all the pvp content for the pvpComponent
    */
   function returnPVPComponent() {
+    const orderedTitles = []
+    const orderedData = Object.values(parsedData.rankHistory).sort(function (first, second) {
+      return first.id > second.id
+    })
+    for (const id in orderedData){
+      for (const [key, value] of Object.entries(parsedData.rankHistory)){
+          if(parseInt(id) === parseInt(value.id))
+            orderedTitles.push(key)
+        }
+    }
     return (
       <div>
         <CustomTable
@@ -163,12 +146,12 @@ const pvpComponent = (props) => {
           ]}
           rows={returnRowsForBrackets()}
         />
-        {Object.values(parsedData.rankHistory).map((entryDictionary, i) => {
+         {orderedData.map((entryDictionary, i) => {
           return (
             <Accordion
-              content={[setSeasonsAccordionContent(entryDictionary)]}
-              titles={[setSeasonsAccordionTitles(i)]}
-              key={i}
+              content={[setSeasonsAccordionContent(entryDictionary.seasons)]}
+              titles={[orderedTitles[i]]}
+              key={entryDictionary.id}
               defaultExpanded={true}
             />
           );
@@ -181,9 +164,9 @@ const pvpComponent = (props) => {
     <div className="pvp-section">
       {parsedData && parsedData.rankHistory ? (
         returnPVPComponent()
-      ) : props.data && props.data.pvpError && props.data.pvpError !== 404 ? (
+      ) : props && props.pvpError && props.pvpError !== 404 ? (
         <p className="error-p">Error loading PVP info</p>
-      ) : props.data && props.data.pvpError && props.data.pvpError ? (
+      ) : props && props.pvpError && props.pvpError ? (
         <p>This Player has no PVP experience</p>
       ) : (
         <React.Fragment />

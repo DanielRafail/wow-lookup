@@ -7,7 +7,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
-import TableStyleDefault from "../Helper/tableStyleDefault.js";
+import TableStyleDefault from "../CSS/tableStyleDefault.js";
 import ClassImages from "../Helper/classImages.js";
 import WowlogsHelper from "../Helper/wowlogsHelper.js";
 

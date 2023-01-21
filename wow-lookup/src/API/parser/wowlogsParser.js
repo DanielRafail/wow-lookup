@@ -244,7 +244,6 @@ function parseWowlogsDataTiers(tier, metric, classesData, classID) {
   const overallMetric = tier["overall".concat(metric)];
   const ilvlMetric = tier["ilvl".concat(metric)];
   let specID;
-  console.log(classesData);
   Object.values(overallMetric.rankings).map((entry, i) => {
     classesData
       ? classesData[
