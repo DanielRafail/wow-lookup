@@ -125,7 +125,7 @@ const pvpComponent = (props) => {
   function returnPVPComponent() {
     const orderedTitles = []
     const orderedData = Object.values(parsedData.rankHistory).sort(function (first, second) {
-      return first.id > second.id
+      return first.id - second.id
     })
     for (const id in orderedData){
       for (const [key, value] of Object.entries(parsedData.rankHistory)){

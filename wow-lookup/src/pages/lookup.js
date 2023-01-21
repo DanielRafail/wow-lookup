@@ -63,7 +63,7 @@ const Lookup = () => {
             setWowlogsData(
               WowlogsParser.parseWowlogsData(
                 response.data.wowlogs,
-                response.data.classes
+                response.data.classes,
               )
             );
           }

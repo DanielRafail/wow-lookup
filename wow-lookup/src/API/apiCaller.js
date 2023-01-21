@@ -74,7 +74,6 @@ class ApiCaller extends React.Component {
    * @returns Dictionary with all servers
    */
   static async getServers() {
-    console.log(process.env.REACT_APP_API_URL_BASE)
     const options = {
       method: "GET",
       url: process.env.REACT_APP_API_URL_BASE + "servers",
