@@ -38,15 +38,10 @@ const Lookup = () => {
     function raiderIOApiCall() {
       ApiCaller.getRaiderIOData(params.url)
         .then(function (response) {
+          console.log(response.data)
           if (response && response.status === 200) {
             setRaiderIOError(false);
-            setRaiderIOData(
-              RaiderIOParser.parseRaiderIOData(
-                response.data.raiderIO,
-                response.data.colors,
-                response.data.dungeons
-              )
-            );
+            setRaiderIOData(response.data);
           }
         })
         .catch(function (error) {

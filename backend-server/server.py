@@ -112,7 +112,7 @@ def raiderio():
     url_dungeons = "https://raider.io/api/v1/characters/profile?region={region}&realm={server}&name={name}&fields=mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs:all".format(server=server, region=region, name=name)
     dungeons_response = requests.get(url_dungeons)
     raiderIO = verifyAPIAnswer(dungeons_response, "raiderio")
-    return {"raiderIO": raiderIO, "colors":colors, "dungeons": allDungeons}
+    return parseRaiderIOData({"raiderIO": raiderIO, "colors" : colors, "dungeons": allDungeons})
 
 # Get RaiderIO colors
 def getRaiderIOColors():
