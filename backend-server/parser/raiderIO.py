@@ -40,24 +40,24 @@ def getRaiderIOIfPlayed(mythicPlusBest, mythicPlusAlternate, mythicPlusRecent):
     recentData = []
     counter = 0
     for entry in mythicPlusBest:
-        print(entry)
         if entry:
             if entry["affixes"][0]["name"] == "Tyrannical":
-                pushToDictionary(keys, entry, mythicPlusAlternate, True)
+                keys.append(getMythicKeyBest(
+                    entry, mythicPlusAlternate, False))
             else:
-                pushToDictionary(keys, entry, mythicPlusAlternate, False)
+                keys.append(getMythicKeyBest(
+                    entry, mythicPlusAlternate, True))
         else:
             keys.append({"dungeon": entry["name"],
                         "tyrannical": "-", "fortified": "-"})
-        seperatedDateElements = mythicPlusRecent[counter] if mythicPlusRecent[counter][
-            "completed_at"][0: mythicPlusRecent[counter]["completed_at"].index("T")].split("-") else None
+        seperatedDateElements = mythicPlusRecent[counter][
+            "completed_at"][0: mythicPlusRecent[counter]["completed_at"].index("T")].split("-") if mythicPlusRecent[counter] else None
         recentData.append({
             "dungeons": mythicPlusRecent[counter]["dungeon"],
-            "key": mythicPlusRecent[counter]
-            if calculateUpgrades(
+            "key": calculateUpgrades(
                 mythicPlusRecent[counter]["mythic_level"],
                 mythicPlusRecent[counter]["num_keystone_upgrades"]
-            )
+            ) if mythicPlusRecent[counter]
             else "-",
             "date": seperatedDateElements[1] +
             "/" +
@@ -88,39 +88,38 @@ def calculateUpgrades(key_level, num_keystone_upgrades):
 
 '''
  * Push an entry into a dict. The first entry goes into a tyrannical key, the second entry into a fortified key
- * @param {Object} dict The dictionary we will be pushing to
  * @param {Dictionary} entry The first dictionary which will be added to tyrannical keys
  * @param {Dictionary} secondEntry The second dictionary which will be added to fortified keys
+ * @param {Boolean} isTyrannical Boolean to see if the dungeon being looked at is fortified or not (aka tyrannical)
  * @returns The dictionary onbject after it has been pushed
 '''
 
 
-def pushToDictionary(dictContainer, entry, secondEntryJSON, bool):
+def getMythicKeyBest(entry, secondEntryJSON, isTyrannical):
     secondEntry = None
-    count = 0
     for item in secondEntryJSON:
-        if secondEntryJSON[count]["dungeon"] == item["dungeon"]:
-            secondEntry = secondEntryJSON[count]
+        if entry["dungeon"] == item["dungeon"]:
+            secondEntry = item
             break
-        count += 1
-    if (bool == False):
-        dictContainer.append({
+    if (isTyrannical == False):
+        return {
             "dungeon": entry["dungeon"],
-            "tyrannical": entry
-            if calculateUpgrades(
+            "tyrannical": calculateUpgrades(
                 entry["mythic_level"], entry["num_keystone_upgrades"]
-            ) else "-",
-            "fortified": secondEntry
-            if calculateUpgrades(
+            )
+            if entry else "-",
+            "fortified": calculateUpgrades(
                 secondEntry["mythic_level"],
                 secondEntry["num_keystone_upgrades"]
-            ) else "-"})
+            )
+            if secondEntry else "-"}
     else:
-        dictContainer.append({
+        return {
             "dungeon": entry["dungeon"],
-            "tyrannical": secondEntry if calculateUpgrades(secondEntry["mythic_level"], secondEntry["num_keystone_upgrades"]) else "-",
-            "fortified": entry if calculateUpgrades(
+            "tyrannical": calculateUpgrades(secondEntry["mythic_level"], secondEntry["num_keystone_upgrades"]
+                                            ) if secondEntry else "-",
+            "fortified": calculateUpgrades(
                 entry["mythic_level"],
                 entry["num_keystone_upgrades"]
-            ) else "-",
-        })
+            ) if entry else "-",
+        }

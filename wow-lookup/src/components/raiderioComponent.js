@@ -68,17 +68,25 @@ const RaiderioComponent = (props) => {
    * @returns string containing the highest key
    */
   function compareKeys(keyOne, keyTwo) {
-    if (keyOne.mythic_level > keyTwo.mythic_level)
-      return keyOne
-    else if (keyOne.mythic_level < keyTwo.mythic_level)
-      return keyTwo
-    else if (keyOne.mythic_level === keyTwo.mythic_level)
-      return 1
-    else if (keyOne.num_keystone_upgrades > keyTwo.num_keystone_upgrades)
-      return keyOne
-    else if (keyOne.num_keystone_upgrades < keyTwo.num_keystone_upgrades)
-      return keyTwo
-    else return 1
+    if (
+      keyOne.substring(keyOne.lastIndexOf("+")) ===
+      keyTwo.substring(keyOne.lastIndexOf("+"))
+    ) {
+      return (
+        (keyOne.match(/[+]/g) || []).length >
+        (keyTwo.match(/[+]/g) || []).length
+      );
+    } else {
+      const keyOneNumber =
+        keyOne.lastIndexOf("+") !== -1
+          ? keyOne.substring(keyOne.lastIndexOf("+") + 1)
+          : keyOne;
+      const keyTwoNumber =
+        keyTwo.lastIndexOf("+") !== -1
+          ? keyTwo.substring(keyTwo.lastIndexOf("+") + 1)
+          : keyTwo;
+      return keyOneNumber > keyTwoNumber;
+    }
   }
 
   /**
@@ -91,7 +99,7 @@ const RaiderioComponent = (props) => {
     const StyledTableCell = TableStyleDefault.styleTableCell();
     let className = "";
     const rowKeys = Object.keys(row);
-    let biggestDungeonKey = "+";
+    let biggestDungeonKey = "";
     for (var i = 0; i < rowKeys.length; i++) {
       if (rowKeys[i] === "fortified" || rowKeys[i] === "tyrannical") {
         biggestDungeonKey = compareKeys(row[rowKeys[i]], biggestDungeonKey)
@@ -105,13 +113,12 @@ const RaiderioComponent = (props) => {
     ) {
       className = "underline veryBold";
     }
-    let rowAsArray = row[rowKeys[index]];
-    console.log(rowAsArray)
+    let rowAsArray = [...row[rowKeys[index]]];
     let counter = 3;
     //missing stars misalignes the content, so add invisible stars to make them all aligned
     while (row[rowKeys[index]].split("+").length < counter) {
       rowAsArray.unshift("+");
-      counter = counter - 1;
+      counter -= 1;
     }
     return (
       <StyledTableCell key={index} align="center" className={className}>

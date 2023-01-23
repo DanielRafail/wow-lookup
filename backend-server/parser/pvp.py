@@ -32,7 +32,6 @@ def parsePVPData(pvpData, allXpacs):
         }}
     for spec in pvpData["solo"]:
         returnDict["brackets"][spec] = getRating(pvpData["solo"][spec])
-    # print(returnDict)
     return returnDict
 
 
@@ -152,9 +151,6 @@ def findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions, doneOnThisCha
                     doneOnThisCharCounter += 1
             seasons[season] = list(pvpRanking)[highestRank]
             seasons["doneOnThisChar"] = doneOnThisChar[doneOnThisCharCounter - 1]
-    print("---------------------------------------------------------")
-    print(seasonsPerExpansions)
-    print("---------------------------------------------------------")
     return seasonsPerExpansions
 
 
