@@ -38,7 +38,6 @@ const Lookup = () => {
     function raiderIOApiCall() {
       ApiCaller.getRaiderIOData(params.url)
         .then(function (response) {
-          console.log(response.data)
           if (response && response.status === 200) {
             setRaiderIOError(false);
             setRaiderIOData(response.data);

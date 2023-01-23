@@ -112,7 +112,7 @@ def raiderio():
     url_dungeons = "https://raider.io/api/v1/characters/profile?region={region}&realm={server}&name={name}&fields=mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs:all".format(server=server, region=region, name=name)
     dungeons_response = requests.get(url_dungeons)
     raiderIO = verifyAPIAnswer(dungeons_response, "raiderio")
-    return parseRaiderIOData({"raiderIO": raiderIO, "colors" : colors, "dungeons": allDungeons})
+    return {"raiderIO": parseRaiderIOData(raiderIO), "colors" : colors, "dungeons": allDungeons}
 
 # Get RaiderIO colors
 def getRaiderIOColors():
@@ -135,7 +135,7 @@ def raiderIOColors():
 # Get RaiderIO score for all M+ dungeons
 def getRaiderIOAllDungeons(allExpansions):
     global allDungeons
-    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id={seasonID}".format(seasonID=str(len(allExpansions) - 2))
+    url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id={seasonID}".format(seasonID=str(len(allExpansions) - 1))
     allDungeons_response = requests.get(url_allDungeons)
     allDungeons = verifyAPIAnswer(allDungeons_response, "getRaiderIOAllDungeons")  
     return None
@@ -163,7 +163,7 @@ def getAllExpansions(recursiveCall = False):
     verifyBlizzardToken(response, recursiveCall, getAllExpansions)
     json_response = verifyAPIAnswer(response, "getAllExpansions")
     allExpansions = sorted(json_response["tiers"], key=lambda d: d['id'])
-    # remove last item because it is m+
+    # - 1 because of 
     allExpansions.pop(len(allExpansions) - 1)
     getRaiderIOAllDungeons(allExpansions)
     return 1

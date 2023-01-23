@@ -9,29 +9,19 @@
 
 
 def parseRaiderIOData(raiderIOData):
-    mythicPlusBest = raiderIOData["raiderIO"]["mythic_plus_best_runs"]
-    mythicPlusAlternate = raiderIOData["raiderIO"]["mythic_plus_alternate_runs"]
-    mythicPlusRecent = raiderIOData["raiderIO"]["mythic_plus_recent_runs"]
-    MythicPlusScore = raiderIOData["raiderIO"]["mythic_plus_scores_by_season"]
+    mythicPlusBest = raiderIOData["mythic_plus_best_runs"]
+    mythicPlusAlternate = raiderIOData["mythic_plus_alternate_runs"]
+    mythicPlusRecent = raiderIOData["mythic_plus_recent_runs"]
+    MythicPlusScore = raiderIOData["mythic_plus_scores_by_season"]
     raiderIOPlayedResults = getRaiderIOIfPlayed(
         mythicPlusBest,
         mythicPlusAlternate,
         mythicPlusRecent
     )
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(MythicPlusScore)
-    print("##########################")
-    print(raiderIOPlayedResults)
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print(raiderIOData["dungeons"])
-    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-    print(raiderIOData["colors"])
     return {
-        "keys": raiderIOPlayedResults.keys,
+        "keys": raiderIOPlayedResults["keys"],
         "recentRuns": raiderIOPlayedResults["recentData"],
-        "score": MythicPlusScore[0]["scores"],
-        "allDungeons": raiderIOData["dungeons"]["seasons"][0]["dungeons"],
-        "scoreColors": raiderIOData["colors"],
+        "score": MythicPlusScore[0]["scores"]
     }
 
 

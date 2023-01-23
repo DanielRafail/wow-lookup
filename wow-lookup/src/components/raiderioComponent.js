@@ -21,11 +21,11 @@ const RaiderioComponent = (props) => {
             <span
               style={{
                 color: getRaiderIOScoreColor(
-                  props.data.parsedRaiderIOData.score.all
+                  props.data.parsedRaiderIOData.raiderIO.score.all
                 ),
               }}
             >
-              {props.data.parsedRaiderIOData.score.all} IO
+              {props.data.parsedRaiderIOData.raiderIO.score.all} IO
             </span>
             )
           </h3>
@@ -37,11 +37,11 @@ const RaiderioComponent = (props) => {
                   <span
                     style={{
                       color: getRaiderIOScoreColor(
-                        props.data.parsedRaiderIOData.score[role.toLowerCase()]
+                        props.data.parsedRaiderIOData.raiderIO.score[role.toLowerCase()]
                       ),
                     }}
                   >
-                    {props.data.parsedRaiderIOData.score[role.toLowerCase()]} IO
+                    {props.data.parsedRaiderIOData.raiderIO.score[role.toLowerCase()]} IO
                   </span>
                   ){" "}
                 </span>
@@ -52,7 +52,7 @@ const RaiderioComponent = (props) => {
 
         <CustomTable
           headers={headers}
-          rows={props.data.parsedRaiderIOData.keys}
+          rows={props.data.parsedRaiderIOData.raiderIO.keys}
           personalizedCells={(row, index) =>
             createPersonalizedCells(row, index)
           }
@@ -68,25 +68,17 @@ const RaiderioComponent = (props) => {
    * @returns string containing the highest key
    */
   function compareKeys(keyOne, keyTwo) {
-    if (
-      keyOne.substring(keyOne.lastIndexOf("+")) ===
-      keyTwo.substring(keyOne.lastIndexOf("+"))
-    ) {
-      return (
-        (keyOne.match(/[+]/g) || []).length >
-        (keyTwo.match(/[+]/g) || []).length
-      );
-    } else {
-      const keyOneNumber =
-        keyOne.lastIndexOf("+") !== -1
-          ? keyOne.substring(keyOne.lastIndexOf("+") + 1)
-          : keyOne;
-      const keyTwoNumber =
-        keyTwo.lastIndexOf("+") !== -1
-          ? keyTwo.substring(keyTwo.lastIndexOf("+") + 1)
-          : keyTwo;
-      return keyOneNumber > keyTwoNumber;
-    }
+    if (keyOne.mythic_level > keyTwo.mythic_level)
+      return keyOne
+    else if (keyOne.mythic_level < keyTwo.mythic_level)
+      return keyTwo
+    else if (keyOne.mythic_level === keyTwo.mythic_level)
+      return 1
+    else if (keyOne.num_keystone_upgrades > keyTwo.num_keystone_upgrades)
+      return keyOne
+    else if (keyOne.num_keystone_upgrades < keyTwo.num_keystone_upgrades)
+      return keyTwo
+    else return 1
   }
 
   /**
@@ -113,7 +105,8 @@ const RaiderioComponent = (props) => {
     ) {
       className = "underline veryBold";
     }
-    let rowAsArray = [...row[rowKeys[index]]];
+    let rowAsArray = row[rowKeys[index]];
+    console.log(rowAsArray)
     let counter = 3;
     //missing stars misalignes the content, so add invisible stars to make them all aligned
     while (row[rowKeys[index]].split("+").length < counter) {
@@ -142,13 +135,13 @@ const RaiderioComponent = (props) => {
   function getRaiderIOScoreColor(roleScore) {
     for (
       var i = 0;
-      i < props.data.parsedRaiderIOData.scoreColors.length;
+      i < props.data.parsedRaiderIOData.colors.length;
       i++
     ) {
       if (
-        roleScore >= props.data.parsedRaiderIOData.scoreColors[i].score
+        roleScore >= props.data.parsedRaiderIOData.colors[i].score
       ) {
-        return props.data.parsedRaiderIOData.scoreColors[i].rgbHex;
+        return props.data.parsedRaiderIOData.colors[i].rgbHex;
       }
     }
   }
@@ -161,8 +154,9 @@ const RaiderioComponent = (props) => {
     return (
       props.data &&
       props.data.parsedRaiderIOData &&
-      props.data.parsedRaiderIOData.keys &&
-      props.data.parsedRaiderIOData.keys.length !== 0
+      props.data.parsedRaiderIOData.raiderIO &&
+      props.data.parsedRaiderIOData.raiderIO.keys &&
+      props.data.parsedRaiderIOData.raiderIO.keys.length !== 0
     );
   }
 
@@ -189,7 +183,7 @@ const RaiderioComponent = (props) => {
         <h4>Most Recent Runs</h4>
         <CustomTable
           headers={headers}
-          rows={props.data.parsedRaiderIOData.recentRuns}
+          rows={props.data.parsedRaiderIOData.raiderIO.recentRuns}
           personalizedCells={(row, index) =>
             createPersonalizedCellsMostRecent(row, index)
           }
@@ -227,7 +221,7 @@ const RaiderioComponent = (props) => {
         <CustomTable
           headers={["Dungeons", "Fortified", "Tyrannical"]}
           rows={createEmptyTableArray(
-            props.data.parsedRaiderIOData.allDungeons
+            props.data.parsedRaiderIOData.dungeons.dungeons
           )}
         />
       )}
