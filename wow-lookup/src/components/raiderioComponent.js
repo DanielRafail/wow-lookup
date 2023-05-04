@@ -222,13 +222,11 @@ const RaiderioComponent = (props) => {
     <div className="raiderIO-section">
       {verifyProps() ? (
         returnRaiderIOBestKeys(["Dungeons", "Fortified", "Tyrannical"])
-      ) : props.data && props.data.raiderIOError ? (
-        <p className="error-p">Error loading Raider.IO info</p>
       ) : (
         <CustomTable
           headers={["Dungeons", "Fortified", "Tyrannical"]}
           rows={createEmptyTableArray(
-            props.data.parsedRaiderIOData.dungeons.dungeons
+            props.data.parsedRaiderIOData.dungeons.seasons[0].dungeons
           )}
         />
       )}

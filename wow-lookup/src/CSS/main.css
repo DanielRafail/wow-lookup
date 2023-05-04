@@ -54,7 +54,7 @@
 
 #io_url{
   height: 30px;
-  width: 50%;
+  width: 52%;
   font-size: 20px;
   border-radius: 25px;
   padding: 30px;
@@ -81,6 +81,7 @@
 .index-submit-button{
  margin-top: 70px !important;
  width: 200px !important;
+ margin-bottom: 20px !important;
 }
 
 .single-input-submit-button{
@@ -143,6 +144,7 @@ div div nav div div div div .home-button-section{
 
 .error-p{
   color: red;
+  margin-top: 60px;
 }
 
 .summary-main{
@@ -165,6 +167,7 @@ div div nav div div div div .home-button-section{
 
 .recent-keys{
   flex: 1;
+  margin-top: -30px;
 }
 
 .flex-seperator{
@@ -211,6 +214,23 @@ div div nav div div div div .home-button-section{
 
 .a-clicked-no-change{
   color:white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.footer-modal{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35%;
+  height:400px;
+  background-color: rgb(33, 33, 33);
+  border: 2px solid #acacac;
+  box-shadow: 24;
+  outline: none;
+  color:white;
+  padding:30px;
 }
 
 .pvp-achiev-desc{
@@ -284,4 +304,8 @@ div div nav div div div div .home-button-section{
 
 .raider-io-stars-container{
   display:inline-block;
+}
+
+.circular-progress-summary{
+  text-align: center;
 }

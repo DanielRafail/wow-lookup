@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 // import SendIcon from "@mui/icons-material/Send";
 import Helper from "../Helper/helper.js";
 import ApiCaller from "../API/apiCaller.js";
-import WowGeneralParser from "../API/parser/wowGeneralParser.js";
+import parseServers from "../API/parser/wowServerParser.js";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -26,10 +26,29 @@ const Index = () => {
   let [serversError, setServersError] = useState(false);
   let [openInput, setOpenInput] = useState(false);
   let [inputValue, setInputValue] = useState("");
+  let [firstLoad, setFirstLoad] = useState(true);
   let navigate = useNavigate();
 
   useEffect(() => {
-    if (!servers) seversAPICall();
+    /**
+     * Get the servers from an API call
+     */
+    function seversAPICall() {
+      ApiCaller.getServers()
+        .then(function (response) {
+          if (response) {
+            setServers(parseServers(response));
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          setServersError(true);
+        });
+    }
+    if (firstLoad) {
+      seversAPICall();
+      setFirstLoad(false);
+    }
     let serversInterval = setInterval(() => {
       seversAPICall();
     }, 6000);
@@ -47,22 +66,26 @@ const Index = () => {
     inputTypeURL,
     servers,
     serversError,
+    firstLoad,
   ]);
 
+  useEffect(() => {
+    //Set input type based on local storage
+    const lookupType = localStorage.getItem("lookup-type");
+    if (lookupType) {
+      setInputTypeURL(lookupType === "URL");
+    }
+  }, []);
+
   /**
-   * Get the servers from an API call
+   * Sets an error true and all other error false
+   * @param {func} func the func we will set to true
    */
-  function seversAPICall() {
-    ApiCaller.getServers()
-      .then(function (response) {
-        if (response) {
-          setServers(WowGeneralParser.parseServers(response));
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        setServersError(error.response.status);
-      });
+  function setErrorTrue(func = null) {
+    setInputserror(false);
+    setServersError(false);
+    setSingleInputError(false);
+    if (func) func(true);
   }
 
   /**
@@ -80,7 +103,7 @@ const Index = () => {
     if (name && region && server) {
       navigate(`/lookup/${region + "&" + server + "&" + name}`);
     } else {
-      setInputserror(true);
+      setErrorTrue(setInputserror);
     }
   }
 
@@ -88,9 +111,9 @@ const Index = () => {
    * When the user choses the input type
    */
   function HandleInputType() {
-    setInputserror(false);
-    setSingleInputError(false);
     setInputTypeURL(!inputTypeURL);
+    setErrorTrue();
+    localStorage.setItem("lookup-type", !inputTypeURL ? "URL" : "inputs");
   }
 
   /**
@@ -114,9 +137,9 @@ const Index = () => {
           }`
         );
       } else {
-        setSingleInputError(true);
+        setServersError(setSingleInputError);
       }
-    } else setSingleInputError(true);
+    } else setServersError(setSingleInputError);
   }
 
   /**
@@ -241,13 +264,15 @@ const Index = () => {
             )}
           />
           {serversError ? (
-            <p className="error-p">Error loading every server</p>
+            <p className="error-p">Error loading servers</p>
           ) : (
             <React.Fragment />
           )}
         </div>
         {inputsError ? (
-          <p className="error-p">Please do not leave an input empty</p>
+          <p className="error-p">
+            Please make sure to fill in all the required fields
+          </p>
         ) : (
           <React.Fragment />
         )}
@@ -272,7 +297,7 @@ const Index = () => {
       <div>
         <p className="url-label">Player's URL: </p>
         <p className="sub-label">
-          This functions with RaiderIO, WarcraftLogs and CheckPVP URLs
+          This works with RaiderIO, WarcraftLogs and CheckPVP URLs
         </p>
         <input
           type="text"
@@ -324,7 +349,9 @@ const Index = () => {
           size="large"
           onClick={HandleInputType}
         >
-          {inputTypeURL ? "Find player with Name and Server" : "Find player with URL"}
+          {inputTypeURL
+            ? "Find player with Name and Server"
+            : "Find player with URL"}
         </Button>
         <form id="lookup-form" style={{ width: getFormWidth() }}>
           {inputTypeURL ? getSingleInput() : getInputs()}

@@ -3,24 +3,51 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
+import Modal from "@mui/material/Modal";
 
 /**
  * Create the HTML tags for a paragraph with the website and copyright
  * @returns String with the paragraph
  */
 function Copyright() {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Typography variant="body1">
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="footer-modal">
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            How to contact me
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Cendo#1738 on Discord
+            <br/>
+            Cendoray@gmail.com
+            <br/>
+            <br/>
+            Please keep in mind this project was done for fun, and I am a student working a part time job with other obligations and hobbies. As such, I may not be able to respond to your inquiries in a timely manner. 
+            <br/>
+            <br/>
+            Thank you for your understanding
+          </Typography>
+        </div>
+      </Modal>
       {"Copyright © "}
       <Link color="inherit">WoW-Lookup.surge.sh</Link> 2022
       <br />
       <br />
-      <a
-        href="https://www.youtube.com/watch?v=eQjlMk33sdk&ab_channel=tRistanthedumbifunny"
+      <span
+        onClick={handleOpen}
         className="a-clicked-no-change"
       >
-        Contact me (change link later)
-      </a>{" "}
+        Contact me
+      </span>{" "}
       -
       <a href="https://github.com/DanielRafail" className="a-clicked-no-change">
         {" "}

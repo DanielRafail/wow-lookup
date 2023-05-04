@@ -41,7 +41,8 @@ def wowlogs(recursiveCall = False):
     }
     response = requests.post(url, json=payload, headers=headers)
     verifyBlizzardToken(response, recursiveCall, wowlogs)
-    return {"wowlogs": verifyAPIAnswer(response, "wowlogs"), "classes": allClasses}
+    wowlogsData = verifyAPIAnswer(response, "wowlogs")
+    return parseWowlogsData(wowlogsData, allClasses)
 
 # pvp API route
 @app.route("/pvp", methods=["GET"])
@@ -267,7 +268,7 @@ def getAllClasses(recursiveCall = False):
 # Verify the answer is a valid JSON
 def verifyAPIAnswer(jsonResponse, caller):
     global json_error_message
-    if jsonResponse.status_code <= 300 and jsonResponse.status_code >= 200 and is_json(jsonResponse.text):
+    if jsonResponse.status_code <= 400 and jsonResponse.status_code >= 200 and is_json(jsonResponse.text):
         return jsonResponse.json()
     else:
         print(json_error_message + " from : " + caller)

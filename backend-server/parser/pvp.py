@@ -50,7 +50,8 @@ def divideSeasonsPerExpansion(seasons):
         currentExpansionEntry = getExpansionFromString(season)
         if currentExpansionEntry != previousExpansionEntry:
             previousExpansionEntry = currentExpansionEntry
-            dividedSeasons[currentExpansionEntry] = {"id":count, "seasons":[]}
+            dividedSeasons[currentExpansionEntry] = {
+                "id": count, "seasons": []}
             count += 1
         dividedSeasons[currentExpansionEntry]["seasons"].append({season: ""})
     return dividedSeasons
@@ -64,16 +65,13 @@ def divideSeasonsPerExpansion(seasons):
 
 
 def getRating(bracket):
-    try:
-        if bracket["weekly_round_statistics"]:
-            return {
-                "rating": bracket["rating"],
-                "seasonStats": bracket["season_round_statistics"],
-                "weeklyStats": bracket["weekly_round_statistics"],
-            }
-    except:
-        pass
-    finally:
+    if "season_round_statistics" in bracket:
+        return {
+            "rating": bracket["rating"],
+            "seasonStats": bracket["season_round_statistics"],
+            "weeklyStats": bracket["weekly_round_statistics"],
+        }
+    elif "season_match_statistics" in bracket:
         return {
             "rating": bracket["rating"],
             "seasonStats": bracket["season_match_statistics"],
@@ -92,7 +90,7 @@ def getAllPVPAchievs(allAchievs):
     pvpAchievs = []
     doneOnThisChar = []
     for achievement in allAchievs:
-        if re.search("Season [0-9]$", achievement["achievement"]["name"]):
+        if re.search("Season [0-9]$", achievement["achievement"]["name"]) and "Hero" not in achievement["achievement"]["name"] and "Legend" not in achievement["achievement"]["name"]:
             doneOnThisChar.append(
                 achievement["criteria"]["is_completed"] if achievement["criteria"] else False)
             # Returns only Warlords instead of Warlords of Draenor from APIs so have to fix that
@@ -156,7 +154,7 @@ def findHighestPVPAchievBySeason(pvpAchievs, seasonsPerExpansions, doneOnThisCha
 
 '''
  * Get the correct Title, figure out if the title is a Rank: X type, Rank: X II type, or Gladiator type (you can have Shadowlands: Rival, Shadowlands: Rival II or Shadowlands: Sinful Gladiator)
- * @param {string} achievementRank The achievement that will be analyzed
+ * @param {string} achievement The achievement that will be analyzed
  * @returns The rank of the achievement without the season
 '''
 

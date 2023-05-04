@@ -1,32 +1,33 @@
+====================================================================
+			ALPHA RELEASE
+====================================================================
+
 2 - Add ads and google tracking (LAST THING TO DO)
 
-2 - about me page (BEFORE LAST THING TO DO)(replacing the memes)
-
-1 - PARSE ON BACKEND INSTEAD OF FRONTEND
-
-1 - Error if player has no logs history (Scarybino-area52) (have to verify)
-
-1 - PvP Show main/highest rank and alt rank during the same ssn
+1 - I think it shows PVP rating for last season you played so if i have an alt i played pvp on 4 years ago and check his rating it shows the one of 4 years ago 
+	(pretty much confirmed)
 
 2 - modify website icon
+
+====================================================================
+			ALPHA RELEASE UNSURE FIX
+====================================================================
 
 1 - API CALL FOR CHAR INFO ON INDEX PAGE AND GIVE THAT TO SUMMARY SO I DONT HAVE TO DO API CALL WITHIN
     PVP API CALL FOR THAT INFO
 
+1 - Error if player has no logs history (Scarybino-area52/dumbbells-illidan)
 
+
+====================================================================
+			NOT ALPHA RELEASE
+====================================================================
 
 
 1 - MAYBE SHOW PREVIOUS RAID TIERS (NOT PART OF ALPHA RELEASE)
 - would have to call Blizz API to get journal index, find latest xpac journal id
 - call journals with it, then iterate through all of its ids and call 
 - wowlogs with them
-
-
-
-
-
-
-
 
 
 4 - Maybe add languages to footer (NOT PART OF ALPHA RELEASE)

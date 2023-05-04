@@ -41,6 +41,7 @@ const WowlogsComponent = (props) => {
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].lfr);
           return null;
         case 2:
+          console.log(currentRole, parsedWowlogsData.tableData);
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].normal);
           return null;
         case 3:
@@ -383,8 +384,6 @@ const WowlogsComponent = (props) => {
       props.data.parsedWowlogsData.tableData.DPS &&
       difficultyParse ? (
         returnWowlogsContent()
-      ) : props.data && props.data.wowlogsError ? (
-        <p className="error-p">Error loading WarcraftLogs info</p>
       ) : (
         <React.Fragment />
       )}
