@@ -1,11 +1,13 @@
 import helper
 import json
+from flask import abort
 
 def parseWowlogsData(wowlogsData, classesData):
     characterData = wowlogsData["data"]["characterData"]
     roles = ["DPS", "HPS", "Tank"]
     if characterData["character"] is None:
-        return None
+        print("Character unable to be found. Most likely never completed any content so far")
+        abort(404)
     lfrDPS = parseWowlogsDataTiers(
         characterData["lfr"],
         roles[0],
@@ -221,7 +223,7 @@ def parseWowlogsDataTiers(tier, metric, classesData, classID):
             "overall": str(round(entry["rankPercent"])) + "%" if entry["rankPercent"] else "-",
             "ilvl": str(round(ilvlMetric["rankings"][i]["rankPercent"])) + "%" if ilvlMetric["rankings"][i]["rankPercent"]
             else "-",
-            metric: str(round(entry["bestAmount"])) if ilvlMetric["rankings"][i]["rankPercent"] else "-",
+            metric: str('{0:,}'.format(round(entry["bestAmount"]))) if ilvlMetric["rankings"][i]["rankPercent"] else "-",
             "killCount": entry["totalKills"],
         })
         returnDictionary["spec"].append({"spec": entry["spec"], "specID": specID}

@@ -37,7 +37,7 @@ const CustomTable = (props) => {
                 return <StyledTableCell key={i}>{header}</StyledTableCell>;
               else
                 return (
-                  <StyledTableCell key={i} align="center">
+                  <StyledTableCell key={i} align={props.headerAlign ? props.headerAlign : "center"}>
                     {header}
                   </StyledTableCell>
                 );

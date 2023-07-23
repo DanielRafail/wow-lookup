@@ -170,11 +170,19 @@ const RaiderioComponent = (props) => {
   function createPersonalizedCellsMostRecent(row, index) {
     const StyledTableCell = TableStyleDefault.styleTableCell();
     const rowKeys = Object.keys(row);
-    //adding invisible star so both this table and best dungeons table heights aline
+    let counter = 3;
+
+    while (row[rowKeys[2]].split("+").length < counter) {
+      [...row[rowKeys[2]]].unshift("+");
+      counter -= 1;
+    }
     return (
-      <StyledTableCell key={index} align="center">
-        {row[rowKeys[index]]}
-        <StarRateIcon key={index} className="raider-io-star hidden" />
+      <StyledTableCell key={index} align="left">
+        {row[rowKeys[index]].substring(row[rowKeys[index]].lastIndexOf("+"))}
+          {[...row[rowKeys[2]]].map((char, i) => {
+            if (char === "+" && index === 2)
+              return <StarRateIcon key={i} className="raider-io-star" />;
+          })}
       </StyledTableCell>
     );
   }
@@ -191,6 +199,7 @@ const RaiderioComponent = (props) => {
         <CustomTable
           headers={headers}
           rows={props.data.parsedRaiderIOData.raiderIO.recentRuns}
+          headerAlign={'left'}
           personalizedCells={(row, index) =>
             createPersonalizedCellsMostRecent(row, index)
           }

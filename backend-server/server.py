@@ -23,6 +23,7 @@ allClasses = {}
 colors = {}
 allDungeons = {}
 allExpansions = {}
+pvpSeasonID = None
 json_error_message = "Invalid response cannot be transformed into JSON"
 
 # Wowlogs API route
@@ -51,6 +52,7 @@ def pvp(recursiveCall = False):
     global json_error_message
     global allClasses
     global allExpansions
+    global pvpSeasonID
     name = request.args.get('name')
     region = request.args.get('region')
     server = request.args.get('server')
@@ -99,7 +101,7 @@ def pvp(recursiveCall = False):
         abort(404)
     if (achievs_response.status_code >= 400):
         abort(404)
-    return parsePVPData({"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}, allExpansions)
+    return parsePVPData({"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}, allExpansions, pvpSeasonID)
 
 # raiderIO API route
 @app.route("/raiderio", methods=["GET"])
@@ -114,6 +116,24 @@ def raiderio():
     dungeons_response = requests.get(url_dungeons)
     raiderIO = verifyAPIAnswer(dungeons_response, "raiderio")
     return {"raiderIO": parseRaiderIOData(raiderIO), "colors" : colors, "dungeons": allDungeons}
+
+# getCurrentPVPSeason
+def getPVPSeason(recursiveCall = False):
+    global pvpSeasonID
+    if pvpSeasonID is None:
+        currentSeason_url = "https://us.api.blizzard.com/data/wow/pvp-season/index?namespace=dynamic-us&locale=en_US&access_token={token}".format(token = os.environ["blizzard_api_token"])
+        header = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}".format(token=os.environ["blizzard_api_token"]),
+        }
+        currentSeason_response = requests.get(currentSeason_url, headers=header)
+        verifyBlizzardToken(currentSeason_response, recursiveCall, getPVPSeason)
+        json_currentSeason = verifyAPIAnswer(currentSeason_response, "getPVPSeason")
+        pvpSeasonID = json_currentSeason['current_season']['id']
+        return None
+
+
+        
 
 # Get RaiderIO colors
 def getRaiderIOColors():
@@ -291,4 +311,5 @@ if __name__ == "__main__":
     getAllClasses()
     getRaiderIOColors()
     getAllExpansions()
+    getPVPSeason()
     app.run(debug=True) 

@@ -11,7 +11,7 @@ allExpansions = None
 '''
 
 
-def parsePVPData(pvpData, allXpacs):
+def parsePVPData(pvpData, allXpacs, currentSeasonId):
     global allExpansions
     allExpansions = allXpacs
     pvpAchievs = getAllPVPAchievs(pvpData["achievements"]["achievements"])
@@ -22,8 +22,8 @@ def parsePVPData(pvpData, allXpacs):
         seasonsPerExpansions,
         pvpAchievs["doneOnThisChar"]
     )
-    twoRating = getRating(pvpData["two"])
-    threeRating = getRating(pvpData["three"])
+    twoRating = getRating(pvpData["two"], currentSeasonId)
+    threeRating = getRating(pvpData["three"], currentSeasonId)
     returnDict = {
         "rankHistory": seasonsPerExpansions,
         "brackets": {
@@ -31,7 +31,7 @@ def parsePVPData(pvpData, allXpacs):
             "threeRating": threeRating,
         }}
     for spec in pvpData["solo"]:
-        returnDict["brackets"][spec] = getRating(pvpData["solo"][spec])
+        returnDict["brackets"][spec] = getRating(pvpData["solo"][spec], currentSeasonId)
     return returnDict
 
 
@@ -64,19 +64,20 @@ def divideSeasonsPerExpansion(seasons):
 '''
 
 
-def getRating(bracket):
-    if "season_round_statistics" in bracket:
-        return {
-            "rating": bracket["rating"],
-            "seasonStats": bracket["season_round_statistics"],
-            "weeklyStats": bracket["weekly_round_statistics"],
-        }
-    elif "season_match_statistics" in bracket:
-        return {
-            "rating": bracket["rating"],
-            "seasonStats": bracket["season_match_statistics"],
-            "weeklyStats": bracket["weekly_match_statistics"],
-        }
+def getRating(bracket, currentSeasonId):
+    if(bracket['season']['id'] == currentSeasonId):
+        if "season_round_statistics" in bracket:
+            return {
+                "rating": bracket["rating"],
+                "seasonStats": bracket["season_round_statistics"],
+                "weeklyStats": bracket["weekly_round_statistics"],
+            }
+        elif "season_match_statistics" in bracket:
+            return {
+                "rating": bracket["rating"],
+                "seasonStats": bracket["season_match_statistics"],
+                "weeklyStats": bracket["weekly_match_statistics"],
+            }
 
 
 '''

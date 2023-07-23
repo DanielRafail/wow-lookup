@@ -4,11 +4,6 @@
 
 2 - Add ads and google tracking (LAST THING TO DO)
 
-1 - I think it shows PVP rating for last season you played so if i have an alt i played pvp on 4 years ago and check his rating it shows the one of 4 years ago 
-	(pretty much confirmed)
-
-2 - modify website icon
-
 ====================================================================
 			ALPHA RELEASE UNSURE FIX
 ====================================================================
@@ -37,6 +32,10 @@
 11 - Maybe I18N (NOT PART OF ALPHA RELEASE) 
 (not priority, option would be a dropdown in footer)
 
+
+
+========================================================================
+NUMBER = PRIORITY
 
 
 
