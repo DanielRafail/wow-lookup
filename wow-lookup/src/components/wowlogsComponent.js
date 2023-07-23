@@ -41,7 +41,6 @@ const WowlogsComponent = (props) => {
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].lfr);
           return null;
         case 2:
-          console.log(currentRole, parsedWowlogsData.tableData);
           setdifficultyParse(parsedWowlogsData.tableData[currentRole].normal);
           return null;
         case 3:
