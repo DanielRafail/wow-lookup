@@ -1,0 +1,311 @@
+#root {
+  font-family: Verdana, Helvetica, sans-serif
+}
+
+.body,
+.footer {
+  background-color: rgb(33, 33, 33);
+}
+
+.body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.link {
+  color: #61dafb;
+}
+
+.name-line-index, .server-line-index, .region-line-index{
+  width: 100%;
+  margin-left:auto;
+}
+
+
+#lookup-form {
+  text-align: center;
+}
+
+.header-title {
+  width: 100%;
+  font-size: 2.5em;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+
+.index-input-type-button{
+  width: 400px;
+  margin-bottom: 70px !important;
+}
+
+.name-input, .server-input, .region-input {
+  height: 30px;
+  width: 100%;
+  font-size: 20px;
+  padding: 25px;
+  margin-right: 20px;
+}
+
+#io_url{
+  height: 30px;
+  width: 52%;
+  font-size: 20px;
+  border-radius: 25px;
+  padding: 30px;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+
+.name-label, .server-label, .region-label{
+  text-align-last: left;
+  margin-bottom:0px;
+}
+
+.url-label, .error-p-url-input, .sub-label{
+  margin-Bottom:0px;
+  display: inline-flex;
+  width:52%;
+}
+
+.sub-label{
+  font-size: 0.6em;
+  text-align: left;
+}
+
+.index-submit-button{
+ margin-top: 70px !important;
+ width: 200px !important;
+ margin-bottom: 20px !important;
+}
+
+.single-input-submit-button{
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.footer-container>footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.footer-container>footer>div {
+  text-align: center;
+  color: white;
+}
+
+.footer-container {
+  opacity: 90%;
+}
+
+footer {
+  padding: 20px;
+}
+
+.nav_tab {
+  display: flex;
+  flex: auto;
+}
+div div nav div div div div .home-button-section{
+  font-weight: bold;
+  color:#282c34 !important;
+}
+
+@media (min-width: 1200px) {
+  div div nav div div div div .home-button-section {
+    padding-left: 80px;
+  }
+}
+
+@media (max-width: 747px) {
+  div div nav div div div div button {
+    font-size: small !important;
+    padding:5px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  div div nav div div div div button {
+    font-size: 10px !important;
+    padding:0px !important;
+  }
+}
+
+@media (min-width: 747px) {
+  div div nav div div div div button {
+    font-size: large !important;
+  }
+}
+
+.error-p{
+  color: red;
+  margin-top: 60px;
+}
+
+.summary-main{
+  width: 90%;
+  margin-bottom:25px;
+  margin-top:25px;
+}
+
+.raiderIO-section{
+  display: flex;
+}
+
+.best-keys, .recent-keys{
+  flex-direction: column;
+}
+
+.best-keys{
+  flex: 1.5;
+}
+
+.recent-keys{
+  flex: 1;
+  margin-top: -30px;
+}
+
+.flex-seperator{
+  flex:0.2;
+}
+.hidden{
+  visibility: hidden;
+}
+
+.small-margin-bottom{
+  margin-bottom: -21px;
+}
+
+.multi-button-tab{
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: -24px;
+}
+
+.rankIcons{
+  width:90px;
+  height:90px;
+}
+
+.pvpRankInfoContainer{
+  display: flex;
+  margin-bottom:40px;
+}
+
+.pvpText{
+  margin-left: 30px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1557px) {
+  .raiderIO-section {
+    display: inline;
+  }
+}
+
+.a-clicked-no-change:visited{
+  color:white;
+}
+
+.a-clicked-no-change{
+  color:white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.footer-modal{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35%;
+  height:400px;
+  background-color: rgb(33, 33, 33);
+  border: 2px solid #acacac;
+  box-shadow: 24;
+  outline: none;
+  color:white;
+  padding:30px;
+}
+
+.pvp-achiev-desc{
+  display: block;
+  font-size: 21px;
+  margin-top: -6px;
+  margin-left: 14px;
+}
+
+.wowlogs-ilvl-average-parse{
+  margin-top:-2em;
+}
+
+.underline{
+  text-decoration:underline;
+}
+
+.veryBold{
+  font-weight: 1000 !important;
+}
+
+.spec-Image{
+  width: 30px;
+  vertical-align: bottom;
+  margin-right: 5px;
+}
+
+
+
+.wowlogs-cell-container{
+  display:inline-flex;
+  position: relative;
+  width: 100%;
+}
+
+.wowlogs-cell{
+  flex:auto;
+}
+
+.wowlogs-section-data-text, .best-keys{
+  margin-left:24px;
+}
+
+.best-keys-headers, .wowlogs-section-data-text{
+  font-size:25px;
+}
+
+.auto-complete-textfield > div > input::placeholder, .name-input::placeholder{
+  opacity: 60% !important;
+  color: black !important;
+}
+
+.auto-complete-textfield > div{
+  background-color: white !important;
+  font-size: 20px;
+}
+
+.server-input{
+  padding:0px;
+}
+
+.raider-io-star{
+  color:yellow;
+  transform: scale(0.7);
+  transform-origin: bottom;
+}
+
+.raider-io-star:not(:first-child){
+  margin-left:-10px;
+}
+
+.raider-io-stars-container{
+  display:inline-block;
+}
+
+.circular-progress-summary{
+  text-align: center;
+}
