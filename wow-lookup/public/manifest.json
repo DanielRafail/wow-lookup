@@ -1,6 +1,6 @@
 {
-  "short_name": "WoW-Lookup",
-  "name": "Look up a player's PVP, M+ and Raider logs all at once!",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",

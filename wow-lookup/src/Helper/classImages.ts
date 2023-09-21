@@ -45,7 +45,7 @@ class ClassImages extends React.Component {
    * Get all images for every ingame spec
    * @returns images of every spec
    */
-  static getSpecImages() {
+  static getSpecImages(): {[key: number]: string} {
     return {
       265: Affliction,
       73: ProtectionW,

@@ -10,7 +10,7 @@ class ApiCaller extends React.Component {
    * API call to get the relevant information from raiderIO
    * @param {string} urlParams The URL parameters which include the character name, server and region
    */
-  static async getRaiderIOData(urlParams) {
+  static async getRaiderIOData(urlParams: string): Promise<any> {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
@@ -31,7 +31,7 @@ class ApiCaller extends React.Component {
    * API call to get the relevant information from wowlogs
    * @param {string} urlParams The URL parameters which include the character name, server and region
    */
-  static async getWowlogsData(urlParams) {
+  static async getWowlogsData(urlParams: string): Promise<any> {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
@@ -52,7 +52,7 @@ class ApiCaller extends React.Component {
    * API call to get the relevant information from pvp
    * @param {string} urlParams The URL parameters which include the character name, server and region
    */
-  static async getPVPData(urlParams) {
+  static async getPVPData(urlParams: string): Promise<any> {
     const characterInfoArray = getCharacterInfoArray(urlParams);
     const options = {
       method: "GET",
@@ -73,7 +73,7 @@ class ApiCaller extends React.Component {
    * API call to get all servers
    * @returns Dictionary with all servers
    */
-  static async getServers() {
+  static async getServers(): Promise<any> {
     const options = {
       method: "GET",
       url: process.env.REACT_APP_API_URL_BASE + "servers",
@@ -91,6 +91,6 @@ export default ApiCaller;
  * @param {*} url the string to be split
  * @returns an array with the string split
  */
-function getCharacterInfoArray(url) {
+function getCharacterInfoArray(url: string) : string[] {
   return url.split("&");
 }

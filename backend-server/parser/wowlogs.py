@@ -1,6 +1,6 @@
 import helper
 import json
-from flask import abort
+import math
 
 
 def parseWowlogsData(wowlogsData, classesData):
@@ -17,7 +17,7 @@ def parseWowlogsData(wowlogsData, classesData):
     rolesToRemove = set()
     for role_idx, role in enumerate(roles):
         for tier in tiers:
-            if "overall{role}".format(role = role) in characterData[tier].keys():
+            if "overall{role}".format(role=role) in characterData[tier].keys():
                 result = parseWowlogsDataTiers(
                     characterData[tier],
                     roles[role_idx],
@@ -27,11 +27,9 @@ def parseWowlogsData(wowlogsData, classesData):
                 results[role][tier] = result
             else:
                 rolesToRemove.add(role)
-    print(results.keys())
     for toRemove in rolesToRemove:
         del results[toRemove]
-    print(toRemove)
-    print(results.keys())
+    roles = [x for x in roles if x not in rolesToRemove]
     allSpecs = dict()
     for i, key in enumerate(results.keys()):
         spec = verifyRoleAverageParse(
@@ -73,15 +71,14 @@ def findMainParsePerDifficulty(specs):
         "heroic": {},
         "mythic": {},
     }
-    allParses = {"DPS": specs["dps"], "Healer": specs["hps"], "Tank": specs["tank"]}
-    for i, difficulty in enumerate(mainParsePerDifficulty):
+    for difficulty in mainParsePerDifficulty:
         highestParseAveragePerDifficulty = 0
-        entryIndex = -1
-        for roleParse in allParses:
-            if highestParseAveragePerDifficulty < allParses[roleParse][difficulty]:
-                highestParseAveragePerDifficulty = allParses[roleParse][difficulty]
-                entryIndex = i
-        mainParsePerDifficulty[difficulty] = list(allParses.keys())[entryIndex]
+        specIndex = -1
+        for i,spec in enumerate(specs.values()):
+            if highestParseAveragePerDifficulty < spec[difficulty]:
+                highestParseAveragePerDifficulty = spec[difficulty]
+                specIndex = i
+        mainParsePerDifficulty[difficulty] = list(specs.keys())[specIndex]
     return mainParsePerDifficulty
 
 
@@ -92,6 +89,8 @@ def findMainParsePerDifficulty(specs):
  * @param {Object} mythic Dictionary containing the mythic parses
  * @returns Dictionary containing average parses per tier for a given role
  '''
+
+
 def verifyRoleAverageParse(LFR, normal, heroic, mythic, metric):
     mythicScore = 0
     heroicScore = 0
@@ -147,10 +146,10 @@ def parseWowlogsDataTiers(tier, metric, classesData, classID):
                     specID = spec['id']
         returnDictionary["data"].append({
             "boss": entry["encounter"]["name"],
-            "overall": str(round(entry["rankPercent"])) + "%" if entry["rankPercent"] else "-",
-            "ilvl": str(round(ilvlMetric["rankings"][i]["rankPercent"])) + "%" if ilvlMetric["rankings"][i]["rankPercent"]
+            "overall": str(math.floor(entry["rankPercent"])) + "%" if entry["rankPercent"] else "-",
+            "ilvl": str(math.floor(ilvlMetric["rankings"][i]["rankPercent"])) + "%" if ilvlMetric["rankings"][i]["rankPercent"]
             else "-",
-            metric: str('{0:,}'.format(round(entry["bestAmount"]))) if ilvlMetric["rankings"][i]["rankPercent"] else "-",
+            metric: str('{0:,}'.format(math.floor(entry["bestAmount"]))) if ilvlMetric["rankings"][i]["rankPercent"] else "-",
             "killCount": entry["totalKills"],
         })
         returnDictionary["spec"].append({"spec": entry["spec"], "specID": specID}

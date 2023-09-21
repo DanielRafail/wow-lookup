@@ -4,17 +4,15 @@
  * @param {Object} serversData Dictionary returned by the API
  * @returns Array with every single server in the game
  */
-function parseServers(serversData) {
-  let returnDict = [];
-  Object.entries(serversData.data).map((region, i) => {
-    region[1].realms.map((server, j) => {
+function parseServers(serversData: Record<string, Record<string, Record<string, Array<Record<string, string>>>>>) : {label: string, value: string}[]{
+  let returnDict: {label: string, value: string}[] = [];
+  Object.entries(serversData.data).forEach((region, i) => {
+    region[1].realms.forEach((server, j) => {
       returnDict.push({
         label: server.name + "-" + region[0],
         value: server.slug + "&" + region[0],
       });
-      return null;
     });
-    return null;
   });
   return returnDict;
 }

@@ -1,15 +1,29 @@
 import "../CSS/main.css";
 import React from "react";
 import CustomTable from "./table";
-import Accordion from "./accordion.js";
+import Accordion from "./accordion";
 import Challenger from "../images/Challenger.png";
 import Combatant from "../images/Combatant.png";
 import Rival from "../images/Rival.png";
 import Duelist from "../images/Duelist.png";
 import Gladiator from "../images/Gladiator.png";
 import Elite from "../images/Elite.png";
+import {
+  iParsedPVPData,
+  PvPBrackets,
+  PVPSeason,
+  pvpRanks,
+} from "../interfaces/lookup/interface";
 
-const pvpComponent = (props) => {
+interface Props {
+  data: {
+    parsedPVPData: iParsedPVPData;
+    name: string;
+    server: string;
+  };
+}
+
+const pvpComponent = (props: Props) => {
   const parsedData = props.data.parsedPVPData;
   const images = {
     Challenger: Challenger,
@@ -18,7 +32,7 @@ const pvpComponent = (props) => {
     Duelist: Duelist,
     Gladiator: Gladiator,
     Elite: Elite,
-    Legend: Gladiator
+    Legend: Gladiator,
   };
 
   /**
@@ -26,7 +40,7 @@ const pvpComponent = (props) => {
    * @returns React component for the rows of the 2v2, 3v3 and solo shuffle pvp brackets
    */
   function returnRowsForBrackets() {
-    var returnArray = [];
+    var returnArray: PvPBrackets[] = [];
     for (const [key, bracket] of Object.entries(parsedData.brackets)) {
       const name =
         !key.includes("two") && !key.includes("three")
@@ -85,9 +99,9 @@ const pvpComponent = (props) => {
             : "-",
       });
     }
-    return returnArray.sort(function (first, second) {
-      return first.bracket > second.bracket;
-    });
+    return returnArray.sort((first, second) =>
+      first.bracket.localeCompare(second.bracket)
+    );
   }
 
   /**
@@ -96,10 +110,15 @@ const pvpComponent = (props) => {
    * @param {*} b second season
    * @returns int representing their order
    */
-  function compareSeasons(a, b) {
-    const seasonA = parseInt(a.name.match(/Season (\d+)/)[1], 10);
-    const seasonB = parseInt(b.name.match(/Season (\d+)/)[1], 10);
-  
+  function compareSeasons(a: PVPSeason, b: PVPSeason) {
+    const seasonA = parseInt(
+      (a["name"] || "").match(/Season (\d+)/)?.[1] || "0",
+      10
+    );
+    const seasonB = parseInt(
+      (b["name"] || "").match(/Season (\d+)/)?.[1] || "0",
+      10
+    );
     return seasonB - seasonA;
   }
 
@@ -108,7 +127,7 @@ const pvpComponent = (props) => {
    * @param {Object} seasonArray Array with all the seasons
    * @returns React element containing the accordion's content
    */
-  function setSeasonsAccordionContent(seasonArray) {
+  function setSeasonsAccordionContent(seasonArray: PVPSeason[]) {
     seasonArray.sort(compareSeasons);
     console.log(seasonArray);
     return (
@@ -123,7 +142,9 @@ const pvpComponent = (props) => {
                     Object.keys(images).includes(
                       title.substring(title.indexOf(":") + 2)
                     )
-                      ? images[title.substring(title.indexOf(":") + 2)]
+                      ? images[
+                          title.substring(title.indexOf(":") + 2) as pvpRanks
+                        ]
                       : Gladiator
                   }
                   alt="PVP Rank"
@@ -150,20 +171,19 @@ const pvpComponent = (props) => {
    * @returns all the pvp content for the pvpComponent
    */
   function returnPVPComponent() {
-    const orderedTitles = [];
-    const orderedData = Object.values(parsedData.rankHistory).sort(function (
-      first,
-      second
-    ) {
-      return first.id - second.id;
-    });
-    for (const id in orderedData) {
+    const orderedTitles: string[] = [];
+    const orderedRankHistory = Object.values(parsedData.rankHistory).sort(
+      function (first, second) {
+        return first.id - second.id;
+      }
+    );
+    for (const id in orderedRankHistory) {
       for (const [key, value] of Object.entries(parsedData.rankHistory)) {
         if (parseInt(id) === parseInt(value.id)) orderedTitles.push(key);
       }
     }
     return (
-      <div>
+      <>
         <CustomTable
           headers={[
             "Bracket",
@@ -175,27 +195,23 @@ const pvpComponent = (props) => {
           ]}
           rows={returnRowsForBrackets()}
         />
-        {orderedData.map((entryDictionary, i) => {
+        {orderedRankHistory.map((rankHistory, i) => {
           return (
             <Accordion
-              content={[setSeasonsAccordionContent(entryDictionary.seasons)]}
+              content={[setSeasonsAccordionContent(rankHistory.seasons)]}
               titles={[orderedTitles[i]]}
-              key={entryDictionary.id}
+              key={rankHistory.id}
               defaultExpanded={true}
             />
           );
         })}
-      </div>
+      </>
     );
   }
 
   return (
     <div className="pvp-section">
-      {parsedData && parsedData.rankHistory ? (
-        returnPVPComponent()
-      ) : (
-        <React.Fragment />
-      )}
+      {parsedData && parsedData.rankHistory && returnPVPComponent()}
     </div>
   );
 };
