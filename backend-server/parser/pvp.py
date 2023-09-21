@@ -76,7 +76,7 @@ def getAllPVPAchievs(allAchievs):
                     "Season")] + "of Draenor" + achievName[achievName.find("Season") - 1:]
             seasonsPlayed.add(returnExpansionName(achievName))
             achievs.append({"achiev": achievName, "completed": True if "completed_timestamp" in achievement.keys(
-            ) else achievement["criteria"]["is_completed"]})
+            ) and "criteria" not in achievement.keys() else achievement["criteria"]["is_completed"]})
     return {"achievs": achievs, "seasonsPlayed": list(seasonsPlayed)}
 
 
