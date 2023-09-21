@@ -2,185 +2,49 @@ import helper
 import json
 from flask import abort
 
+
 def parseWowlogsData(wowlogsData, classesData):
     characterData = wowlogsData["data"]["characterData"]
     roles = ["DPS", "HPS", "Tank"]
     if characterData["character"] is None:
-        print("Character unable to be found. Most likely never completed any content so far")
-        return {"status": 404} 
+        print(
+            "Character unable to be found. Most likely never completed any content so far")
+        return {"status": 404}
     roles = ["DPS", "Healer", "Tank"]
     tiers = ["lfr", "normal", "heroic", "mythic"]
-    
+
     results = {role: {} for role in roles}
-    
+    rolesToRemove = set()
     for role_idx, role in enumerate(roles):
         for tier in tiers:
-            result = parseWowlogsDataTiers(
-                characterData[tier],
-                roles[role_idx],
-                classesData,
-                characterData["character"]["classID"]
-            )
-            results[role][tier] = result
-
-    dps = verifyRoleAverageParse(
-        characterData["lfr"],
-        characterData["normal"],
-        characterData["heroic"],
-        characterData["mythic"],
-        roles[0]
-    )
-    hps = verifyRoleAverageParse(
-        characterData["lfr"],
-        characterData["normal"],
-        characterData["heroic"],
-        characterData["mythic"],
-        roles[1]
-    )
-    tank = verifyRoleAverageParse(
-        characterData["lfr"],
-        characterData["normal"],
-        characterData["heroic"],
-        characterData["mythic"],
-        roles[2]
-    )
-    mainParsePerDifficulty = findMainParsePerDifficulty(dps, hps, tank)
+            if "overall{role}".format(role = role) in characterData[tier].keys():
+                result = parseWowlogsDataTiers(
+                    characterData[tier],
+                    roles[role_idx],
+                    classesData,
+                    characterData["character"]["classID"]
+                )
+                results[role][tier] = result
+            else:
+                rolesToRemove.add(role)
+    print(results.keys())
+    for toRemove in rolesToRemove:
+        del results[toRemove]
+    print(toRemove)
+    print(results.keys())
+    allSpecs = dict()
+    for i, key in enumerate(results.keys()):
+        spec = verifyRoleAverageParse(
+            characterData["lfr"],
+            characterData["normal"],
+            characterData["heroic"],
+            characterData["mythic"],
+            roles[i]
+        )
+        allSpecs[key] = spec
+    mainParsePerDifficulty = findMainParsePerDifficulty(allSpecs)
     return json.dumps({
-        "tableData": {
-            "DPS": {
-                "lfr": dps["lfrDPS"],
-                "normal": dps["normalDPS"],
-                "heroic": dps["heroicDPS"],
-                "mythic": dps["mythicDPS"],
-            },
-            "Healer": {
-                "lfr": hps["lfrHealer"],
-                "normal": hps["normalHealer"],
-                "heroic": hps["heroicHealer"],
-                "mythic": hps["mythicHealer"],
-            },
-            "Tank": {
-                "lfr": tank["lfrTank"],
-                "normal": tank["normalTank"],
-                "heroic": tank["heroicTank"],
-                "mythic": tank["mythicTank"],
-            },
-        },
-    #     lfrDPS = parseWowlogsDataTiers(
-    #     characterData["lfr"],
-    #     roles[0],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # normalDPS = parseWowlogsDataTiers(
-    #     characterData["normal"],
-    #     roles[0],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # heroicDPS = parseWowlogsDataTiers(
-    #     characterData["heroic"],
-    #     roles[0],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # mythicDPS = parseWowlogsDataTiers(
-    #     characterData["mythic"],
-    #     roles[0],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # lfrHealer = parseWowlogsDataTiers(
-    #     characterData["lfr"],
-    #     roles[1],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # normalHealer = parseWowlogsDataTiers(
-    #     characterData["normal"],
-    #     roles[1],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # heroicHealer = parseWowlogsDataTiers(
-    #     characterData["heroic"],
-    #     roles[1],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # mythicHealer = parseWowlogsDataTiers(
-    #     characterData["mythic"],
-    #     roles[1],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # lfrTank = parseWowlogsDataTiers(
-    #     characterData["lfr"],
-    #     roles[2],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # normalTank = parseWowlogsDataTiers(
-    #     characterData["normal"],
-    #     roles[2],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # heroicTank = parseWowlogsDataTiers(
-    #     characterData["heroic"],
-    #     roles[2],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # mythicTank = parseWowlogsDataTiers(
-    #     characterData["mythic"],
-    #     roles[2],
-    #     classesData,
-    #     characterData["character"]["classID"]
-    # )
-    # dps = verifyRoleAverageParse(
-    #     characterData["lfr"],
-    #     characterData["normal"],
-    #     characterData["heroic"],
-    #     characterData["mythic"],
-    #     roles[0]
-    # )
-    # hps = verifyRoleAverageParse(
-    #     characterData["lfr"],
-    #     characterData["normal"],
-    #     characterData["heroic"],
-    #     characterData["mythic"],
-    #     roles[1]
-    # )
-    # tank = verifyRoleAverageParse(
-    #     characterData["lfr"],
-    #     characterData["normal"],
-    #     characterData["heroic"],
-    #     characterData["mythic"],
-    #     roles[2]
-    # )
-    # mainParsePerDifficulty = findMainParsePerDifficulty(dps, hps, tank)
-    # return json.dumps({
-    #     "tableData": {
-    #         "DPS": {
-    #             "lfr": lfrDPS,
-    #             "normal": normalDPS,
-    #             "heroic": heroicDPS,
-    #             "mythic": mythicDPS,
-    #         },
-    #         "Healer": {
-    #             "lfr": lfrHealer,
-    #             "normal": normalHealer,
-    #             "heroic": heroicHealer,
-    #             "mythic": mythicHealer,
-    #         },
-    #         "Tank": {
-    #             "lfr": lfrTank,
-    #             "normal": normalTank,
-    #             "heroic": heroicTank,
-    #             "mythic": mythicTank,
-    #         },
-    #     },
+        "tableData": results,
         "highestDifficulty": 4 if mainParsePerDifficulty["mythic"]
         else 3 if mainParsePerDifficulty["heroic"]
         else 2 if mainParsePerDifficulty["normal"]
@@ -202,14 +66,14 @@ def parseWowlogsData(wowlogsData, classesData):
 '''
 
 
-def findMainParsePerDifficulty(dps, hps, tank):
+def findMainParsePerDifficulty(specs):
     mainParsePerDifficulty = {
         "lfr": {},
         "normal": {},
         "heroic": {},
         "mythic": {},
     }
-    allParses = {"DPS": dps, "Healer": hps, "Tank": tank}
+    allParses = {"DPS": specs["dps"], "Healer": specs["hps"], "Tank": specs["tank"]}
     for i, difficulty in enumerate(mainParsePerDifficulty):
         highestParseAveragePerDifficulty = 0
         entryIndex = -1
@@ -228,8 +92,6 @@ def findMainParsePerDifficulty(dps, hps, tank):
  * @param {Object} mythic Dictionary containing the mythic parses
  * @returns Dictionary containing average parses per tier for a given role
  '''
-
-
 def verifyRoleAverageParse(LFR, normal, heroic, mythic, metric):
     mythicScore = 0
     heroicScore = 0
@@ -238,13 +100,21 @@ def verifyRoleAverageParse(LFR, normal, heroic, mythic, metric):
     bossKills = 0
     for i in range(len(mythic["overall"+metric]["rankings"])):
         if mythic["overall"+metric]["rankings"][i] and mythic["overall"+metric]["rankings"][i]["totalKills"] > 0:
-            mythicScore = mythicScore + mythic["overall"+metric]["rankings"][i]["allStars"]["points"] if mythic["overall"+metric]['rankings'][i]['allStars'] else mythicScore
+            mythicScore = mythicScore + \
+                mythic["overall"+metric]["rankings"][i]["allStars"]["points"] if mythic["overall" +
+                                                                                        metric]['rankings'][i]['allStars'] else mythicScore
         if heroic and heroic["overall"+metric]["rankings"][i]["totalKills"] > 0:
-            heroicScore = heroicScore + heroic["overall" +metric]["rankings"][i]["allStars"]["points"] if heroic["overall"+metric]['rankings'][i]['allStars'] else heroicScore
+            heroicScore = heroicScore + \
+                heroic["overall" + metric]["rankings"][i]["allStars"]["points"] if heroic["overall" +
+                                                                                          metric]['rankings'][i]['allStars'] else heroicScore
         if normal and normal["overall"+metric]["rankings"][i]["totalKills"] > 0:
-            normalScore = normalScore + normal["overall"+metric]["rankings"][i]["allStars"]["points"] if normal["overall"+metric]['rankings'][i]['allStars'] else normalScore
+            normalScore = normalScore + \
+                normal["overall"+metric]["rankings"][i]["allStars"]["points"] if normal["overall" +
+                                                                                        metric]['rankings'][i]['allStars'] else normalScore
         else:
-            LFRScore = LFRScore + LFR["overall"+metric]["rankings"][i]["allStars"]["points"] if LFR["overall"+metric]['rankings'][i]['allStars'] else LFRScore
+            LFRScore = LFRScore + \
+                LFR["overall"+metric]["rankings"][i]["allStars"]["points"] if LFR["overall" +
+                                                                                  metric]['rankings'][i]['allStars'] else LFRScore
         bossKills = bossKills + 1
     return {
         "mythic": mythicScore / bossKills,
@@ -266,7 +136,8 @@ def verifyRoleAverageParse(LFR, normal, heroic, mythic, metric):
 
 def parseWowlogsDataTiers(tier, metric, classesData, classID):
     returnDictionary = {"spec": [], "data": []}
-    overallMetric = tier["overall"+metric] if "overall"+metric in tier.keys() else {"rankings": {}}
+    overallMetric = tier["overall"+metric] if "overall" + \
+        metric in tier.keys() else {"rankings": {}}
     ilvlMetric = tier["ilvl"+metric]
     specID = None
     for i, entry in enumerate(overallMetric["rankings"]):
