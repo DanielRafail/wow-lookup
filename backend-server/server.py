@@ -24,7 +24,6 @@ colors = {}
 allDungeons = {}
 allExpansions = {}
 pvpSeasonID = None
-json_error_message = "Invalid response cannot be transformed into JSON"
 
 # Wowlogs API route
 @app.route("/wowlogs", methods=["GET"])
@@ -42,14 +41,12 @@ def wowlogs(recursiveCall = False):
     }
     response = requests.post(url, json=payload, headers=headers)
     verifyBlizzardToken(response, recursiveCall, wowlogs)
-    wowlogsData = verifyAPIAnswer(response, "wowlogs")
-    return parseWowlogsData(wowlogsData, allClasses)
+    return parseWowlogsData(response.json(), allClasses) if response.status_code >= 200 and response.status_code < 300 else {"status":response.status_code} 
 
 # pvp API route
 @app.route("/pvp", methods=["GET"])
 @limiter.limit("60/minute")
 def pvp(recursiveCall = False):
-    global json_error_message
     global allClasses
     global allExpansions
     global pvpSeasonID
@@ -85,23 +82,22 @@ def pvp(recursiveCall = False):
             else:
                 print("Spec: {spec} unable to be added to shuffle_response".format(spec=spec['name']))
     else:
-         print(json_error_message)
+         print(profile_response)
     if is_json(two_response.text):
         json_response_two = two_response.json()
     else:
-        print(json_error_message)
+        print(two_response.status_code, two_response)
     if is_json(three_response.text):
         json_response_three = three_response.json()
     else:
-        print(json_error_message)
+        print(three_response.status_code, three_response)
+    if (achievs_response.status_code >= 300 and achievs_response.status_code < 200):
+        abort(achievs_response)
     if is_json(achievs_response.text):
         json_response_achievs = achievs_response.json()
     else:
-        print(json_error_message)
-        abort(404)
-    if (achievs_response.status_code >= 400):
-        abort(404)
-    return parsePVPData({"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}, allExpansions, pvpSeasonID)
+        print(achievs_response.status_code, achievs_response)
+    return parsePVPData({"achievements":json_response_achievs, "two":json_response_two, "three": json_response_three, "solo":json_soloShuffle}, allExpansions)
 
 # raiderIO API route
 @app.route("/raiderio", methods=["GET"])
@@ -114,7 +110,7 @@ def raiderio():
     server = request.args.get('server')
     url_dungeons = "https://raider.io/api/v1/characters/profile?region={region}&realm={server}&name={name}&fields=mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs:all".format(server=server, region=region, name=name)
     dungeons_response = requests.get(url_dungeons)
-    raiderIO = verifyAPIAnswer(dungeons_response, "raiderio")
+    raiderIO = verifyAPIAnswer(dungeons_response)
     return {"raiderIO": parseRaiderIOData(raiderIO), "colors" : colors, "dungeons": allDungeons}
 
 # getCurrentPVPSeason
@@ -128,7 +124,7 @@ def getPVPSeason(recursiveCall = False):
         }
         currentSeason_response = requests.get(currentSeason_url, headers=header)
         verifyBlizzardToken(currentSeason_response, recursiveCall, getPVPSeason)
-        json_currentSeason = verifyAPIAnswer(currentSeason_response, "getPVPSeason")
+        json_currentSeason = verifyAPIAnswer(currentSeason_response)
         pvpSeasonID = json_currentSeason['current_season']['id']
         return None
 
@@ -140,7 +136,7 @@ def getRaiderIOColors():
     global colors
     url_colors = "https://raider.io/api/v1/mythic-plus/score-tiers"
     colors_response = requests.get(url_colors)
-    colors = verifyAPIAnswer(colors_response, "getRaiderIOColors") 
+    colors = verifyAPIAnswer(colors_response) 
     return None
 
 # Route to get Wowlogs colors
@@ -158,7 +154,7 @@ def getRaiderIOAllDungeons(allExpansions):
     global allDungeons
     url_allDungeons = "https://raider.io/api/v1/mythic-plus/static-data?expansion_id={seasonID}".format(seasonID=str(len(allExpansions) - 1))
     allDungeons_response = requests.get(url_allDungeons)
-    allDungeons = verifyAPIAnswer(allDungeons_response, "getRaiderIOAllDungeons")  
+    allDungeons = verifyAPIAnswer(allDungeons_response)  
     return None
 
 # Route to get all current M+ dungeons
@@ -182,7 +178,7 @@ def getAllExpansions(recursiveCall = False):
     }
     response = requests.get(url, headers=header)
     verifyBlizzardToken(response, recursiveCall, getAllExpansions)
-    json_response = verifyAPIAnswer(response, "getAllExpansions")
+    json_response = verifyAPIAnswer(response)
     allExpansions = sorted(json_response["tiers"], key=lambda d: d['id'])
     # - 1 because of 
     allExpansions.pop(len(allExpansions) - 1)
@@ -257,7 +253,7 @@ def getAllServers(recursiveCall = False):
         json_response = None
         response = requests.get(url, headers=header)
         verifyBlizzardToken(response, recursiveCall, getAllServers)
-        json_response = verifyAPIAnswer(response, "getAllServers")
+        json_response = verifyAPIAnswer(response)
         allServers[region] = json_response
     return None
 
@@ -272,27 +268,25 @@ def getAllClasses(recursiveCall = False):
     allClassesURL = "https://us.api.blizzard.com/data/wow/playable-class/index?namespace=static-us&locale=en_US&access_token={token}".format(token=os.environ["blizzard_api_token"])
     allClasses_response = requests.get(allClassesURL, headers=header)
     verifyBlizzardToken(allClasses_response, recursiveCall, getAllClasses)
-    allClasses_json_response = verifyAPIAnswer(allClasses_response, "getAllClasses")
+    allClasses_json_response = verifyAPIAnswer(allClasses_response)
     
     for class_entry in allClasses_json_response["classes"]:
         class_entry_url = "https://us.api.blizzard.com/data/wow/playable-class/{classID}?namespace=static-us&locale=en_US&access_token={token}".format(token=os.environ["blizzard_api_token"], classID=str(class_entry["id"]))
         class_entry_json_response = None
         class_entry_response = requests.get(class_entry_url, headers=header)
         allClassesContent[class_entry["id"]] = {"name": class_entry["name"], "specs": []}
-        class_entry_json_response = verifyAPIAnswer(class_entry_response, "getAllClasses")
+        class_entry_json_response = verifyAPIAnswer(class_entry_response)
         for class_entry_detail in class_entry_json_response["specializations"]: 
             allClassesContent[class_entry["id"]]["specs"].append({"name": class_entry_detail["name"], "id": class_entry_detail["id"]})
     allClasses = allClassesContent
     return None
 
 # Verify the answer is a valid JSON
-def verifyAPIAnswer(jsonResponse, caller):
-    global json_error_message
-    if jsonResponse.status_code <= 400 and jsonResponse.status_code >= 200 and is_json(jsonResponse.text):
+def verifyAPIAnswer(jsonResponse):
+    if jsonResponse.status_code < 300 and jsonResponse.status_code >= 200 and is_json(jsonResponse.text):
         return jsonResponse.json()
     else:
-        print(json_error_message + " from : " + caller)
-        abort(404)
+        abort(jsonResponse, jsonResponse.status_code)
 
 # If Blizzard token is unauthorized, get new one and call original function. If its a recursive call, abort
 def verifyBlizzardToken(jsonResponse, recursiveCall, originalFunction):
@@ -301,7 +295,7 @@ def verifyBlizzardToken(jsonResponse, recursiveCall, originalFunction):
         getBlizzardToken()
         return originalFunction(True)
     elif recursiveCall == True:
-        abort(404)
+        abort(jsonResponse.status_code)
 
 
 if __name__ == "__main__":
