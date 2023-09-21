@@ -129,7 +129,6 @@ const pvpComponent = (props: Props) => {
    */
   function setSeasonsAccordionContent(seasonArray: PVPSeason[]) {
     seasonArray.sort(compareSeasons);
-    console.log(seasonArray);
     return (
       <div>
         {seasonArray.map((season, i) => {
@@ -183,7 +182,7 @@ const pvpComponent = (props: Props) => {
       }
     }
     return (
-      <>
+      <div>
         <CustomTable
           headers={[
             "Bracket",
@@ -205,7 +204,7 @@ const pvpComponent = (props: Props) => {
             />
           );
         })}
-      </>
+      </div>
     );
   }
 

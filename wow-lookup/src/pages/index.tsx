@@ -227,7 +227,7 @@ const Index = () => {
       return defaultFilterOptions(options, state).slice(0, 5);
     };
     return (
-      <>
+      <div>
         <div className="name-line-index">
           <p className="name-label">Character Name: </p>
           <input
@@ -281,7 +281,7 @@ const Index = () => {
         >
           Submit
         </Button>
-      </>
+      </div>
     );
   }
 
@@ -291,7 +291,7 @@ const Index = () => {
    */
   function getSingleInput(): React.ReactElement {
     return (
-      <>
+      <div>
         <p className="url-label">Player's URL: </p>
         <p className="sub-label">
           This works with RaiderIO, WarcraftLogs and CheckPVP URLs
@@ -322,7 +322,7 @@ const Index = () => {
             Please make sure to place a correct URL
           </p>
         )}
-      </>
+      </div>
     );
   }
 

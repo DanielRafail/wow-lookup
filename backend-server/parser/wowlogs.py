@@ -17,10 +17,11 @@ def parseWowlogsData(wowlogsData, classesData):
     rolesToRemove = set()
     for role_idx, role in enumerate(roles):
         for tier in tiers:
-            if "overall{role}".format(role=role) in characterData[tier].keys():
+            if "overall{role}".format(role=role if role != "Healer" else "HPS") in characterData[tier].keys():
+                roleName = roles[role_idx] if roles[role_idx] != "Healer" else "HPS"
                 result = parseWowlogsDataTiers(
                     characterData[tier],
-                    roles[role_idx],
+                    roleName,
                     classesData,
                     characterData["character"]["classID"]
                 )
@@ -32,12 +33,13 @@ def parseWowlogsData(wowlogsData, classesData):
     roles = [x for x in roles if x not in rolesToRemove]
     allSpecs = dict()
     for i, key in enumerate(results.keys()):
+        roleName = roles[i] if roles[i] != "Healer" else "HPS"
         spec = verifyRoleAverageParse(
             characterData["lfr"],
             characterData["normal"],
             characterData["heroic"],
             characterData["mythic"],
-            roles[i]
+            roleName
         )
         allSpecs[key] = spec
     mainParsePerDifficulty = findMainParsePerDifficulty(allSpecs)

@@ -5,7 +5,7 @@ import TableStyleDefault from "../CSS/tableStyleDefault";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import {
   iparsedRaiderIOData,
-  RoleLower,
+  RoleLowerCase,
   iMythicPlusRun,
   mythicPlusRunCategories,
   iRecentMythicPlusRun,
@@ -54,14 +54,14 @@ const RaiderioComponent = (props: Props) => {
                     style={{
                       color: getRaiderIOScoreColor(
                         props.data.parsedRaiderIOData.raiderIO.score[
-                          role.toLowerCase() as RoleLower
+                          role.toLowerCase() as RoleLowerCase
                         ]
                       ),
                     }}
                   >
                     {
                       props.data.parsedRaiderIOData.raiderIO.score[
-                        role.toLowerCase() as RoleLower
+                        role.toLowerCase() as RoleLowerCase
                       ]
                     }{" "}
                     IO

@@ -6,25 +6,26 @@ WoW-Lookup is a website used to look up all details about a player! Instead of h
 
 ### Veto a player correctly ;)
 
+
 ## Images
 
-Welcome Page:
+#### Welcome Page:
 
 ![Welcome page asking for user information](/screenshotsForGithub/welcome.jpg?raw=true "Welcome Page")
 
-Arrival page after looking up a character:
+#### Arrival page after looking up a character:
 
 ![Default look of the page with user information](/screenshotsForGithub/default.jpg?raw=true "Arrival Page")
 
-Raider IO Data:
+#### Raider IO Data:
 
 ![Raider IO Data](/screenshotsForGithub/raiderio.jpg?raw=true "Raider IO Data")
 
-Warcraft Logs Data:
+#### Warcraft Logs Data:
 
 ![Warcraft Logs Data](/screenshotsForGithub/wowlogs.jpg?raw=true "Warcraft Logs Data")
 
-PVP Data:
+#### PVP Data:
 
 ![PVP Data](/screenshotsForGithub/pvp.jpg?raw=true "PVP Data")
 

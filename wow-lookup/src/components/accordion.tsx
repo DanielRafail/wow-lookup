@@ -14,10 +14,10 @@ interface Props {
 
 const customAccordion = (props: Props) => {
   return (
-    <>
+    <div>
       {props.content.map((section: any, i: number) => {
         return (
-          <Accordion sx={{ color: "white", border: props.border ? props.border : "", margin: props.margin ? props.margin : "inherit"}} defaultExpanded = {props.defaultExpanded}>
+          <Accordion key={i} sx={{ color: "white", border: props.border ? props.border : "", margin: props.margin ? props.margin : "inherit"}} defaultExpanded = {props.defaultExpanded}>
             <AccordionSummary
               expandIcon={
                 <ExpandMoreIcon
@@ -26,6 +26,7 @@ const customAccordion = (props: Props) => {
               }
               aria-controls={"panel" + i + "a-content"}
               id={"panel" + i + "-header"}
+              key={i}
               sx={{
                 backgroundColor: "rgb(18, 18, 18)",
                 "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
@@ -44,7 +45,7 @@ const customAccordion = (props: Props) => {
           </Accordion>
         );
       })}
-    </>
+    </div>
   );
 };
 

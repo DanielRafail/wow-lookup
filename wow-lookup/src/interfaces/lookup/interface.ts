@@ -1,5 +1,5 @@
-export type RoleUpper = "DPS" | "Healer" | "Tank";
-export type RoleLower = "dps" | "healer" | "tank";
+export type RoleUpperCase = "DPS" | "Healer" | "Tank";
+export type RoleLowerCase = "dps" | "healer" | "tank";
 export type mythicPlusRunCategories = "dungeon" | "tyrannical" | "fortified";
 export type mythicPlusRecentRunCategories = "dungeons" | "key" | "date"
 export type pvpRanks = "Challenger" | "Combatant" | "Rival" | "Duelist" | "Gladiator" | "Elite" | "Legend"

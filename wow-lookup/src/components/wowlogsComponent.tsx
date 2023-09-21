@@ -11,7 +11,7 @@ import TableStyleDefault from "../CSS/tableStyleDefault";
 import ClassImages from "../Helper/classImages";
 import WowlogsHelper from "../Helper/wowlogsHelper";
 import {
-  RoleUpper,
+  RoleUpperCase,
   iParse,
   iparsedWowlogsData,
   difficulties,
@@ -28,7 +28,7 @@ interface Props {
 const WowlogsComponent = (props: Props) => {
   let [difficultyParse, setdifficultyParse] = useState<iParse>();
   let [difficulty, setDifficulty] = useState(0);
-  let [role, setRole] = useState<RoleUpper>("DPS");
+  let [role, setRole] = useState<RoleUpperCase>("DPS");
 
   /**
    * Function ran whenever the props element is modified which verifies what the current difficultyParse is (Based on page reload and tabs click)
@@ -46,7 +46,7 @@ const WowlogsComponent = (props: Props) => {
           ? parsedWowlogsData.highestDifficulty
           : 1
       );
-      const currentRole: RoleUpper = Object.values(
+      const currentRole: RoleUpperCase = Object.values(
         parsedWowlogsData.mainParsePerDifficulty
       )[parsedWowlogsData.highestDifficulty - 1];
       setRole(currentRole ? currentRole : "DPS");
@@ -110,15 +110,14 @@ const WowlogsComponent = (props: Props) => {
   function handleChangeTiers(event: React.SyntheticEvent, newVal: number) {
     let newBestParsingSpec = Object.values(
       props.data.parsedWowlogsData.mainParsePerDifficulty
-    )[Number(newVal)] as RoleUpper;
+    )[newVal] as RoleUpperCase;
     setDifficulty(Number(newVal) + 1);
     if (newBestParsingSpec) setRole(newBestParsingSpec);
     else newBestParsingSpec = role;
     Object.values(
       props.data.parsedWowlogsData.tableData[newBestParsingSpec]
-    ).map((data, i) => {
-      if (i === Number(newVal)) setdifficultyParse(data);
-      return null;
+    ).forEach((data, i) => {
+      if (i === newVal) setdifficultyParse(data);
     });
   }
 
@@ -128,14 +127,13 @@ const WowlogsComponent = (props: Props) => {
    * @param {number} newVal The value of the new tab clicked
    */
   function handleChangeRole(event: React.SyntheticEvent, newVal: number) {
-    setRole(Helper.wowlogsNumbersToRole(newVal) as RoleUpper);
+    setRole(Helper.wowlogsNumbersToRole(newVal) as RoleUpperCase);
     Object.values(
       props.data.parsedWowlogsData.tableData[
-        Helper.wowlogsNumbersToRole(newVal) as RoleUpper
+        Helper.wowlogsNumbersToRole(newVal) as RoleUpperCase
       ]
-    ).map((data, i) => {
+    ).forEach((data, i) => {
       if (i === difficulty - 1) setdifficultyParse(data as iParse);
-      return null;
     });
   }
 
@@ -198,28 +196,15 @@ const WowlogsComponent = (props: Props) => {
    */
   function getRoleHeaders() {
     return Object.keys(props.data.parsedWowlogsData.tableData).map(
-      (roleEntry, i) => {
-        if (
-          roleEntry === "Tank" &&
-          !Helper.getAllTankingClasses().includes(
-            props.data.parsedWowlogsData.class
-          )
-        ) {
-          return null;
-        } else if (
-          roleEntry === "Healer" &&
-          !Helper.getAllHealingClasses().includes(
-            props.data.parsedWowlogsData.class
-          )
-        ) {
-          return null;
-        } else
+      (role, i) => 
+      {
           return (
+            role in Helper.rolesForClasses(props.data.parsedWowlogsData.class) ? 
             <Tab
               label={
-                roleEntry === "Healer"
+                role === "Healer"
                   ? "Healing"
-                  : roleEntry === "Tank"
+                  : role === "Tank"
                   ? "Tanking"
                   : "DPS"
               }
@@ -230,8 +215,10 @@ const WowlogsComponent = (props: Props) => {
                 color: "white",
                 backgroundColor: "rgb(33, 33, 33)",
               }}
-              value={Helper.wowlogsRoleToNumbers(roleEntry).toString()}
+              value={Helper.wowlogsRoleToNumbers(role).toString()}
             />
+            :
+            <div></div>
           );
       }
     );
@@ -412,7 +399,7 @@ const WowlogsComponent = (props: Props) => {
           content
         </p>
       ) : (
-        <></>
+        <div></div>
       )}
     </div>
   );

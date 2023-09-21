@@ -9,6 +9,26 @@ class Helper extends React.Component {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  static rolesForClasses(className:string){
+    const rolesPerClasses: Record<string, string[]> = {
+      "Druid": ["Tank", "DPS", "Healer"],
+      "Warrior": ["Tank", "DPS"],
+      "Paladin": ["Tank", "DPS", "Healer"],
+      "Hunter": ["DPS"],
+      "Rogue": ["DPS"],
+      "Priest": ["DPS", "Healer"],
+      "Shaman": ["DPS", "Healer"],
+      "Mage": ["DPS"],
+      "Warlock": ["DPS"],
+      "Monk": ["Tank", "DPS", "Healer"],
+      "Demon Hunter": ["Tank", "DPS"],
+      "Death Knight": ["Tank", "DPS"],
+      "Evoker": ["DPS", "Healer"],
+    }
+    console.log(rolesPerClasses[className])
+    return rolesPerClasses[className] 
+  }
+
   /**
    * Function to translate the tier name to its difficulty number
    * @param {string} name the tier name
