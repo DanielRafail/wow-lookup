@@ -124,14 +124,12 @@ const WowlogsComponent = (props: Props) => {
   /**
    * Function to handle changes on role tab clicks
    * @param {React.SyntheticEvent} event The event of the tab change
-   * @param {number} newVal The value of the new tab clicked
+   * @param {string} newVal The value of the new tab clicked
    */
-  function handleChangeRole(event: React.SyntheticEvent, newVal: number) {
-    setRole(Helper.wowlogsNumbersToRole(newVal) as RoleUpperCase);
+  function handleChangeRole(event: React.SyntheticEvent, newVal: string) {
+    setRole(newVal as RoleUpperCase);
     Object.values(
-      props.data.parsedWowlogsData.tableData[
-        Helper.wowlogsNumbersToRole(newVal) as RoleUpperCase
-      ]
+      props.data.parsedWowlogsData.tableData[newVal as RoleUpperCase]
     ).forEach((data, i) => {
       if (i === difficulty - 1) setdifficultyParse(data as iParse);
     });
@@ -196,30 +194,30 @@ const WowlogsComponent = (props: Props) => {
    */
   function getRoleHeaders() {
     return Object.keys(props.data.parsedWowlogsData.tableData).map(
-      (role, i) => 
-      {
-          return (
-            role in Helper.rolesForClasses(props.data.parsedWowlogsData.class) ? 
-            <Tab
-              label={
-                role === "Healer"
-                  ? "Healing"
-                  : role === "Tank"
-                  ? "Tanking"
-                  : "DPS"
-              }
-              key={i}
-              sx={{
-                fontSize: "18px",
-                fontWeight: "bold",
-                color: "white",
-                backgroundColor: "rgb(33, 33, 33)",
-              }}
-              value={Helper.wowlogsRoleToNumbers(role).toString()}
-            />
-            :
-            <div></div>
-          );
+      (role, i) => {
+        return Helper.rolesForClasses(
+          props.data.parsedWowlogsData.class
+        ).includes(role) ? (
+          <Tab
+            label={
+              role === "Healer"
+                ? "Healing"
+                : role === "Tank"
+                ? "Tanking"
+                : "DPS"
+            }
+            key={i}
+            sx={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "white",
+              backgroundColor: "rgb(33, 33, 33)",
+            }}
+            value={role}
+          />
+        ) : (
+          <div></div>
+        );
       }
     );
   }
@@ -235,6 +233,7 @@ const WowlogsComponent = (props: Props) => {
           <TabPanel
             key={i}
             value={Helper.wowlogsTierNamesToNumbers(entry[0]).toString()}
+            sx={{padding: "0px"}}
           >
             <CustomTable
               headers={[
@@ -279,23 +278,18 @@ const WowlogsComponent = (props: Props) => {
            /* woulda been at 0 and therefore considered "undeclared" or "undefined" or whatever
            /* and none of the table would have appeared
           */}
-          <TabContext value={(difficulty - 1).toString()}>
-            <Box
-              className="multi-button-tab"
-              sx={{
-                border: "2px solid gray",
-                borderBottom: "none",
-                backgroundColor: "rgb(33, 33, 33)",
-              }}
-            >
-              <TabList
-                onChange={(e, v) => handleChangeTiers(e, v)}
-                style={{ marginBottom: "none" }}
-              >
-                {getDifficultyHeaders()}
-                <TabContext
-                  value={Helper.wowlogsRoleToNumbers(role).toString()}
-                >
+          <div className="wowlogs-table">
+            <TabContext value={(difficulty - 1).toString()}>
+              <div className="wowlogs-header-tabs">
+                <TabContext value={(difficulty - 1).toString()}>
+                  <TabList
+                    onChange={(e, v) => handleChangeTiers(e, v)}
+                    style={{ marginBottom: "none" }}
+                  >
+                    {getDifficultyHeaders()}
+                  </TabList>
+                </TabContext>
+                <TabContext value={role}>
                   <TabList
                     onChange={(e, v) => handleChangeRole(e, v)}
                     style={{ marginBottom: "none", marginLeft: "auto" }}
@@ -303,10 +297,10 @@ const WowlogsComponent = (props: Props) => {
                     {getRoleHeaders()}
                   </TabList>
                 </TabContext>
-              </TabList>
-            </Box>
-            {populateTable()}
-          </TabContext>
+              </div>
+              {populateTable()}
+            </TabContext>
+          </div>
         </div>
       </div>
     );
@@ -347,7 +341,11 @@ const WowlogsComponent = (props: Props) => {
     let textColor = "";
     Object.values(row).forEach((cell, i) => {
       Object.values(cell);
-      textColor = textColor ? textColor : cell ? getColorFromNumber(cell) : "#b5b5b5";
+      textColor = textColor
+        ? textColor
+        : cell
+        ? getColorFromNumber(cell)
+        : "#b5b5b5";
       return null;
     });
     const specID =

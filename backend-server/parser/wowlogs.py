@@ -80,7 +80,7 @@ def findMainParsePerDifficulty(specs):
             if highestParseAveragePerDifficulty < spec[difficulty]:
                 highestParseAveragePerDifficulty = spec[difficulty]
                 specIndex = i
-        mainParsePerDifficulty[difficulty] = list(specs.keys())[specIndex]
+        mainParsePerDifficulty[difficulty] = list(specs.keys())[specIndex] if specIndex >= 0 else None
     return mainParsePerDifficulty
 
 

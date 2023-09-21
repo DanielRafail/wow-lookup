@@ -25,7 +25,6 @@ class Helper extends React.Component {
       "Death Knight": ["Tank", "DPS"],
       "Evoker": ["DPS", "Healer"],
     }
-    console.log(rolesPerClasses[className])
     return rolesPerClasses[className] 
   }
 
@@ -77,7 +76,7 @@ class Helper extends React.Component {
    * @param {string} specName the name of the spec
    * @returns the id attached to it
    */
-  static getSpecIDFromName(specName: string) : number | null {
+  static getSpecIDFromName(specName: string) : number {
     switch (specName) {
       case "Affliction":
         return 265;
@@ -146,7 +145,7 @@ class Helper extends React.Component {
       case "Windwalker":
         return 269;
       default:
-        return null;
+        return 0;
     }
   }
 
