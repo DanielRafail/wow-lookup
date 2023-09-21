@@ -171,9 +171,8 @@ const RaiderioComponent = (props) => {
     const StyledTableCell = TableStyleDefault.styleTableCell();
     const rowKeys = Object.keys(row);
     let counter = 3;
-
     while (row[rowKeys[2]].split("+").length < counter) {
-      [...row[rowKeys[2]]].unshift("+");
+      row["key"].split("").unshift("+");
       counter -= 1;
     }
     return (

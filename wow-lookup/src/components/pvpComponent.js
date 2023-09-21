@@ -12,12 +12,13 @@ import Elite from "../images/Elite.png";
 const pvpComponent = (props) => {
   const parsedData = props.data.parsedPVPData;
   const images = {
-    Challenger: { Challenger },
-    Combatant: { Combatant },
-    Rival: { Rival },
-    Duelist: { Duelist },
-    Gladiator: { Gladiator },
-    Elite: { Elite },
+    Challenger: Challenger,
+    Combatant: Combatant,
+    Rival: Rival,
+    Duelist: Duelist,
+    Gladiator: Gladiator,
+    Elite: Elite,
+    Legend: Gladiator
   };
 
   /**
@@ -38,32 +39,47 @@ const pvpComponent = (props) => {
         rating: bracket && bracket.rating ? bracket.rating.toString() : "0",
         weekly:
           "Played: " +
-          (bracket &&  bracket.weeklyStats ? bracket.weeklyStats.played.toString() : "0") +
+          (bracket && bracket.weeklyStats
+            ? bracket.weeklyStats.played.toString()
+            : "0") +
           " | Won: " +
-          (bracket &&  bracket.weeklyStats ? bracket.weeklyStats.won.toString() : "0") +
+          (bracket && bracket.weeklyStats
+            ? bracket.weeklyStats.won.toString()
+            : "0") +
           " | Lost: " +
-          (bracket && bracket.weeklyStats ? bracket.weeklyStats.lost.toString() : "0"),
+          (bracket && bracket.weeklyStats
+            ? bracket.weeklyStats.lost.toString()
+            : "0"),
         weeklyRatio:
-            bracket && 
-            bracket.weeklyStats &&
-            bracket.weeklyStats.won &&
-            bracket.weeklyStats.lost
-            ? (bracket.weeklyStats.won / bracket.weeklyStats.played  * 100)
+          bracket &&
+          bracket.weeklyStats &&
+          bracket.weeklyStats.won &&
+          bracket.weeklyStats.lost
+            ? ((bracket.weeklyStats.won / bracket.weeklyStats.played) * 100)
                 .toFixed(2)
                 .concat("%")
             : "-",
         season:
           "Played: " +
-          (bracket && bracket.seasonStats ? bracket.seasonStats.played.toString() : "0") +
+          (bracket && bracket.seasonStats
+            ? bracket.seasonStats.played.toString()
+            : "0") +
           " | Won: " +
-          (bracket && bracket.seasonStats ? bracket.seasonStats.won.toString() : "0") +
+          (bracket && bracket.seasonStats
+            ? bracket.seasonStats.won.toString()
+            : "0") +
           " | Lost: " +
-          (bracket && bracket.seasonStats ? bracket.seasonStats.lost.toString() : "0"),
+          (bracket && bracket.seasonStats
+            ? bracket.seasonStats.lost.toString()
+            : "0"),
         seasonRatio:
-          bracket && bracket.seasonStats &&
-          bracket && bracket.seasonStats.won &&
-          bracket && bracket.seasonStats.lost
-            ? (bracket.seasonStats.won / bracket.seasonStats.played  * 100)
+          bracket &&
+          bracket.seasonStats &&
+          bracket &&
+          bracket.seasonStats.won &&
+          bracket &&
+          bracket.seasonStats.lost
+            ? ((bracket.seasonStats.won / bracket.seasonStats.played) * 100)
                 .toFixed(2)
                 .concat("%")
             : "-",
@@ -75,42 +91,53 @@ const pvpComponent = (props) => {
   }
 
   /**
+   * Order the seasons based on their chronogical order
+   * @param {*} a first season
+   * @param {*} b second season
+   * @returns int representing their order
+   */
+  function compareSeasons(a, b) {
+    const seasonA = parseInt(a.name.match(/Season (\d+)/)[1], 10);
+    const seasonB = parseInt(b.name.match(/Season (\d+)/)[1], 10);
+  
+    return seasonB - seasonA;
+  }
+
+  /**
    * Set the accordions' content for each distinctive seasons in pvp
    * @param {Object} seasonArray Array with all the seasons
    * @returns React element containing the accordion's content
    */
   function setSeasonsAccordionContent(seasonArray) {
+    seasonArray.sort(compareSeasons);
+    console.log(seasonArray);
     return (
       <div>
         {seasonArray.map((season, i) => {
+          const title = season["name"];
           return (
             <div className="pvpRankInfoContainer" key={i}>
               {
                 <img
                   src={
-                    images[Object.values(season)[0]]
-                      ? Object.values(images[Object.values(season)[0]])[0]
+                    Object.keys(images).includes(
+                      title.substring(title.indexOf(":") + 2)
+                    )
+                      ? images[title.substring(title.indexOf(":") + 2)]
                       : Gladiator
                   }
                   alt="PVP Rank"
                   className="rankIcons"
                 />
               }
-              {season.doneOnThisChar ? (
-                <p className="pvpText">
-                  {Object.keys(season)[0]} : {Object.values(season)[0]}
-                  <span className="pvp-achiev-desc">
-                    Completed on this character
-                  </span>
-                </p>
-              ) : (
-                <p className="pvpText">
-                  {Object.keys(season)[0]} : {Object.values(season)[0]}
-                  <span className="pvp-achiev-desc">
-                    Completed on another character
-                  </span>
-                </p>
-              )}
+              <p className="pvpText">
+                {season["name"]}
+                <span className="pvp-achiev-desc">
+                  {season["completed"]
+                    ? "Completed on this character"
+                    : "Completed on another character"}
+                </span>
+              </p>
             </div>
           );
         })}

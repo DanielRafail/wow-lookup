@@ -25,6 +25,8 @@ const Summary = (props) => {
   return (
     <div className="summary-main">
       <Accordion
+        border = "2px solid grey"
+        margin = "10px auto"
         content={[
           props.data.parsedRaiderIOData ? (
             <RaiderioComponent

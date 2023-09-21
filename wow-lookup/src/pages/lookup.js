@@ -38,9 +38,12 @@ const Lookup = () => {
         })
     }
     if (firstLoad) {
-      fetchData(ApiCaller.getRaiderIOData, setRaiderIOData,);
-      fetchData(ApiCaller.getWowlogsData, setWowlogsData);
-      fetchData(ApiCaller.getPVPData, setPVPParsedData);
+      const apiCalls = [
+        fetchData(ApiCaller.getRaiderIOData, setRaiderIOData),
+        fetchData(ApiCaller.getWowlogsData, setWowlogsData),
+        fetchData(ApiCaller.getPVPData, setPVPParsedData),
+      ];
+      Promise.all(apiCalls);
       setFirstLoad(false);
     }
 
@@ -85,6 +88,7 @@ const Lookup = () => {
   function HandleChange(event, v) {
     // Set the navigation tab back to 0 as it is the default and only interactive page, will leave this here in case I decide to create personalized pages for each website in the future
     setNavigationTabValue(0);
+    console.log(v)
     //verify which tab we are on and select the link based on it (or send back to index)
     const correctPage = VerifyTab(v);
     if (correctPage !== null && correctPage !== -1) {

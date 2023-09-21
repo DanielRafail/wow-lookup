@@ -379,12 +379,16 @@ const WowlogsComponent = (props) => {
 
   return (
     <div className="wowlogs-section">
-      {props.data.parsedWowlogsData.tableData &&
+      {console.log(props) && props.data.parsedWowlogsData.tableData &&
       props.data.parsedWowlogsData.tableData.DPS &&
       difficultyParse ? (
         returnWowlogsContent()
       ) : (
-        <React.Fragment />
+        props.data.parsedWowlogsData.status && props.data.parsedWowlogsData.status === 429 ? 
+        <p className="error-p">Please try again later<br/> Warcraft logs timed out the website out for requesting information too often</p>
+        : props.data.parsedWowlogsData.status && props.data.parsedWowlogsData.status === 404 ?
+        <p className="error-p">Character could not be found, make sure they exist and have completed content</p>
+        : <></>
       )}
     </div>
   );

@@ -11,7 +11,7 @@ const customAccordion = (props) => {
         return (
           <Accordion
             key={i}
-            sx={{ color: "white" }}
+            sx={{ color: "white", border: props.border ? props.border : "", margin: props.margin ? props.margin : "inherit"}}
             {... props}
           >
             <AccordionSummary
