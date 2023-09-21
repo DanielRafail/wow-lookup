@@ -4,9 +4,9 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 // import IconButton from "@mui/material/IconButton";
 // import SendIcon from "@mui/icons-material/Send";
-import Helper from "../Helper/helper.js";
-import ApiCaller from "../API/apiCaller.js";
-import parseServers from "../API/parser/wowServerParser.js";
+import Helper from "../Helper/helper";
+import ApiCaller from "../API/apiCaller";
+import parseServers from "../API/parser/wowServerParser";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -18,33 +18,34 @@ const Index = () => {
   let [name, setName] = useState("");
   let [region, setRegion] = useState("");
   let [server, setServer] = useState("");
-  let [inputsError, setInputserror] = useState(false);
+  let [inputsError, setInputsError] = useState(false);
   let [singleInputError, setSingleInputError] = useState(false);
   let [url, seturl] = useState("");
   let [inputTypeURL, setInputTypeURL] = useState(false);
-  let [servers, setServers] = useState(0);
-  let [serversError, setServersError] = useState(false);
+  let [servers, setServers] = useState<{ label: string; value: string }[]>([]);
+  let [serversStatus, setServersStatus] = useState(false);
   let [openInput, setOpenInput] = useState(false);
   let [inputValue, setInputValue] = useState("");
   let [firstLoad, setFirstLoad] = useState(true);
   let navigate = useNavigate();
 
+  /**
+   * Get the servers from an API call
+   */
+  function seversAPICall() {
+    ApiCaller.getServers()
+      .then(function (response) {
+        if (response) {
+          setServers(parseServers(response));
+          setServersStatus(false);
+        }
+      })
+      .catch(function (error) {
+        setServersStatus(true);
+      });
+  }
+
   useEffect(() => {
-    /**
-     * Get the servers from an API call
-     */
-    function seversAPICall() {
-      ApiCaller.getServers()
-        .then(function (response) {
-          if (response) {
-            setServers(parseServers(response));
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-          setServersError(true);
-        });
-    }
     if (firstLoad) {
       seversAPICall();
       setFirstLoad(false);
@@ -52,22 +53,14 @@ const Index = () => {
     let serversInterval = setInterval(() => {
       seversAPICall();
     }, 6000);
-    if (servers || setServersError === 404) clearInterval(serversInterval);
+    if (Object.keys(servers).length !== 0 || serversStatus) {
+      clearInterval(serversInterval);
+      if (serversStatus) setServersStatus(false);
+    }
     return () => {
       clearInterval(serversInterval);
     };
-  }, [
-    name,
-    region,
-    server,
-    url,
-    inputsError,
-    singleInputError,
-    inputTypeURL,
-    servers,
-    serversError,
-    firstLoad,
-  ]);
+  }, [servers, serversStatus, firstLoad]);
 
   useEffect(() => {
     //Set input type based on local storage
@@ -81,9 +74,9 @@ const Index = () => {
    * Sets an error true and all other error false
    * @param {func} func the func we will set to true
    */
-  function setErrorTrue(func = null) {
-    setInputserror(false);
-    setServersError(false);
+  function resetOtherErrors(func?: (status: boolean) => void): void {
+    setInputsError(false);
+    setServersStatus(false);
     setSingleInputError(false);
     if (func) func(true);
   }
@@ -92,36 +85,38 @@ const Index = () => {
    * Update the name state variable
    * @param {Object} event event object from which we will get the value and set the URL
    */
-  function updateName(event) {
+  function updateCharacterName(
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void {
     setName(event.target.value.replace(/[^a-z]/gi, "").toLowerCase());
   }
 
   /**
    * Submit the form and move to the next page
    */
-  function HandleSubmitInputs() {
+  function HandleSubmitInputs(): void {
     if (name && region && server) {
       navigate(`/lookup/${region + "&" + server + "&" + name}`);
     } else {
-      setErrorTrue(setInputserror);
+      resetOtherErrors(setInputsError);
     }
   }
 
   /**
    * When the user choses the input type
    */
-  function HandleInputType() {
+  function HandleInputType(): void {
     setInputTypeURL(!inputTypeURL);
-    setErrorTrue();
+    resetOtherErrors();
     localStorage.setItem("lookup-type", !inputTypeURL ? "URL" : "inputs");
   }
 
   /**
    * Submit the form and move to the next page
    */
-  function HandleSubmitUrl() {
+  function HandleSubmitUrl(): void {
     if (url) {
-      const parsedString = parseString(url);
+      const parsedString = parseCharacterInformation(url);
       if (
         parsedString.characterRegion &&
         parsedString.characterServer &&
@@ -137,16 +132,21 @@ const Index = () => {
           }`
         );
       } else {
-        setServersError(setSingleInputError);
+        resetOtherErrors(setSingleInputError);
       }
-    } else setServersError(setSingleInputError);
+    } else resetOtherErrors(setSingleInputError);
   }
 
   /**
-   * Parse the URL string to get relevant information
+   * Parse the URL string to turn the string with the characters name, server and region into a dictionary
+   * @param {string} url the url string containing the character's information
    * @returns dictionary object containing useful character information
    */
-  function parseString(url) {
+  function parseCharacterInformation(url: string): {
+    characterRegion: string;
+    characterServer: string;
+    characterName: string;
+  } {
     const split_url_length = url.split("/").length;
     const characterName = Helper.getSubstring(
       url,
@@ -174,14 +174,14 @@ const Index = () => {
    * Get the value of the input tag and set the URL value with it
    * @param {Object} event object from which we will get the value and set the URL
    */
-  function UpdateInput(event) {
+  function UpdateInput(event: React.ChangeEvent<HTMLInputElement>): void {
     seturl(event.target.value);
   }
 
   /**
    * Function to handle when the auto complete input menu is open
    */
-  function handleOpenInput() {
+  function handleOpenInput(): void {
     if (inputValue.length > 0) {
       setOpenInput(true);
     }
@@ -192,7 +192,10 @@ const Index = () => {
    * @param {Object} event the event of the values being written or deleted
    * @param {string} newInputValue the new input after the event has taken place
    */
-  function handleInputChange(event, newInputValue) {
+  function handleInputChange(
+    event: React.SyntheticEvent,
+    newInputValue: unknown
+  ): void {
     if (typeof newInputValue === "string") {
       setInputValue(newInputValue);
       if (newInputValue.length > 0) {
@@ -218,9 +221,9 @@ const Index = () => {
    * Function to display user input with multiple inputs
    * @returns user inputs with multiple inputs
    */
-  function getInputs() {
+  function getInputs(): React.ReactElement {
     const defaultFilterOptions = createFilterOptions();
-    const filterOptions = (options, state) => {
+    const filterOptions = (options: unknown[], state: any) => {
       return defaultFilterOptions(options, state).slice(0, 5);
     };
     return (
@@ -232,7 +235,7 @@ const Index = () => {
             className="name-input"
             name="name"
             placeholder="Player name"
-            onChange={updateName}
+            onChange={updateCharacterName}
           />
         </div>
         <div className="server-line-index">
@@ -251,9 +254,9 @@ const Index = () => {
             onClose={() => setOpenInput(false)}
             inputValue={inputValue}
             onInputChange={handleInputChange}
-            getOptionLabel={(option, value) => option.label || ""}
-            isOptionEqualToValue={(option, value) =>
-              option.value === value.value || ""
+            getOptionLabel={(option: any) => option.label || ""}
+            isOptionEqualToValue={(option: any, value: any) =>
+              option.value === value.value
             }
             renderInput={(params) => (
               <TextField
@@ -263,18 +266,12 @@ const Index = () => {
               />
             )}
           />
-          {serversError ? (
-            <p className="error-p">Error loading servers</p>
-          ) : (
-            <React.Fragment />
-          )}
+          {serversStatus && <p className="error-p">Error loading servers</p>}
         </div>
-        {inputsError ? (
+        {inputsError && (
           <p className="error-p">
             Please make sure to fill in all the required fields
           </p>
-        ) : (
-          <React.Fragment />
         )}
         <Button
           variant="contained"
@@ -292,7 +289,7 @@ const Index = () => {
    * Function to display user input with a single inputs
    * @returns user input with a single input
    */
-  function getSingleInput() {
+  function getSingleInput(): React.ReactElement {
     return (
       <div>
         <p className="url-label">Player's URL: </p>
@@ -320,12 +317,10 @@ const Index = () => {
         >
           Submit
         </Button>
-        {singleInputError ? (
+        {singleInputError && (
           <p className="error-p-url-input error-p">
             Please make sure to place a correct URL
           </p>
-        ) : (
-          <React.Fragment />
         )}
       </div>
     );
@@ -335,7 +330,7 @@ const Index = () => {
    * Get the width of the form based on which input type we are on
    * @returns the input width
    */
-  function getFormWidth() {
+  function getFormWidth(): string {
     return inputTypeURL ? "100%" : "50%";
   }
 

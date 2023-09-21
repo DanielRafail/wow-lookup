@@ -1,5 +1,4 @@
 import "../CSS/main.css";
-import React from "react";
 import "../CSS/main.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,16 +7,25 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TableStyleDefault from "../CSS/tableStyleDefault.js"
+import {iParse, iMythicPlusRun, iRecentMythicPlusRun, PvPBrackets} from "../interfaces/lookup/interface"
+
+interface Props {
+  headers: string[],
+  rows: iParse["data"] | iMythicPlusRun[] | iRecentMythicPlusRun[] | PvPBrackets[],
+  headerAlign?: "left" | "center" | "right" | "justify" | "inherit",
+  personalizedCells? : any
+}
 
 
-const CustomTable = (props) => {
+
+const CustomTable = (props: Props) => {
   /**
    * Default cells to be used in the table if none are given
    * @param {int} index index of cell we are on
    * @param {string} cell value for each table cell
    * @returns The default cell to be used in the table
    */
-  function defaultCells(index, cell) {
+  function defaultCells(index: number, cell: string) {
     return (
       <StyledTableCell key={index} align="center">
         {cell}

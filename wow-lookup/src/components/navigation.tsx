@@ -2,16 +2,20 @@ import React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Paper from "@mui/material/Paper";
-import LinkTab from "./linktab.js";
+import LinkTab from "./linktab";
 import HomeIcon from "@mui/icons-material/Home";
+
+interface Props {
+  navigationTabValue: number;
+  HandleChange: Function;
+  headers: string[];
+  homeButton: boolean;
+}
+
 /**
  * Navigation bar component with headers. Modify if need different navigation id
- * * @param {int} navigation_tab_value value the tabs will use
- * * @param {boolean} homeButton boolean to verify if to add menu button
- * * @param {function} HandleChange function to handle the tabs click
- * * @param {array} headers string array with the name of the headers
  */
-const Navigation = (props) => {
+const Navigation = (props: Props) => {
   return (
     <nav id="navigation-header">
       <Paper>
@@ -27,7 +31,7 @@ const Navigation = (props) => {
           value={props.navigationTabValue}
           onChange={(e, v) => props.HandleChange(e, v)}
         >
-          {props.homeButton ? (
+          {props.homeButton && (
             <Tab
               className="home-button-section nav_tab"
               label="WoW-Lookup"
@@ -36,16 +40,11 @@ const Navigation = (props) => {
               key={-1}
               value={-1}
             />
-          ) : (
-            <React.Fragment />
           )}
-          {props.headers ? (
-            props.headers.map((header, i) => {
+          {props.headers &&
+            props.headers.map((header: string, i: number) => {
               return <LinkTab label={header} value={i} key={i} />;
-            })
-          ) : (
-            <React.Fragment />
-          )}
+            })}
         </Tabs>
       </Paper>
     </nav>

@@ -35,40 +35,35 @@ def parseRaiderIOData(raiderIOData):
 '''
 
 
-def getRaiderIOIfPlayed(mythicPlusBest, mythicPlusAlternate, mythicPlusRecent):
-    keys = []
-    recentData = []
-    counter = 0
-    for entry in mythicPlusBest:
-        if entry:
-            if entry["affixes"][0]["name"] == "Tyrannical":
-                keys.append(getMythicKeyBest(
-                    entry, mythicPlusAlternate, False))
-            else:
-                keys.append(getMythicKeyBest(
-                    entry, mythicPlusAlternate, True))
+def getRaiderIOIfPlayed(mythicPlusBestKeys, mythicPlusAlternateKeys, mythicPlusRecent):
+    bothWeeksAllDungeons = []
+    recentDungeonData = []
+    for i, mythicPlusBestDungeon in enumerate(mythicPlusBestKeys):
+        if mythicPlusBestDungeon:
+            bothWeeksAllDungeons.append(getMythicKeyBest(
+                mythicPlusBestDungeon, mythicPlusAlternateKeys, mythicPlusBestDungeon["affixes"][0]["name"]))
         else:
-            keys.append({"dungeon": entry["name"],
-                        "tyrannical": "-", "fortified": "-"})
-        seperatedDateElements = mythicPlusRecent[counter][
-            "completed_at"][0: mythicPlusRecent[counter]["completed_at"].index("T")].split("-") if mythicPlusRecent[counter] else None
-        recentData.append({
-            "dungeons": mythicPlusRecent[counter]["dungeon"],
+            bothWeeksAllDungeons.append({"dungeon": mythicPlusBestDungeon["name"],
+                                         "tyrannical": "-", "fortified": "-"})
+        seperatedDateElements = mythicPlusBestDungeon[
+            "completed_at"][0: mythicPlusBestDungeon["completed_at"].index("T")].split("-")
+    
+    for i, mythicPlusRecentDungeon in enumerate(mythicPlusRecent):
+        seperatedDateElements = mythicPlusRecentDungeon[
+            "completed_at"][0: mythicPlusRecentDungeon["completed_at"].index("T")].split("-")
+        recentDungeonData.append({
+            "dungeons": mythicPlusRecentDungeon["dungeon"],
             "key": calculateUpgrades(
-                mythicPlusRecent[counter]["mythic_level"],
-                mythicPlusRecent[counter]["num_keystone_upgrades"]
-            ) if mythicPlusRecent[counter]
-            else "-",
+                mythicPlusRecentDungeon["mythic_level"],
+                mythicPlusRecentDungeon["num_keystone_upgrades"]
+            ),
             "date": seperatedDateElements[1] +
             "/" +
             seperatedDateElements[2] +
             "/" +
-            seperatedDateElements[0]
-            if len(seperatedDateElements) == 3
-            else "-",
+            seperatedDateElements[0],
         })
-        counter += 1
-    return {"keys": keys, "recentData": recentData}
+    return {"keys": bothWeeksAllDungeons, "recentData": recentDungeonData}
 
 
 '''
@@ -88,38 +83,33 @@ def calculateUpgrades(key_level, num_keystone_upgrades):
 
 '''
  * Push an entry into a dict. The first entry goes into a tyrannical key, the second entry into a fortified key
- * @param {Dictionary} entry The first dictionary which will be added to tyrannical keys
- * @param {Dictionary} secondEntry The second dictionary which will be added to fortified keys
- * @param {Boolean} isTyrannical Boolean to see if the dungeon being looked at is fortified or not (aka tyrannical)
+ * @param {Dictionary} mythicPlusBestDungeon The first dictionary which will be added to tyrannical keys
+ * @param {Dictionary} mythicPlusAlternateKeys The second dictionary which will be added to fortified keys
+ * @param {String} weeklyAffix String of the weekly affix name
  * @returns The dictionary onbject after it has been pushed
 '''
 
 
-def getMythicKeyBest(entry, secondEntryJSON, isTyrannical):
-    secondEntry = None
-    for item in secondEntryJSON:
-        if entry["dungeon"] == item["dungeon"]:
-            secondEntry = item
+def getMythicKeyBest(mythicPlusBestDungeon, mythicPlusAlternateKeys, weeklyAffix):
+    alternateDungeon = None
+    for dungeon in mythicPlusAlternateKeys:
+        if mythicPlusBestDungeon["dungeon"] == dungeon["dungeon"]:
+            alternateDungeon = dungeon
             break
-    if (isTyrannical == False):
+    mythicPlusBest = calculateUpgrades(
+        mythicPlusBestDungeon["mythic_level"],
+        mythicPlusBestDungeon["num_keystone_upgrades"]
+    ) if mythicPlusBestDungeon else "-"
+    alternate = calculateUpgrades(alternateDungeon["mythic_level"], alternateDungeon["num_keystone_upgrades"]
+                                  ) if alternateDungeon else "-"
+    if (weeklyAffix == "Tyrannical"):
         return {
-            "dungeon": entry["dungeon"],
-            "tyrannical": calculateUpgrades(
-                entry["mythic_level"], entry["num_keystone_upgrades"]
-            )
-            if entry else "-",
-            "fortified": calculateUpgrades(
-                secondEntry["mythic_level"],
-                secondEntry["num_keystone_upgrades"]
-            )
-            if secondEntry else "-"}
+            "dungeon": mythicPlusBestDungeon["dungeon"],
+            "tyrannical": mythicPlusBest,
+            "fortified": alternate}
     else:
         return {
-            "dungeon": entry["dungeon"],
-            "tyrannical": calculateUpgrades(secondEntry["mythic_level"], secondEntry["num_keystone_upgrades"]
-                                            ) if secondEntry else "-",
-            "fortified": calculateUpgrades(
-                entry["mythic_level"],
-                entry["num_keystone_upgrades"]
-            ) if entry else "-",
+            "dungeon": mythicPlusBestDungeon["dungeon"],
+            "tyrannical": alternate,
+            "fortified": mythicPlusBest,
         }

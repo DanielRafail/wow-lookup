@@ -9,7 +9,7 @@ class WowlogsHelper extends React.Component {
    * Get all colors for every parsing bracket
    * @returns color for every parsing bracket
    */
-  static getWowlogsColors() {
+  static getWowlogsColors() : {[key: number]: string} {
     return {
       100: "#e5cc80",
       99: "#f48cba",

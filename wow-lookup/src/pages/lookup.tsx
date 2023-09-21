@@ -1,13 +1,15 @@
 import "../CSS/main.css";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "../CSS/main.css";
-import Navigation from "../components/navigation.js";
+import Navigation from "../components/navigation";
 import { useParams } from "react-router-dom";
-import Summary from "../components/summary.js";
+import Summary from "../components/summary";
 import { useNavigate } from "react-router-dom";
-import ApiCaller from "../API/apiCaller.js";
+import ApiCaller from "../API/apiCaller";
 import CircularProgress from "@mui/material/CircularProgress";
-import Helper from "../Helper/helper.js";
+import Helper from "../Helper/helper";
+import {iparsedWowlogsData, iparsedRaiderIOData, iParsedPVPData} from "../interfaces/lookup/interface"
+
 
 /**
  * main page (lookup page) which displays a summary of all the information, with individual links to each of them
@@ -15,32 +17,37 @@ import Helper from "../Helper/helper.js";
  */
 const Lookup = () => {
   let [navigationTabValue, setNavigationTabValue] = useState(0);
-  let [parsedRaiderIOData, setRaiderIOData] = useState(0);
-  let [parsedWowlogsData, setWowlogsData] = useState(0);
-  let [parsedPVPData, setPVPParsedData] = useState(0);
+  let [parsedRaiderIOData, setRaiderIOData] = useState<iparsedRaiderIOData>();
+  let [parsedWowlogsData, setWowlogsData] = useState<iparsedWowlogsData>();
+  let [parsedPVPData, setPVPParsedData] = useState<iParsedPVPData>();
   let [firstLoad, setFirstLoad] = useState(true);
   let params = useParams();
   let navigate = useNavigate();
   let headers = ["Summary", "Raider.IO", "WoWlogs", "CheckPVP"];
 
   useEffect(() => {
-    let timeout;
-    let raiderioInterval;
-    let pvpInterval;
-    let wowlogsInterval;
+    let timeout: ReturnType<typeof setTimeout>;
+    let raiderioInterval: ReturnType<typeof setInterval>;
+    let pvpInterval: ReturnType<typeof setInterval>;
+    let wowlogsInterval: ReturnType<typeof setInterval>;
 
-    function fetchData(apiCall, setData) {
-      apiCall(params.url)
-        .then(function (response) {
-          if (response && response.status === 200) {
-            setData(response.data);
-          }
-        })
+    function fetchData(apiCall: Function, setData: Function) {
+      apiCall(params.url).then(function (response: {
+        status: number;
+        data: {};
+      }) {
+        if (response && Helper.verifyStatusValid(response.status)) {
+          setData(response.data);
+        }
+      });
     }
     if (firstLoad) {
-      fetchData(ApiCaller.getRaiderIOData, setRaiderIOData,);
-      fetchData(ApiCaller.getWowlogsData, setWowlogsData);
-      fetchData(ApiCaller.getPVPData, setPVPParsedData);
+      const apiCalls = [
+        fetchData(ApiCaller.getRaiderIOData, setRaiderIOData),
+        fetchData(ApiCaller.getWowlogsData, setWowlogsData),
+        fetchData(ApiCaller.getPVPData, setPVPParsedData),
+      ];
+      Promise.all(apiCalls);
       setFirstLoad(false);
     }
 
@@ -82,7 +89,7 @@ const Lookup = () => {
   /**
    * Function to handle changing tabs on the navigation menu
    */
-  function HandleChange(event, v) {
+  function HandleChange(event: React.SyntheticEvent, v: number) {
     // Set the navigation tab back to 0 as it is the default and only interactive page, will leave this here in case I decide to create personalized pages for each website in the future
     setNavigationTabValue(0);
     //verify which tab we are on and select the link based on it (or send back to index)
@@ -97,8 +104,8 @@ const Lookup = () => {
    * @param {int} index Verify which tab we are on and select the appropriate website
    * @returns the appropriate website URL
    */
-  function VerifyTab(index) {
-    const characterInfo = params.url.replaceAll("&", "/");
+  function VerifyTab(index: number) {
+    const characterInfo = params.url!.replaceAll("&", "/");
     switch (index) {
       case 0:
         return null;
@@ -115,8 +122,8 @@ const Lookup = () => {
         });
         splitURL[1] = serverSectionCapitalized.join(" ");
         splitURL[2] = Helper.capitalizeFirstLetter(splitURL[2]);
-        splitURL = splitURL.join("/");
-        return "https://check-pvp.fr/" + splitURL;
+        const newURL = splitURL.join("/");
+        return "https://check-pvp.fr/" + newURL;
       case -1:
         navigate("/");
         return -1;
@@ -129,7 +136,7 @@ const Lookup = () => {
     <div className="main">
       <Navigation
         navigationTabValue={navigationTabValue}
-        HandleChange={(e, v) => HandleChange(e, v)}
+        HandleChange={HandleChange}
         headers={headers}
         homeButton={true}
       />
@@ -137,13 +144,13 @@ const Lookup = () => {
         {parsedRaiderIOData || parsedWowlogsData || parsedPVPData ? (
           <Summary
             data={{
-              name: params.url.split("&")[2],
-              server: params.url.split("&")[1],
-              parsedRaiderIOData: parsedRaiderIOData,
-              parsedWowlogsData: parsedWowlogsData,
-              parsedPVPData: parsedPVPData,
+              name: params.url!.split("&")[2],
+              server: params.url!.split("&")[1],
+              parsedRaiderIOData: parsedRaiderIOData!,
+              parsedWowlogsData: parsedWowlogsData!,
+              parsedPVPData: parsedPVPData!,
             }}
-            url={params.url}
+            url={params.url!}
           />
         ) : (
           <div>

@@ -1,5 +1,5 @@
 import "../CSS/main.css";
-import Helper from "../Helper/helper.js";
+import Helper from "../Helper/helper";
 import React, { useCallback, useEffect, useState } from "react";
 import CustomTable from "./table";
 import Tab from "@mui/material/Tab";
@@ -7,14 +7,28 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
-import TableStyleDefault from "../CSS/tableStyleDefault.js";
-import ClassImages from "../Helper/classImages.js";
-import WowlogsHelper from "../Helper/wowlogsHelper.js";
+import TableStyleDefault from "../CSS/tableStyleDefault";
+import ClassImages from "../Helper/classImages";
+import WowlogsHelper from "../Helper/wowlogsHelper";
+import {
+  RoleUpperCase,
+  iParse,
+  iparsedWowlogsData,
+  difficulties,
+} from "../interfaces/lookup/interface";
 
-const WowlogsComponent = (props) => {
-  let [difficultyParse, setdifficultyParse] = useState(0);
+interface Props {
+  data: {
+    name: string;
+    server: string;
+    parsedWowlogsData: iparsedWowlogsData;
+  };
+}
+
+const WowlogsComponent = (props: Props) => {
+  let [difficultyParse, setdifficultyParse] = useState<iParse>();
   let [difficulty, setDifficulty] = useState(0);
-  let [role, setRole] = useState(0);
+  let [role, setRole] = useState<RoleUpperCase>("DPS");
 
   /**
    * Function ran whenever the props element is modified which verifies what the current difficultyParse is (Based on page reload and tabs click)
@@ -32,7 +46,7 @@ const WowlogsComponent = (props) => {
           ? parsedWowlogsData.highestDifficulty
           : 1
       );
-      const currentRole = Object.values(
+      const currentRole: RoleUpperCase = Object.values(
         parsedWowlogsData.mainParsePerDifficulty
       )[parsedWowlogsData.highestDifficulty - 1];
       setRole(currentRole ? currentRole : "DPS");
@@ -54,7 +68,7 @@ const WowlogsComponent = (props) => {
           return null;
       }
     } else return null;
-  }, [props.data.parsedWowlogsData]);
+  }, [setdifficultyParse, props.data.parsedWowlogsData]);
 
   useEffect(() => {
     choseCorrectdifficultyParse();
@@ -68,7 +82,7 @@ const WowlogsComponent = (props) => {
     let averageParseOverall = 0;
     let averageParseIlvl = 0;
     let bossesKilled = 0;
-    difficultyParse.data.map((boss, i) => {
+    difficultyParse!.data.map((boss, i) => {
       if (boss.overall !== "-") {
         averageParseOverall =
           averageParseOverall + Number(boss.overall.slice(0, -1));
@@ -93,35 +107,31 @@ const WowlogsComponent = (props) => {
    * @param {Object} event The event of the tab change
    * @param {string} newVal The value of the new tab clicked
    */
-  function handleChangeTiers(event, newVal) {
+  function handleChangeTiers(event: React.SyntheticEvent, newVal: number) {
     let newBestParsingSpec = Object.values(
       props.data.parsedWowlogsData.mainParsePerDifficulty
-    )[Number(newVal)];
-    setDifficulty((Number(newVal) + 1).toString());
+    )[newVal] as RoleUpperCase;
+    setDifficulty(Number(newVal) + 1);
     if (newBestParsingSpec) setRole(newBestParsingSpec);
     else newBestParsingSpec = role;
     Object.values(
       props.data.parsedWowlogsData.tableData[newBestParsingSpec]
-    ).map((data, i) => {
-      if (i === Number(newVal)) setdifficultyParse(data);
-      return null;
+    ).forEach((data, i) => {
+      if (i === newVal) setdifficultyParse(data);
     });
   }
 
   /**
    * Function to handle changes on role tab clicks
-   * @param {Object} event The event of the tab change
+   * @param {React.SyntheticEvent} event The event of the tab change
    * @param {string} newVal The value of the new tab clicked
    */
-  function handleChangeRole(event, newVal) {
-    setRole(Helper.wowlogsNumbersToRole(Number(newVal)));
+  function handleChangeRole(event: React.SyntheticEvent, newVal: string) {
+    setRole(newVal as RoleUpperCase);
     Object.values(
-      props.data.parsedWowlogsData.tableData[
-        Helper.wowlogsNumbersToRole(Number(newVal))
-      ]
-    ).map((data, i) => {
-      if (i === difficulty - 1) setdifficultyParse(data);
-      return null;
+      props.data.parsedWowlogsData.tableData[newVal as RoleUpperCase]
+    ).forEach((data, i) => {
+      if (i === difficulty - 1) setdifficultyParse(data as iParse);
     });
   }
 
@@ -141,17 +151,15 @@ const WowlogsComponent = (props) => {
             Average Overall Parse
           </h5>
         ) : (
-          <h6>No Average Parse</h6>
+          <h5>No Average Parse</h5>
         )}
-        {averageParse.ilvl !== "-" ? (
+        {averageParse.ilvl !== "-" && (
           <h5 className="wowlogs-ilvl-average-parse">
             <span style={{ color: getColorFromNumber(averageParse.ilvl) }}>
               {averageParse.ilvl}
             </span>{" "}
             Average Ilvl Parse
           </h5>
-        ) : (
-          <React.Fragment />
         )}
       </div>
     );
@@ -186,29 +194,15 @@ const WowlogsComponent = (props) => {
    */
   function getRoleHeaders() {
     return Object.keys(props.data.parsedWowlogsData.tableData).map(
-      (roleEntry, i) => {
-        if (
-          roleEntry === "Tank" &&
-          !Helper.getAllTankingClasses().includes(
-            props.data.parsedWowlogsData.class
-          )
-        ) {
-          return null;
-        }
-        if (
-          roleEntry === "Healer" &&
-          !Helper.getAllHealingClasses().includes(
-            props.data.parsedWowlogsData.class
-          )
-        ) {
-          return null;
-        }
-        return (
+      (role, i) => {
+        return Helper.rolesForClasses(
+          props.data.parsedWowlogsData.class
+        ).includes(role) ? (
           <Tab
             label={
-              roleEntry === "Healer"
+              role === "Healer"
                 ? "Healing"
-                : roleEntry === "Tank"
+                : role === "Tank"
                 ? "Tanking"
                 : "DPS"
             }
@@ -219,8 +213,10 @@ const WowlogsComponent = (props) => {
               color: "white",
               backgroundColor: "rgb(33, 33, 33)",
             }}
-            value={Helper.wowlogsRoleToNumbers(roleEntry).toString()}
+            value={role}
           />
+        ) : (
+          <div></div>
         );
       }
     );
@@ -237,6 +233,7 @@ const WowlogsComponent = (props) => {
           <TabPanel
             key={i}
             value={Helper.wowlogsTierNamesToNumbers(entry[0]).toString()}
+            sx={{padding: "0px"}}
           >
             <CustomTable
               headers={[
@@ -247,9 +244,11 @@ const WowlogsComponent = (props) => {
                 "Kills",
               ]}
               rows={entry[1].data}
-              personalizedCells={(row, index, parentIndex) =>
-                createPersonalizedCells(row, index, parentIndex)
-              }
+              personalizedCells={(
+                row: iParse["data"][0],
+                index: number,
+                parentIndex: number
+              ) => createPersonalizedCells(row, index, parentIndex)}
             />
           </TabPanel>
         );
@@ -279,23 +278,18 @@ const WowlogsComponent = (props) => {
            /* woulda been at 0 and therefore considered "undeclared" or "undefined" or whatever
            /* and none of the table would have appeared
           */}
-          <TabContext value={(difficulty - 1).toString()}>
-            <Box
-              className="multi-button-tab"
-              sx={{
-                border: "2px solid gray",
-                borderBottom: "none",
-                backgroundColor: "rgb(33, 33, 33)",
-              }}
-            >
-              <TabList
-                onChange={(e, v) => handleChangeTiers(e, v)}
-                style={{ marginBottom: "none" }}
-              >
-                {getDifficultyHeaders()}
-                <TabContext
-                  value={Helper.wowlogsRoleToNumbers(role).toString()}
-                >
+          <div className="wowlogs-table">
+            <TabContext value={(difficulty - 1).toString()}>
+              <div className="wowlogs-header-tabs">
+                <TabContext value={(difficulty - 1).toString()}>
+                  <TabList
+                    onChange={(e, v) => handleChangeTiers(e, v)}
+                    style={{ marginBottom: "none" }}
+                  >
+                    {getDifficultyHeaders()}
+                  </TabList>
+                </TabContext>
+                <TabContext value={role}>
                   <TabList
                     onChange={(e, v) => handleChangeRole(e, v)}
                     style={{ marginBottom: "none", marginLeft: "auto" }}
@@ -303,10 +297,10 @@ const WowlogsComponent = (props) => {
                     {getRoleHeaders()}
                   </TabList>
                 </TabContext>
-              </TabList>
-            </Box>
-            {populateTable()}
-          </TabContext>
+              </div>
+              {populateTable()}
+            </TabContext>
+          </div>
         </div>
       </div>
     );
@@ -317,49 +311,58 @@ const WowlogsComponent = (props) => {
    * @param {string} cell the content of the cell
    * @returns the color associated with the parse on that cell's content
    */
-  function getColorFromNumber(cell) {
+  function getColorFromNumber(cell: string): string {
     const colors = Object.entries(WowlogsHelper.getWowlogsColors());
-    if (cell.toString().indexOf("%")) {
+    if (cell.indexOf("%")) {
       for (var i = colors.length - 1; i >= 0; i--) {
         if (
-          cell.toString().substring(0, cell.toString().indexOf("%")) >=
-          Number(colors[i][0])
+          Number(cell.substring(0, cell.indexOf("%"))) >= Number(colors[i][0])
         ) {
           return colors[i][1];
         }
       }
     }
+    return "";
   }
 
   /**
    * Create personalized cells for the customTable
    * @param {Dictionary} row Row dictionary which holds all the cells for a row
-   * @param {int} index The index of each cell
-   * @param {int} parentIndex The index of each row
+   * @param {number} index The index of each cell
+   * @param {number} parentIndex The index of each row
    * @returns The cells after they have been modified
    */
-  function createPersonalizedCells(row, index, parentIndex) {
+  function createPersonalizedCells(
+    row: iParse["data"][0],
+    index: number,
+    parentIndex: number
+  ) {
     const StyledTableCell = TableStyleDefault.styleTableCell();
-    let textColor;
-    Object.values(row).map((cell, i) => {
-      textColor = textColor ? textColor : getColorFromNumber(cell);
+    let textColor = "";
+    Object.values(row).forEach((cell, i) => {
+      Object.values(cell);
+      textColor = textColor
+        ? textColor
+        : cell
+        ? getColorFromNumber(cell)
+        : "#b5b5b5";
       return null;
     });
     const specID =
       props.data.parsedWowlogsData.tableData[role][
-        Helper.wowlogsNumbersToTierNames(difficulty - 1)
+        Helper.wowlogsNumbersToTierNames(difficulty - 1) as difficulties
       ].spec[parentIndex].specID;
     return (
       <StyledTableCell
         key={index}
         align="center"
         style={{
-          color: textColor ? textColor : "#b5b5b5",
+          color: textColor,
           border: "2px solid grey",
         }}
       >
         <div className="wowlogs-cell-container">
-          {index === 1 && specID && row.killCount > 0 ? (
+          {index === 1 && specID && Number(row.killCount) > 0 && (
             <div className="wowlogs-spec-container">
               <img
                 src={ClassImages.getSpecImages()[specID]}
@@ -367,10 +370,7 @@ const WowlogsComponent = (props) => {
                 className="spec-Image"
               />
             </div>
-          ) : (
-            <React.Fragment />
           )}
-
           <div className="wowlogs-cell">{Object.values(row)[index]}</div>
         </div>
       </StyledTableCell>
@@ -383,8 +383,21 @@ const WowlogsComponent = (props) => {
       props.data.parsedWowlogsData.tableData.DPS &&
       difficultyParse ? (
         returnWowlogsContent()
+      ) : props.data.parsedWowlogsData.status &&
+        props.data.parsedWowlogsData.status === 429 ? (
+        <p className="error-p">
+          Please try again later
+          <br /> Warcraft logs timed out the website out for requesting
+          information too often
+        </p>
+      ) : props.data.parsedWowlogsData.status &&
+        props.data.parsedWowlogsData.status === 404 ? (
+        <p className="error-p">
+          Character could not be found, make sure they exist and have completed
+          content
+        </p>
       ) : (
-        <React.Fragment />
+        <div></div>
       )}
     </div>
   );

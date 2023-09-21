@@ -26,26 +26,25 @@ function Copyright() {
             How to contact me
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Cendo#1738 on Discord
-            <br/>
+            Cendo on Discord
+            <br />
             Cendoray@gmail.com
-            <br/>
-            <br/>
-            Please keep in mind this project was done for fun, and I am a student working a part time job with other obligations and hobbies. As such, I may not be able to respond to your inquiries in a timely manner. 
-            <br/>
-            <br/>
+            <br />
+            <br />
+            Please keep in mind this project was done for fun, and I have other
+            obligations and hobbies. As such, I may not always be able to
+            respond to your inquiries in a timely manner.
+            <br />
+            <br />
             Thank you for your understanding
           </Typography>
         </div>
       </Modal>
       {"Copyright © "}
-      <Link color="inherit">WoW-Lookup.surge.sh</Link> 2022
+      <Link color="inherit">WoW-Lookup.surge.sh</Link> 2023
       <br />
       <br />
-      <span
-        onClick={handleOpen}
-        className="a-clicked-no-change"
-      >
+      <span onClick={handleOpen} className="a-clicked-no-change">
         Contact me
       </span>{" "}
       -

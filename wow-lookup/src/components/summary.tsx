@@ -1,18 +1,33 @@
 import "../CSS/main.css";
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import "../CSS/main.css";
-import Accordion from "./accordion.js";
-import RaiderioComponent from "./raiderioComponent.js";
-import WowlogsComponent from "./wowlogsComponent.js";
-import PVPComponent from "./pvpComponent.js";
+import Accordion from "./accordion";
+import RaiderioComponent from "./raiderioComponent";
+import WowlogsComponent from "./wowlogsComponent";
+import PVPComponent from "./pvpComponent";
 import CircularProgress from "@mui/material/CircularProgress";
+import {
+  iparsedWowlogsData,
+  iparsedRaiderIOData,
+  iParsedPVPData,
+} from "../interfaces/lookup/interface";
 
+interface Props {
+  data: {
+    name: string;
+    server: string;
+    parsedRaiderIOData: iparsedRaiderIOData;
+    parsedWowlogsData: iparsedWowlogsData;
+    parsedPVPData: iParsedPVPData;
+  };
+  url: string;
+}
 
 /**
  * Summary page which will show information about your WoWlogs, Raider.IO and PVP in one compact location
  * @returns HTML and logic components for the Summary page
  */
-const Summary = (props) => {
+const Summary = (props: Props) => {
   const [showText, setShowText] = useState(false);
 
   useEffect(() => {
@@ -25,6 +40,8 @@ const Summary = (props) => {
   return (
     <div className="summary-main">
       <Accordion
+        border="2px solid grey"
+        margin="10px auto"
         content={[
           props.data.parsedRaiderIOData ? (
             <RaiderioComponent
@@ -37,7 +54,9 @@ const Summary = (props) => {
           ) : (
             <div className="circular-progress-summary">
               <CircularProgress size={100} />
-              {showText && <p className="error-p">Error loading RaiderIO info</p>}
+              {showText && (
+                <p className="error-p">Error loading RaiderIO info</p>
+              )}
             </div>
           ),
           props.data.parsedWowlogsData ? (
@@ -51,7 +70,9 @@ const Summary = (props) => {
           ) : (
             <div className="circular-progress-summary">
               <CircularProgress size={100} />
-              {showText && <p className="error-p">Error loading WarcraftLogs info</p>}
+              {showText && (
+                <p className="error-p">Error loading WarcraftLogs info</p>
+              )}
             </div>
           ),
           props.data.parsedPVPData ? (

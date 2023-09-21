@@ -1,5 +1,5 @@
 #root {
-  font-family: Verdana, Helvetica, sans-serif
+  font-family: Verdana, Helvetica, sans-serif;
 }
 
 .body,
@@ -21,11 +21,12 @@
   color: #61dafb;
 }
 
-.name-line-index, .server-line-index, .region-line-index{
+.name-line-index,
+.server-line-index,
+.region-line-index {
   width: 100%;
-  margin-left:auto;
+  margin-left: auto;
 }
-
 
 #lookup-form {
   text-align: center;
@@ -38,13 +39,14 @@
   margin-bottom: 30px;
 }
 
-
-.index-input-type-button{
+.index-input-type-button {
   width: 400px;
   margin-bottom: 70px !important;
 }
 
-.name-input, .server-input, .region-input {
+.name-input,
+.server-input,
+.region-input {
   height: 30px;
   width: 100%;
   font-size: 20px;
@@ -52,7 +54,7 @@
   margin-right: 20px;
 }
 
-#io_url{
+#io_url {
   height: 30px;
   width: 52%;
   font-size: 20px;
@@ -62,39 +64,43 @@
   margin-top: 10px;
 }
 
-.name-label, .server-label, .region-label{
+.name-label,
+.server-label,
+.region-label {
   text-align-last: left;
-  margin-bottom:0px;
+  margin-bottom: 0px;
 }
 
-.url-label, .error-p-url-input, .sub-label{
-  margin-Bottom:0px;
+.url-label,
+.error-p-url-input,
+.sub-label {
+  margin-bottom: 0px;
   display: inline-flex;
-  width:52%;
+  width: 52%;
 }
 
-.sub-label{
+.sub-label {
   font-size: 0.6em;
   text-align: left;
 }
 
-.index-submit-button{
- margin-top: 70px !important;
- width: 200px !important;
- margin-bottom: 20px !important;
+.index-submit-button {
+  margin-top: 70px !important;
+  width: 200px !important;
+  margin-bottom: 20px !important;
 }
 
-.single-input-submit-button{
+.single-input-submit-button {
   display: block !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
-.footer-container>footer {
+.footer-container > footer {
   border-top: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-.footer-container>footer>div {
+.footer-container > footer > div {
   text-align: center;
   color: white;
 }
@@ -111,9 +117,9 @@ footer {
   display: flex;
   flex: auto;
 }
-div div nav div div div div .home-button-section{
+div div nav div div div div .home-button-section {
   font-weight: bold;
-  color:#282c34 !important;
+  color: #282c34 !important;
 }
 
 @media (min-width: 1200px) {
@@ -125,14 +131,14 @@ div div nav div div div div .home-button-section{
 @media (max-width: 747px) {
   div div nav div div div div button {
     font-size: small !important;
-    padding:5px !important;
+    padding: 5px !important;
   }
 }
 
 @media (max-width: 400px) {
   div div nav div div div div button {
     font-size: 10px !important;
-    padding:0px !important;
+    padding: 0px !important;
   }
 }
 
@@ -142,62 +148,63 @@ div div nav div div div div .home-button-section{
   }
 }
 
-.error-p{
+.error-p {
   color: red;
   margin-top: 60px;
 }
 
-.summary-main{
+.summary-main {
   width: 90%;
-  margin-bottom:25px;
-  margin-top:25px;
+  margin-bottom: 25px;
+  margin-top: 25px;
 }
 
-.raiderIO-section{
+.raiderIO-section {
   display: flex;
 }
 
-.best-keys, .recent-keys{
+.best-keys,
+.recent-keys {
   flex-direction: column;
 }
 
-.best-keys{
+.best-keys {
   flex: 1.5;
 }
 
-.recent-keys{
+.recent-keys {
   flex: 1;
   margin-top: -30px;
 }
 
-.flex-seperator{
-  flex:0.2;
+.flex-seperator {
+  flex: 0.2;
 }
-.hidden{
+.hidden {
   visibility: hidden;
 }
 
-.small-margin-bottom{
+.small-margin-bottom {
   margin-bottom: -21px;
 }
 
-.multi-button-tab{
+.multi-button-tab {
   margin-left: 24px;
   margin-right: 24px;
   margin-bottom: -24px;
 }
 
-.rankIcons{
-  width:90px;
-  height:90px;
+.rankIcons {
+  width: 90px;
+  height: 90px;
 }
 
-.pvpRankInfoContainer{
+.pvpRankInfoContainer {
   display: flex;
-  margin-bottom:40px;
+  margin-bottom: 40px;
 }
 
-.pvpText{
+.pvpText {
   margin-left: 30px;
   margin-top: 20px;
 }
@@ -208,104 +215,117 @@ div div nav div div div div .home-button-section{
   }
 }
 
-.a-clicked-no-change:visited{
-  color:white;
+.a-clicked-no-change:visited {
+  color: white;
 }
 
-.a-clicked-no-change{
-  color:white;
+.a-clicked-no-change {
+  color: white;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.footer-modal{
+.footer-modal {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 35%;
-  height:400px;
+  height: 400px;
   background-color: rgb(33, 33, 33);
   border: 2px solid #acacac;
   box-shadow: 24;
   outline: none;
-  color:white;
-  padding:30px;
+  color: white;
+  padding: 30px;
 }
 
-.pvp-achiev-desc{
+.pvp-achiev-desc {
   display: block;
   font-size: 21px;
   margin-top: -6px;
   margin-left: 14px;
 }
 
-.wowlogs-ilvl-average-parse{
-  margin-top:-2em;
+.wowlogs-ilvl-average-parse {
+  margin-top: -2em;
 }
 
-.underline{
-  text-decoration:underline;
+.underline {
+  text-decoration: underline;
 }
 
-.veryBold{
+.veryBold {
   font-weight: 1000 !important;
 }
 
-.spec-Image{
+.spec-Image {
   width: 30px;
   vertical-align: bottom;
   margin-right: 5px;
 }
 
-
-
-.wowlogs-cell-container{
-  display:inline-flex;
+.wowlogs-cell-container {
+  display: inline-flex;
   position: relative;
   width: 100%;
 }
 
-.wowlogs-cell{
-  flex:auto;
+.wowlogs-cell {
+  flex: auto;
 }
 
-.wowlogs-section-data-text, .best-keys{
-  margin-left:24px;
+.wowlogs-section-data-text,
+.best-keys {
+  margin-left: 24px;
 }
 
-.best-keys-headers, .wowlogs-section-data-text{
-  font-size:25px;
+.best-keys-headers,
+.wowlogs-section-data-text {
+  font-size: 25px;
 }
 
-.auto-complete-textfield > div > input::placeholder, .name-input::placeholder{
+.auto-complete-textfield > div > input::placeholder,
+.name-input::placeholder {
   opacity: 60% !important;
   color: black !important;
 }
 
-.auto-complete-textfield > div{
+.auto-complete-textfield > div {
   background-color: white !important;
   font-size: 20px;
 }
 
-.server-input{
-  padding:0px;
+.server-input {
+  padding: 0px;
 }
 
-.raider-io-star{
-  color:yellow;
+.raider-io-star {
+  color: yellow;
   transform: scale(0.7);
   transform-origin: bottom;
 }
 
-.raider-io-star:not(:first-child){
-  margin-left:-10px;
+.raider-io-star:not(:first-child) {
+  margin-left: -10px;
 }
 
-.raider-io-stars-container{
-  display:inline-block;
+.raider-io-stars-container {
+  display: inline-block;
 }
 
-.circular-progress-summary{
+.circular-progress-summary {
   text-align: center;
+}
+
+.wowlogs-header-tabs {
+  border: 2px solid gray;
+  border-bottom: none;
+  background-color: rgb(33, 33, 33);
+  display:flex;
+  margin: 0px;
+}
+
+.wowlogs-table{
+  padding:20px;
 }
